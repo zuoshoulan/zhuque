@@ -15,13 +15,19 @@
  */
 package ai.houyi.zhuque.dashboard.filter;
 
+import java.io.IOException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ai.houyi.dorado.rest.annotation.FilterPath;
-import ai.houyi.dorado.rest.http.Filter;
-import ai.houyi.dorado.rest.http.HttpRequest;
-import ai.houyi.dorado.rest.http.HttpResponse;
 import ai.houyi.zhuque.core.model.AuthContext;
 import ai.houyi.zhuque.core.model.AuthInfo;
 import ai.houyi.zhuque.dao.model.User;
@@ -29,19 +35,26 @@ import ai.houyi.zhuque.dao.model.User;
 /**
  * @author weiping wang
  */
-@FilterPath(exclude="/auth/*")
+@WebFilter(urlPatterns = "/*", filterName = "mockAuthFilter")
 public class MockAuthFilter implements Filter {
 	private static final Logger LOG = LoggerFactory.getLogger(MockAuthFilter.class);
-	
+
 	@Override
-	public boolean preFilter(HttpRequest request, HttpResponse response) {
-		AuthInfo authInfo=new AuthInfo();
-		User user = new User();
-		user.setId(1);
-		
-		authInfo.setUser(user);
-		AuthContext.set(authInfo);
-		LOG.info("=====AuthFilter execute====");
-		return true;
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
+		HttpServletRequest req = (HttpServletRequest) request;
+
+		// 排除 /auth/* 路径
+		if (!req.getRequestURI().startsWith("/auth/")) {
+			AuthInfo authInfo = new AuthInfo();
+			User user = new User();
+			user.setId(1);
+
+			authInfo.setUser(user);
+			AuthContext.set(authInfo);
+			LOG.info("=====AuthFilter execute====");
+		}
+
+		chain.doFilter(request, response);
 	}
 }

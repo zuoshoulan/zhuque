@@ -16,34 +16,46 @@
 package ai.houyi.zhuque.dashboard.controller;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import ai.houyi.dorado.rest.annotation.Controller;
-import ai.houyi.dorado.rest.annotation.DELETE;
-import ai.houyi.dorado.rest.annotation.GET;
-import ai.houyi.dorado.rest.annotation.POST;
-import ai.houyi.dorado.rest.annotation.Path;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 import ai.houyi.zhuque.commons.page.Page;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.commons.web.IController;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.model.query.TemplateQueryReq;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.service.TemplateService;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.dao.model.Template;
+import org.springframework.web.bind.annotation.RequestMapping;
 import io.swagger.annotations.Api;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  *
  * @author weiping wang
  */
-@Controller
-@Path("/templates")
+@RestController
+@RequestMapping("/templates")
 @Api(tags= {"广告位模板管理"})
 public class TemplateController implements IController<Template, TemplateQueryReq, Integer> {
 	@Autowired
 	private TemplateService templateService;
 
-	@POST
-	@Path
+	@PostMapping
+	@RequestMapping
 	public void saveOrUpdate(Template template) {
 		if (template.getId() != null) {
 			templateService.save(template);
@@ -52,32 +64,32 @@ public class TemplateController implements IController<Template, TemplateQueryRe
 		}
 	}
 
-	@DELETE
-	@Path("/{templateId}")
+	@DeleteMapping
+	@RequestMapping("/{templateId}")
 	public void deleteById(Integer templateId) {
 		templateService.softDeleteById(templateId);
 	}
 
-	@GET
-	@Path
+	@GetMapping
+	@RequestMapping
 	public void selectAll() {
 		templateService.selectAll();
 	}
 
-	@GET
-	@Path("/{templateId}")
+	@GetMapping
+	@RequestMapping("/{templateId}")
 	public Template loadById(Integer templateId) {
 		return templateService.loadById(templateId);
 	}
 
-	@GET
-	@Path("/{name}")
+	@GetMapping
+	@RequestMapping("/{name}")
 	public List<Template> selectByName(String name) {
 		return templateService.selectByName(name);
 	}
 
-	@POST
-	@Path("/list")
+	@PostMapping
+	@RequestMapping("/list")
 	public Page<Template> selectPage(TemplateQueryReq queryReq) {
 		return templateService.selectPageList(queryReq);
 	}

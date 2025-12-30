@@ -16,32 +16,44 @@
 package ai.houyi.zhuque.auth.controller;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import ai.houyi.dorado.rest.annotation.Controller;
-import ai.houyi.dorado.rest.annotation.DELETE;
-import ai.houyi.dorado.rest.annotation.GET;
-import ai.houyi.dorado.rest.annotation.POST;
-import ai.houyi.dorado.rest.annotation.Path;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 import ai.houyi.zhuque.auth.service.MenuService;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.commons.page.Page;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.commons.web.IController;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.model.query.MenuQueryReq;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.dao.model.Menu;
+import org.springframework.web.bind.annotation.RequestMapping;
 import io.swagger.annotations.Api;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * @author weiping wang
  */
-@Controller
-@Path("/menus")
+@RestController
+@RequestMapping("/menus")
 @Api(tags="菜单管理")
 public class MenuController implements IController<Menu, MenuQueryReq, Integer> {
 	@Autowired
 	private MenuService menuService;
 
-	@POST
+	@PostMapping
 	public void saveOrUpdate(Menu t) {
 		if (t.getId() == null) {
 			menuService.save(t);
@@ -50,19 +62,19 @@ public class MenuController implements IController<Menu, MenuQueryReq, Integer> 
 		}
 	}
 
-	@DELETE
-	@Path("/{id}")
+	@DeleteMapping
+	@RequestMapping("/{id}")
 	public void deleteById(Integer id) {
 		menuService.deleteById(id);
 	}
 
-	@GET
-	@Path("/{id}")
+	@GetMapping
+	@RequestMapping("/{id}")
 	public Menu loadById(Integer id) {
 		return menuService.loadById(id);
 	}
 
-	@GET
+	@GetMapping
 	public List<Menu> selectAll(){
 		return menuService.selectAll();
 	}

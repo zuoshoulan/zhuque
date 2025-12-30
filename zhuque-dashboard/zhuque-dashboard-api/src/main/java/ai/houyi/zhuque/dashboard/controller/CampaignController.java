@@ -16,35 +16,48 @@
 package ai.houyi.zhuque.dashboard.controller;
 
 import java.util.Arrays;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import ai.houyi.dorado.rest.annotation.Controller;
-import ai.houyi.dorado.rest.annotation.DELETE;
-import ai.houyi.dorado.rest.annotation.GET;
-import ai.houyi.dorado.rest.annotation.POST;
-import ai.houyi.dorado.rest.annotation.Path;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 import ai.houyi.zhuque.commons.page.Page;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.commons.web.IController;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.model.AuthContext;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.model.query.CampaignQueryReq;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.service.CampaignService;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.dao.model.Campaign;
+import org.springframework.web.bind.annotation.RequestMapping;
 import io.swagger.annotations.Api;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  *
  * @author weiping wang
  */
-@Controller
-@Path("/campaigns")
+@RestController
+@RequestMapping("/campaigns")
 @Api(tags="推广活动/计划管理")
 public class CampaignController implements IController<Campaign, CampaignQueryReq, Integer> {
 	@Autowired
 	private CampaignService campaignService;
 
-	@POST
-	@Path
+	@PostMapping
+	@RequestMapping
 	public void saveOrUpdate(Campaign t) {
 		t.setAdvertiserId(AuthContext.currentUser().getId());
 		if (t.getId() == null) {
@@ -54,20 +67,20 @@ public class CampaignController implements IController<Campaign, CampaignQueryRe
 		}
 	}
 
-	@DELETE
-	@Path("/{id:[0-9]+}")
+	@DeleteMapping
+	@RequestMapping("/{id:[0-9]+}")
 	public void deleteById(Integer id) {
 		campaignService.softDeleteById(id);
 	}
 
-	@GET
-	@Path("/{id:[0-9]+}")
+	@GetMapping
+	@RequestMapping("/{id:[0-9]+}")
 	public Campaign loadById(Integer id) {
 		return campaignService.loadById(id);
 	}
 
-	@POST
-	@Path("/list")
+	@PostMapping
+	@RequestMapping("/list")
 	public Page<Campaign> selectPage(CampaignQueryReq queryReq) {
 		queryReq.setAdvertiserIds(Arrays.asList(AuthContext.currentUser().getId()));
 		return campaignService.selectPageList(queryReq);

@@ -16,32 +16,43 @@
 package ai.houyi.zhuque.dashboard.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import ai.houyi.dorado.rest.annotation.Controller;
-import ai.houyi.dorado.rest.annotation.DELETE;
-import ai.houyi.dorado.rest.annotation.GET;
-import ai.houyi.dorado.rest.annotation.POST;
-import ai.houyi.dorado.rest.annotation.Path;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 import ai.houyi.zhuque.commons.page.Page;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.commons.web.IController;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.model.query.CreativeQueryReq;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.service.CreativeService;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.dao.model.Creative;
+import org.springframework.web.bind.annotation.RequestMapping;
 import io.swagger.annotations.Api;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  *
  * @author weiping wang
  */
-@Controller
-@Path("/creatives")
+@RestController
+@RequestMapping("/creatives")
 @Api(tags="推广创意管理")
 public class CreativeController implements IController<Creative,CreativeQueryReq,Integer>{
 	@Autowired
 	private CreativeService creativeService;
 
-	@POST
-	@Path
+	@PostMapping
+	@RequestMapping
 	public void saveOrUpdate(Creative creative) {
 		if (creative.getId() == null)
 			creativeService.save(creative);
@@ -49,20 +60,20 @@ public class CreativeController implements IController<Creative,CreativeQueryReq
 			creativeService.update(creative);
 	}
 
-	@DELETE
-	@Path("/{creativeId}")
+	@DeleteMapping
+	@RequestMapping("/{creativeId}")
 	public void deleteById(Integer creativeId) {
 		creativeService.deleteById(creativeId);
 	}
 
-	@GET
-	@Path("/{creativeId}")
+	@GetMapping
+	@RequestMapping("/{creativeId}")
 	public Creative loadById(Integer creativeId) {
 		return creativeService.loadById(creativeId);
 	}
 	
-	@POST
-	@Path("/list")
+	@PostMapping
+	@RequestMapping("/list")
 	public Page<Creative> selectPage(CreativeQueryReq queryReq){
 		return creativeService.selectPageList(queryReq);
 	}

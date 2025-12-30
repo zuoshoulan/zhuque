@@ -19,25 +19,11 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>ai.houyi</groupId>
-				<artifactId>dorado-core</artifactId>
-				<version>${dorado.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>ai.houyi</groupId>
-				<artifactId>dorado-spring-boot-starter</artifactId>
-				<version>${dorado.version}</version>
-			</dependency>
+			<!-- 移除 Dorado 框架依赖，改用标准 Spring Boot -->
 			<dependency>
 				<groupId>org.mybatis</groupId>
 				<artifactId>mybatis</artifactId>
 				<version>${mybatis.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>ai.houyi</groupId>
-				<artifactId>dorado-swagger-ui</artifactId>
-				<version>${dorado.version}</version>
 			</dependency>
 
 			<!-- springboot相关依赖 -->
@@ -45,6 +31,11 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-log4j2</artifactId>
 				<version>${spring-boot-starter-log4j2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-web</artifactId>
+				<version>${spring-boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mybatis.spring.boot</groupId>
@@ -57,23 +48,29 @@
 				<artifactId>protobuf-java</artifactId>
 				<version>${protobuf-java.version}</version>
 			</dependency>
+
 			<dependency>
-				<groupId>com.f2time.albatross</groupId>
-				<artifactId>albatross-rpc</artifactId>
-				<version>${albatross.version}</version>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>1.7.36</version>
+			</dependency>
+
+			<!-- 使用标准 Swagger 替代 Dorado Swagger -->
+			<dependency>
+				<groupId>io.springfox</groupId>
+				<artifactId>springfox-swagger2</artifactId>
+				<version>2.9.2</version>
 			</dependency>
 			<dependency>
-				<groupId>ai.houyi</groupId>
-				<artifactId>
-					dorado-swagger-spring-boot-starter
-				</artifactId>
-				<version>${dorado.version}</version>
+				<groupId>io.springfox</groupId>
+				<artifactId>springfox-swagger-ui</artifactId>
+				<version>2.9.2</version>
 			</dependency>
+
 			<dependency>
 				<groupId>com.alibaba</groupId>
 				<artifactId>fastjson</artifactId>
 				<version>${fastjson.version}</version>
-<!-- 				<version>1.2.47</version> -->
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

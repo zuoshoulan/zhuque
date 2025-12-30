@@ -16,32 +16,44 @@
 package ai.houyi.zhuque.auth.controller;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import ai.houyi.dorado.rest.annotation.Controller;
-import ai.houyi.dorado.rest.annotation.DELETE;
-import ai.houyi.dorado.rest.annotation.GET;
-import ai.houyi.dorado.rest.annotation.POST;
-import ai.houyi.dorado.rest.annotation.Path;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 import ai.houyi.zhuque.auth.service.PermissionService;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.commons.page.Page;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.commons.web.IController;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.model.query.PermissionQueryReq;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.dao.model.Permission;
+import org.springframework.web.bind.annotation.RequestMapping;
 import io.swagger.annotations.Api;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * @author weiping wang
  */
-@Controller
-@Path("/permissions")
+@RestController
+@RequestMapping("/permissions")
 @Api(tags="权限管理")
 public class PermissionController implements IController<Permission, PermissionQueryReq, Integer> {
 	@Autowired
 	private PermissionService permissionService;
 	
-	@POST
+	@PostMapping
 	public void saveOrUpdate(Permission t) {
 		if(t.getId()==null) {
 			permissionService.save(t);
@@ -50,19 +62,19 @@ public class PermissionController implements IController<Permission, PermissionQ
 		}
 	}
 
-	@DELETE
-	@Path("/{id}")
+	@DeleteMapping
+	@RequestMapping("/{id}")
 	public void deleteById(Integer id) {
 		permissionService.deleteById(id);
 	}
 
-	@GET
-	@Path("/{id}")
+	@GetMapping
+	@RequestMapping("/{id}")
 	public Permission loadById(Integer id) {
 		return permissionService.loadById(id);
 	}
 
-	@GET
+	@GetMapping
 	public List<Permission> permissionTree(){
 		return permissionService.selectPermissionsAsTree();
 	}

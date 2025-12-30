@@ -17,17 +17,16 @@ package ai.houyi.zhuque.auth;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
-
-import ai.houyi.dorado.springboot.DoradoSpringBootApplication;
 
 /**
  *
  * @author weiping wang
  */
-@DoradoSpringBootApplication
+@SpringBootApplication
 @MapperScan("ai.houyi.zhuque.dao")
-@ComponentScan(basePackages= {"ai.houyi.zhuque"})
+@ComponentScan(basePackages = {"ai.houyi.zhuque"})
 public class Application {
 
 	public static void main(String[] args) {

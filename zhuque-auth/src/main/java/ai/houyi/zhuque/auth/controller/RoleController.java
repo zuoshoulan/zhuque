@@ -18,13 +18,13 @@ package ai.houyi.zhuque.auth.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
-import ai.houyi.dorado.rest.annotation.Controller;
-import ai.houyi.dorado.rest.annotation.DELETE;
-import ai.houyi.dorado.rest.annotation.GET;
-import ai.houyi.dorado.rest.annotation.POST;
-import ai.houyi.dorado.rest.annotation.Path;
-import ai.houyi.dorado.rest.annotation.PathVariable;
 import ai.houyi.zhuque.auth.service.RoleService;
 import ai.houyi.zhuque.commons.page.Page;
 import ai.houyi.zhuque.commons.web.IController;
@@ -36,14 +36,14 @@ import io.swagger.annotations.Api;
 /**
  * @author weiping wang
  */
-@Controller
-@Path("/roles")
+@RestController
+@RequestMapping("/roles")
 @Api(tags = { "角色管理" })
 public class RoleController implements IController<Role, RoleQueryReq, Integer> {
 	@Autowired
 	private RoleService roleService;
 
-	@POST
+	@PostMapping
 	public void saveOrUpdate(Role role) {
 		if (role.getId() == null) {
 			roleService.save(role);
@@ -52,32 +52,32 @@ public class RoleController implements IController<Role, RoleQueryReq, Integer> 
 		}
 	}
 
-	@GET
-	@Path("/{id}")
+	@GetMapping
+	@RequestMapping("/{id}")
 	public Role loadById(Integer id) {
 		return roleService.loadById(id);
 	}
 
-	@DELETE
-	@Path("/{id}")
+	@DeleteMapping
+	@RequestMapping("/{id}")
 	public void deleteById(Integer id) {
 		roleService.deleteById(id);
 	}
 
-	@GET
-	@Path
+	@GetMapping
+	@RequestMapping
 	public List<Role> selectAll() {
 		return roleService.selectAll();
 	}
 
-	@POST
-	@Path("/list")
+	@PostMapping
+	@RequestMapping("/list")
 	public Page<Role> selectPage(RoleQueryReq queryReq) {
 		return roleService.selectPageList(queryReq);
 	}
 
-	@POST
-	@Path("/permissions/{roleId}")
+	@PostMapping
+	@RequestMapping("/permissions/{roleId}")
 	public void setRolePermissions(@PathVariable Integer roleId, List<Permission> permissions) {
 		roleService.updateRolePermissions(roleId,permissions);
 	}

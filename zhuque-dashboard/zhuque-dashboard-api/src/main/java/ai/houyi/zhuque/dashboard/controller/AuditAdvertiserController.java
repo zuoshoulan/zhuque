@@ -16,34 +16,47 @@
 package ai.houyi.zhuque.dashboard.controller;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import ai.houyi.dorado.rest.annotation.Controller;
-import ai.houyi.dorado.rest.annotation.DELETE;
-import ai.houyi.dorado.rest.annotation.GET;
-import ai.houyi.dorado.rest.annotation.POST;
-import ai.houyi.dorado.rest.annotation.Path;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 import ai.houyi.zhuque.commons.page.Page;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.commons.web.IController;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.model.query.AuditAdvertiserQueryReq;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.service.AuditAdvertiserService;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.dao.model.AdvertiserQualification;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.dao.model.AuditAdvertiser;
+import org.springframework.web.bind.annotation.RequestMapping;
 import io.swagger.annotations.Api;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * @author weiping wang
  */
-@Controller
-@Path("/audit-advertisers")
+@RestController
+@RequestMapping("/audit-advertisers")
 @Api(tags = "审核广告主管理")
 public class AuditAdvertiserController implements IController<AuditAdvertiser, AuditAdvertiserQueryReq, Integer> {
 	@Autowired
 	private AuditAdvertiserService auditAdvertiserService;
 
-	@POST
-	@Path
+	@PostMapping
+	@RequestMapping
 	public void saveOrUpdate(AuditAdvertiser t) {
 		if (t.getId() == null) {
 			auditAdvertiserService.save(t);
@@ -52,38 +65,38 @@ public class AuditAdvertiserController implements IController<AuditAdvertiser, A
 		}
 	}
 
-	@DELETE
-	@Path("/{id}")
+	@DeleteMapping
+	@RequestMapping("/{id}")
 	public void deleteById(Integer id) {
 		auditAdvertiserService.deleteById(id);
 	}
 
-	@GET
-	@Path("/{id}")
+	@GetMapping
+	@RequestMapping("/{id}")
 	public AuditAdvertiser loadById(Integer id) {
 		return auditAdvertiserService.loadById(id);
 	}
 
-	@POST
-	@Path("/list")
+	@PostMapping
+	@RequestMapping("/list")
 	public Page<AuditAdvertiser> selectPage(AuditAdvertiserQueryReq queryReq) {
 		return auditAdvertiserService.selectPageList(queryReq);
 	}
 
-	@GET
-	@Path("/qualifications/{advertiserId}")
+	@GetMapping
+	@RequestMapping("/qualifications/{advertiserId}")
 	public List<AdvertiserQualification> getAdvertiserQualifications(Integer advertiserId) {
 		return auditAdvertiserService.getAdvertiserQualificationsByAdvertiserId(advertiserId);
 	}
 
-	@POST
-	@Path("/qualifications")
+	@PostMapping
+	@RequestMapping("/qualifications")
 	public void addAdvertiserQualification(AdvertiserQualification qualification) {
 		auditAdvertiserService.addAdvertiserQualification(qualification);
 	}
 	
-	@DELETE
-	@Path("/qualifications/{qualificationId}")
+	@DeleteMapping
+	@RequestMapping("/qualifications/{qualificationId}")
 	public void deleteAdvertiserQualification(Integer qualificationId) {
 		auditAdvertiserService.deleteAdvertiserQualification(qualificationId);
 	}

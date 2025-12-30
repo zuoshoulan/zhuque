@@ -16,14 +16,15 @@
 package ai.houyi.zhuque.adserv.ngx.server;
 
 import org.apache.commons.lang3.math.NumberUtils;
-
-import com.f2time.albatross.rpc.server.AlbatrossRpcServer;
-
-import ai.houyi.zhuque.adserv.ngx.service.BiddingServiceImpl;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 /**
  * @author weiping wang
  */
+@SpringBootApplication
+@ComponentScan(basePackages = {"ai.houyi.zhuque.adserv.ngx.service"})
 public class Application {
 	private static final int DEFAULT_PORT = 16888;
 
@@ -32,10 +33,10 @@ public class Application {
 		if (args.length > 0) {
 			port = NumberUtils.toInt(args[0], DEFAULT_PORT);
 		}
-		
-		AlbatrossRpcServer adservNgxServer = new AlbatrossRpcServer(port);
-		adservNgxServer.registerRpcService(new BiddingServiceImpl());
-		
-		adservNgxServer.start();
+
+		// 设置默认端口
+		System.setProperty("server.port", String.valueOf(port));
+
+		SpringApplication.run(Application.class, args);
 	}
 }

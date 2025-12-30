@@ -15,32 +15,35 @@
  */
 package ai.houyi.zhuque.commons.web;
 
-import ai.houyi.dorado.rest.annotation.ExceptionAdvice;
-import ai.houyi.dorado.rest.annotation.ExceptionType;
-import ai.houyi.dorado.rest.annotation.Status;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.http.HttpStatus;
+
 import ai.houyi.zhuque.commons.exception.ZhuqueException;
 
 /**
  * 全局异常处理器
- * 
+ *
  * @author weiping wang
  */
-@ExceptionAdvice
+@RestControllerAdvice
 public class ZhuqueExceptionAdvisor {
 
-	@ExceptionType(value = ZhuqueException.class)
-	public Response handleException(ZhuqueException exception) {
+	@ExceptionHandler(ZhuqueException.class)
+	public Response handleZhuqueException(ZhuqueException exception) {
 		return new Response(1, exception.getMessage(), null);
 	}
 
-	@ExceptionType(value = Exception.class)
+	@ExceptionHandler(Exception.class)
 	public Response handleException(Exception exception) {
 		exception.printStackTrace();
 		return new Response(1, exception.getMessage(), null);
 	}
 
-	@Status(value = 403)
-	public Response handleException(AuthFailedException exception) {
+	@ExceptionHandler(AuthFailedException.class)
+	@ResponseStatus(HttpStatus.FORBIDDEN)
+	public Response handleAuthFailedException(AuthFailedException exception) {
 		return new Response(1, exception.getMessage(), null);
 	}
 }

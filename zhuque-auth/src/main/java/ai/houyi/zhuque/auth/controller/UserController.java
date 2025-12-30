@@ -18,14 +18,14 @@ package ai.houyi.zhuque.auth.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
-import ai.houyi.dorado.rest.annotation.Controller;
-import ai.houyi.dorado.rest.annotation.DELETE;
-import ai.houyi.dorado.rest.annotation.GET;
-import ai.houyi.dorado.rest.annotation.POST;
-import ai.houyi.dorado.rest.annotation.Path;
-import ai.houyi.dorado.rest.annotation.PathVariable;
-import ai.houyi.dorado.rest.annotation.RequestBody;
 import ai.houyi.zhuque.auth.model.ChangePwdReq;
 import ai.houyi.zhuque.auth.model.ResetPasswdReq;
 import ai.houyi.zhuque.auth.service.UserService;
@@ -40,15 +40,15 @@ import io.swagger.annotations.Api;
 /**
  * @author weiping wang
  */
-@Controller
-@Path("/users")
+@RestController
+@RequestMapping("/users")
 @Api(tags = "用户管理")
 public class UserController implements IController<User, UserQueryReq, Integer> {
 
 	@Autowired
 	private UserService userService;
 
-	@POST
+	@PostMapping
 	public void saveOrUpdate(User user) {
 		if (user.getId() == null) {
 			userService.save(user);
@@ -57,52 +57,52 @@ public class UserController implements IController<User, UserQueryReq, Integer> 
 		}
 	}
 
-	@DELETE
-	@Path("/{id}")
+	@DeleteMapping
+	@RequestMapping("/{id}")
 	public void deleteById(Integer id) {
 		userService.deleteById(id);
 	}
 
-	@GET
-	@Path("/{id}")
+	@GetMapping
+	@RequestMapping("/{id}")
 	public User loadById(Integer id) {
 		return userService.loadById(id);
 	}
 
-	@POST
-	@Path("/list")
+	@PostMapping
+	@RequestMapping("/list")
 	public Page<User> selectPage(UserQueryReq queryReq) {
 		queryReq.initPageInfoIfNeed();
 		return userService.selectPageList(queryReq);
 	}
 
 	// 管理员强制更新用户密码
-	@POST
-	@Path("/passwd/reset")
+	@PostMapping
+	@RequestMapping("/passwd/reset")
 	public void resetPasswd(ResetPasswdReq req) {
 		userService.resetPasswd(req);
 	}
 
-	@POST
-	@Path("/passwd/update")
+	@PostMapping
+	@RequestMapping("/passwd/update")
 	public void changePasswd(ChangePwdReq req) {
 		userService.updatePasswd(req);
 	}
 
-	@POST
-	@Path("/roles/{userId}")
+	@PostMapping
+	@RequestMapping("/roles/{userId}")
 	public void setRoles(@PathVariable Integer userId, @RequestBody List<Integer> roleIds) {
 		userService.updateUserRoles(userId, roleIds);
 	}
 
-	@GET
-	@Path("/roles/{userId}")
+	@GetMapping
+	@RequestMapping("/roles/{userId}")
 	public List<Role> getUserRoles(Integer userId) {
 		return userService.getUserRoles(userId);
 	}
 	
-	@GET
-	@Path("/permissions/{userId}")
+	@GetMapping
+	@RequestMapping("/permissions/{userId}")
 	public List<Permission> getUserPermissions(Integer userId){
 		return userService.getUserPermissions(userId);
 	}

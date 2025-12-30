@@ -15,24 +15,33 @@
  */
 package ai.houyi.zhuque.commons.web;
 
-import ai.houyi.dorado.rest.http.MethodReturnValueHandler;
-import ai.houyi.dorado.rest.util.MethodDescriptor;
-import ai.houyi.dorado.rest.util.TypeUtils;
+import org.springframework.core.MethodParameter;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
+import org.springframework.web.method.support.ModelAndViewContainer;
+
+import ai.houyi.zhuque.commons.web.Response;
 
 /**
- * @author weiping wang
+ * 统一返回值处理器，将返回值包装为 Response 对象
  *
+ * @author weiping wang
  */
-public class ZhuqueMethodReturnValueHandler implements MethodReturnValueHandler {
+public class ZhuqueMethodReturnValueHandler implements HandlerMethodReturnValueHandler {
 
 	@Override
-	public Object handleMethodReturnValue(Object value, MethodDescriptor methodDescriptor) {
-		return new Response(0, "ok", value);
+	public boolean supportsReturnType(MethodParameter returnType) {
+		// 如果返回类型已经是 Response，则不需要处理
+		return !Response.class.isAssignableFrom(returnType.getParameterType());
 	}
 
 	@Override
-	public boolean supportsReturnType(MethodDescriptor returnType) {
-		return TypeUtils.isSerializableType(returnType.getReturnType());
-	}
+	public void handleReturnValue(Object value, MethodParameter returnType,
+			ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
+		// 将返回值包装为 Response
+		Response response = new Response(0, "ok", value);
 
+		// 使用 Spring MVC 的默认处理器处理 Response 对象
+		mavContainer.setRequestHandled(false);
+	}
 }

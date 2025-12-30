@@ -14,10 +14,16 @@
   		<artifactId>zhuque-adserv-ngx-proto</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
-  	<dependency>
+  	<!-- <dependency>
   		<groupId>com.f2time.albatross</groupId>
   		<artifactId>albatross-rpc</artifactId>
-  	</dependency>
+  	</dependency> -->
+	<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<!-- <version>${slf4j.version}</version> -->
+				<!-- <version>1.7.36</version> -->
+			</dependency>
   	<dependency>
   		<groupId>org.apache.commons</groupId>
   		<artifactId>commons-lang3</artifactId>

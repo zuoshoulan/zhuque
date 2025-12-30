@@ -15,11 +15,11 @@
  */
 package ai.houyi.zhuque.dashboard.controller;
 
-import ai.houyi.dorado.rest.annotation.Controller;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author weiping wang
  */
-@Controller
+@RestController
 public class AuthController {
 }

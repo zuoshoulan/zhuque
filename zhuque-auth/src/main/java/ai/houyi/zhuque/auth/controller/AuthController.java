@@ -16,27 +16,34 @@
 package ai.houyi.zhuque.auth.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import ai.houyi.dorado.rest.annotation.Controller;
-import ai.houyi.dorado.rest.annotation.POST;
-import ai.houyi.dorado.rest.annotation.Path;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 import ai.houyi.zhuque.auth.model.AuthReq;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.auth.model.Subject;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.auth.service.AuthService;
+import org.springframework.web.bind.annotation.RequestMapping;
 import io.swagger.annotations.Api;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  *
  * @author weiping wang
  */
-@Controller
-@Path("/auth")
+@RestController
+@RequestMapping("/auth")
 @Api(tags="用户认证api")
 public class AuthController {
 	@Autowired
 	private AuthService authService;
 	
-	@POST
+	@PostMapping
 	public Subject auth(AuthReq authReq) {
 		return authService.auth(authReq);
 	}

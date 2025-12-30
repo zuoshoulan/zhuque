@@ -15,9 +15,13 @@
  */
 package ai.houyi.zhuque.dashboard.filter;
 
-import ai.houyi.dorado.rest.http.Filter;
-import ai.houyi.dorado.rest.http.HttpRequest;
-import ai.houyi.dorado.rest.http.HttpResponse;
+import java.io.IOException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 /**
  *
@@ -25,8 +29,8 @@ import ai.houyi.dorado.rest.http.HttpResponse;
  */
 public class AuthFilter implements Filter {
 	@Override
-	public boolean preFilter(HttpRequest request, HttpResponse response) {
-		return true;
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
+		chain.doFilter(request, response);
 	}
-
 }
