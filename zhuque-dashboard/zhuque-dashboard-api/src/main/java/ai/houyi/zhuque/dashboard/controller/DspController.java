@@ -16,32 +16,21 @@
 package ai.houyi.zhuque.dashboard.controller;
 
 import java.util.List;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import ai.houyi.zhuque.commons.page.Page;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.commons.web.IController;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.model.query.DspQueryReq;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.service.DspService;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.dao.model.Dsp;
-import org.springframework.web.bind.annotation.RequestMapping;
 import io.swagger.annotations.Api;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * @author weiping wang
@@ -55,7 +44,6 @@ public class DspController implements IController<Dsp, DspQueryReq, Integer>{
 	private DspService dspService;
 
 	@PostMapping
-	@RequestMapping
 	public void saveOrUpdate(Dsp dsp) {
 		if (dsp.getId() == null) {
 			dspService.save(dsp);
@@ -64,38 +52,32 @@ public class DspController implements IController<Dsp, DspQueryReq, Integer>{
 		}
 	}
 
-	@DeleteMapping
-	@RequestMapping("/{dspId:[0-9]+}")
-	public void deleteById(Integer dspId) {
+	@DeleteMapping("/{dspId:[0-9]+}")
+	public void deleteById(@PathVariable Integer dspId) {
 		dspService.softDeleteById(dspId);
 	}
 
-	@PostMapping
-	@RequestMapping("/{dspId}/on")
-	public void dspOn(int dspId) {
+	@PostMapping("/{dspId}/on")
+	public void dspOn(@PathVariable int dspId) {
 		dspService.updateStatus(dspId, 1);
 	}
 
-	@PostMapping
-	@RequestMapping("/{dspId}/off")
-	public void dspOff(int dspId) {
+	@PostMapping("/{dspId}/off")
+	public void dspOff(@PathVariable int dspId) {
 		dspService.updateStatus(dspId, 0);
 	}
 
-	@GetMapping
-	@RequestMapping("/{dspId:[0-9]+}")
-	public Dsp loadById(Integer dspId) {
+	@GetMapping("/{dspId:[0-9]+}")
+	public Dsp loadById(@PathVariable Integer dspId) {
 		return dspService.loadById(dspId);
 	}
 
-	@GetMapping
-	@RequestMapping("/{name}")
-	public List<Dsp> selectByName(String name) {
+	@GetMapping("/{name}")
+	public List<Dsp> selectByName(@PathVariable String name) {
 		return dspService.selectByName(name);
 	}
 
-	@PostMapping
-	@RequestMapping("/list")
+	@PostMapping("/list")
 	public Page<Dsp> selectPage(DspQueryReq queryReq) {
 		return dspService.selectPageList(queryReq);
 	}

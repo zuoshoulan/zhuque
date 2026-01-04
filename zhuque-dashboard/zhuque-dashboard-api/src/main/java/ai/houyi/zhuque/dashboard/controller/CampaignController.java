@@ -16,34 +16,22 @@
 package ai.houyi.zhuque.dashboard.controller;
 
 import java.util.Arrays;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import ai.houyi.zhuque.commons.page.Page;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.commons.web.IController;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.model.AuthContext;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.model.query.CampaignQueryReq;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.service.CampaignService;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.dao.model.Campaign;
-import org.springframework.web.bind.annotation.RequestMapping;
 import io.swagger.annotations.Api;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  *
@@ -57,7 +45,6 @@ public class CampaignController implements IController<Campaign, CampaignQueryRe
 	private CampaignService campaignService;
 
 	@PostMapping
-	@RequestMapping
 	public void saveOrUpdate(Campaign t) {
 		t.setAdvertiserId(AuthContext.currentUser().getId());
 		if (t.getId() == null) {
@@ -67,20 +54,17 @@ public class CampaignController implements IController<Campaign, CampaignQueryRe
 		}
 	}
 
-	@DeleteMapping
-	@RequestMapping("/{id:[0-9]+}")
-	public void deleteById(Integer id) {
+	@DeleteMapping("/{id:[0-9]+}")
+	public void deleteById(@PathVariable Integer id) {
 		campaignService.softDeleteById(id);
 	}
 
-	@GetMapping
-	@RequestMapping("/{id:[0-9]+}")
-	public Campaign loadById(Integer id) {
+	@GetMapping("/{id:[0-9]+}")
+	public Campaign loadById(@PathVariable Integer id) {
 		return campaignService.loadById(id);
 	}
 
-	@PostMapping
-	@RequestMapping("/list")
+	@PostMapping("/list")
 	public Page<Campaign> selectPage(CampaignQueryReq queryReq) {
 		queryReq.setAdvertiserIds(Arrays.asList(AuthContext.currentUser().getId()));
 		return campaignService.selectPageList(queryReq);

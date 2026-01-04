@@ -16,32 +16,21 @@
 package ai.houyi.zhuque.dashboard.controller;
 
 import java.util.List;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import ai.houyi.zhuque.commons.page.Page;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.commons.web.IController;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.model.query.TemplateQueryReq;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.service.TemplateService;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.dao.model.Template;
-import org.springframework.web.bind.annotation.RequestMapping;
 import io.swagger.annotations.Api;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  *
@@ -55,7 +44,6 @@ public class TemplateController implements IController<Template, TemplateQueryRe
 	private TemplateService templateService;
 
 	@PostMapping
-	@RequestMapping
 	public void saveOrUpdate(Template template) {
 		if (template.getId() != null) {
 			templateService.save(template);
@@ -64,32 +52,27 @@ public class TemplateController implements IController<Template, TemplateQueryRe
 		}
 	}
 
-	@DeleteMapping
-	@RequestMapping("/{templateId}")
-	public void deleteById(Integer templateId) {
+	@DeleteMapping("/{templateId}")
+	public void deleteById(@PathVariable Integer templateId) {
 		templateService.softDeleteById(templateId);
 	}
 
 	@GetMapping
-	@RequestMapping
 	public void selectAll() {
 		templateService.selectAll();
 	}
 
-	@GetMapping
-	@RequestMapping("/{templateId}")
-	public Template loadById(Integer templateId) {
+	@GetMapping("/{templateId}")
+	public Template loadById(@PathVariable Integer templateId) {
 		return templateService.loadById(templateId);
 	}
 
-	@GetMapping
-	@RequestMapping("/{name}")
-	public List<Template> selectByName(String name) {
+	@GetMapping("/{name}")
+	public List<Template> selectByName(@PathVariable String name) {
 		return templateService.selectByName(name);
 	}
 
-	@PostMapping
-	@RequestMapping("/list")
+	@PostMapping("/list")
 	public Page<Template> selectPage(TemplateQueryReq queryReq) {
 		return templateService.selectPageList(queryReq);
 	}

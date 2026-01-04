@@ -18,12 +18,12 @@ package ai.houyi.zhuque.dashboard.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import ai.houyi.zhuque.commons.page.Page;
 import ai.houyi.zhuque.commons.web.IController;
@@ -46,7 +46,6 @@ public class AdvertiserController implements IController<Advertiser, AdvertiserQ
 	private AdvertiserService advertiserService;
 
 	@PostMapping
-	@RequestMapping
 	public void saveOrUpdate(Advertiser advertiser) {
 		if (advertiser.getId() == null) {
 			advertiserService.save(advertiser);
@@ -55,38 +54,32 @@ public class AdvertiserController implements IController<Advertiser, AdvertiserQ
 		}
 	}
 
-	@DeleteMapping
-	@RequestMapping("/{advertiserId}")
-	public void deleteById(Integer advertiserId) {
+	@DeleteMapping("/{advertiserId}")
+	public void deleteById(@PathVariable Integer advertiserId) {
 		advertiserService.softDeleteById(advertiserId);
 	}
 
-	@PostMapping
-	@RequestMapping("/{advertiserId}/on")
-	public void on(Integer advertiserId) {
+	@PostMapping("/{advertiserId}/on")
+	public void on(@PathVariable Integer advertiserId) {
 		advertiserService.updateStatus(advertiserId, 1);
 	}
 
-	@PostMapping
-	@RequestMapping("/{advertiserId}/off")
-	public void off(Integer advertiserId) {
+	@PostMapping("/{advertiserId}/off")
+	public void off(@PathVariable Integer advertiserId) {
 		advertiserService.updateStatus(advertiserId, 0);
 	}
 
-	@GetMapping
-	@RequestMapping("/{advertiserId}")
-	public Advertiser loadById(Integer advertiserId) {
+	@GetMapping("/{advertiserId}")
+	public Advertiser loadById(@PathVariable Integer advertiserId) {
 		return advertiserService.loadById(advertiserId);
 	}
 
-	@GetMapping
-	@RequestMapping("/list/{name}")
-	public List<Advertiser> selectByName(String name) {
+	@GetMapping("/list/{name}")
+	public List<Advertiser> selectByName(@PathVariable String name) {
 		return advertiserService.selectByName(name);
 	}
 
-	@PostMapping
-	@RequestMapping("/list")
+	@PostMapping("/list")
 	public Page<Advertiser> selectPage(AdvertiserQueryReq queryReq) {
 		queryReq.setAgentId(AuthContext.currentUser().getId());
 		return advertiserService.selectPageList(queryReq);

@@ -16,32 +16,21 @@
 package ai.houyi.zhuque.dashboard.controller;
 
 import java.util.List;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import ai.houyi.zhuque.commons.page.Page;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.commons.web.IController;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.model.query.AgentQueryReq;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.service.AgentService;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.dao.model.Agent;
-import org.springframework.web.bind.annotation.RequestMapping;
 import io.swagger.annotations.Api;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  *
@@ -55,7 +44,6 @@ public class AgentController implements IController<Agent, AgentQueryReq, Intege
 	private AgentService agentService;
 
 	@PostMapping
-	@RequestMapping
 	public void saveOrUpdate(Agent agent) {
 		if (agent.getId() == null) {
 			agentService.save(agent);
@@ -64,38 +52,32 @@ public class AgentController implements IController<Agent, AgentQueryReq, Intege
 		}
 	}
 
-	@DeleteMapping
-	@RequestMapping("/{agentId}")
-	public void deleteById(Integer agentId) {
+	@DeleteMapping("/{agentId}")
+	public void deleteById(@PathVariable Integer agentId) {
 		agentService.softDeleteById(agentId);
 	}
 
-	@PostMapping
-	@RequestMapping("/{agentId}/on")
-	public void agentOn(int agentId) {
+	@PostMapping("/{agentId}/on")
+	public void agentOn(@PathVariable int agentId) {
 		agentService.updateStatus(agentId, 1);
 	}
 
-	@PostMapping
-	@RequestMapping("/{agentId}/off")
-	public void agentOff(int agentId) {
+	@PostMapping("/{agentId}/off")
+	public void agentOff(@PathVariable int agentId) {
 		agentService.updateStatus(agentId, 0);
 	}
 
-	@GetMapping
-	@RequestMapping("/{agentId}")
-	public Agent loadById(Integer agentId) {
+	@GetMapping("/{agentId}")
+	public Agent loadById(@PathVariable Integer agentId) {
 		return agentService.loadById(agentId);
 	}
 
-	@GetMapping
-	@RequestMapping("/list/{name}")
-	public List<Agent> selectByName(String name) {
+	@GetMapping("/list/{name}")
+	public List<Agent> selectByName(@PathVariable String name) {
 		return agentService.selectByName(name);
 	}
 
-	@PostMapping
-	@RequestMapping("/list")
+	@PostMapping("/list")
 	public Page<Agent> selectPage(AgentQueryReq queryReq) {
 		return agentService.selectPageList(queryReq);
 	}

@@ -63,7 +63,6 @@ public class RoleController implements IController<Role, RoleQueryReq, Integer> 
 	}
 
 	@GetMapping
-	@RequestMapping
 	public List<Role> selectAll() {
 		return roleService.selectAll();
 	}

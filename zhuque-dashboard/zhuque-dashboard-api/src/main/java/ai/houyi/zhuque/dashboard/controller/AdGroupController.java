@@ -16,31 +16,20 @@
 package ai.houyi.zhuque.dashboard.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import ai.houyi.zhuque.commons.page.Page;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.commons.web.IController;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.model.AuthContext;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.model.query.AdGroupQueryReq;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.service.AdGroupService;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.dao.model.AdGroup;
-import org.springframework.web.bind.annotation.RequestMapping;
 import io.swagger.annotations.Api;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * 广告组管理
@@ -55,7 +44,6 @@ public class AdGroupController implements IController<AdGroup, AdGroupQueryReq, 
 	private AdGroupService adGroupService;
 
 	@PostMapping
-	@RequestMapping
 	public void saveOrUpdate(AdGroup t) {
 		if (t.getId() == null) {
 			adGroupService.save(t);
@@ -64,20 +52,17 @@ public class AdGroupController implements IController<AdGroup, AdGroupQueryReq, 
 		}
 	}
 
-	@DeleteMapping
-	@RequestMapping("/{id}")
-	public void deleteById(Integer id) {
+	@DeleteMapping("/{id}")
+	public void deleteById(@PathVariable Integer id) {
 		adGroupService.softDeleteById(id);
 	}
 
-	@GetMapping
-	@RequestMapping("/{id}")
-	public AdGroup loadById(Integer id) {
+	@GetMapping("/{id}")
+	public AdGroup loadById(@PathVariable Integer id) {
 		return adGroupService.loadById(id);
 	}
 
-	@PostMapping
-	@RequestMapping("/list")
+	@PostMapping("/list")
 	public Page<AdGroup> selectPage(AdGroupQueryReq queryReq) {
 		queryReq.setAdvertiserId(AuthContext.currentUser().getId());
 

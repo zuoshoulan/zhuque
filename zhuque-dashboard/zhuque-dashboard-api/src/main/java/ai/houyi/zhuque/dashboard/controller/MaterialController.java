@@ -16,29 +16,19 @@
 package ai.houyi.zhuque.dashboard.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import ai.houyi.zhuque.commons.page.Page;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.commons.web.IController;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.model.query.MaterialQueryReq;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.core.service.MaterialService;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ai.houyi.zhuque.dao.model.Material;
-import org.springframework.web.bind.annotation.RequestMapping;
 import io.swagger.annotations.Api;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  *
@@ -52,7 +42,6 @@ public class MaterialController implements IController<Material, MaterialQueryRe
 	private MaterialService materialService;
 
 	@PostMapping
-	@RequestMapping
 	public void saveOrUpdate(Material t) {
 		if (t.getId() == null) {
 			materialService.save(t);
@@ -61,20 +50,17 @@ public class MaterialController implements IController<Material, MaterialQueryRe
 		}
 	}
 
-	@DeleteMapping
-	@RequestMapping("/{id}")
-	public void deleteById(Integer id) {
+	@DeleteMapping("/{id}")
+	public void deleteById(@PathVariable Integer id) {
 		materialService.deleteById(id);
 	}
 
-	@GetMapping
-	@RequestMapping("/{id}")
-	public Material loadById(Integer id) {
+	@GetMapping("/{id}")
+	public Material loadById(@PathVariable Integer id) {
 		return materialService.loadById(id);
 	}
 
-	@PostMapping
-	@RequestMapping("/list")
+	@PostMapping("/list")
 	public Page<Material> selectPage(MaterialQueryReq queryReq) {
 		return materialService.selectPageList(queryReq);
 	}
