@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,15 +63,13 @@ public class PermissionController implements IController<Permission, PermissionQ
 		}
 	}
 
-	@DeleteMapping
-	@RequestMapping("/{id}")
-	public void deleteById(Integer id) {
+	@DeleteMapping("/{id}")
+	public void deleteById(@PathVariable Integer id) {
 		permissionService.deleteById(id);
 	}
 
-	@GetMapping
-	@RequestMapping("/{id}")
-	public Permission loadById(Integer id) {
+	@GetMapping("/{id}")
+	public Permission loadById(@PathVariable Integer id) {
 		return permissionService.loadById(id);
 	}
 

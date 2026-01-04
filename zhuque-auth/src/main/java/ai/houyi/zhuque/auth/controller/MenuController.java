@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,15 +62,13 @@ public class MenuController implements IController<Menu, MenuQueryReq, Integer> 
 		}
 	}
 
-	@DeleteMapping
-	@RequestMapping("/{id}")
-	public void deleteById(Integer id) {
+	@DeleteMapping("/{id}")
+	public void deleteById(@PathVariable Integer id) {
 		menuService.deleteById(id);
 	}
 
-	@GetMapping
-	@RequestMapping("/{id}")
-	public Menu loadById(Integer id) {
+	@GetMapping("/{id}")
+	public Menu loadById(@PathVariable Integer id) {
 		return menuService.loadById(id);
 	}
 

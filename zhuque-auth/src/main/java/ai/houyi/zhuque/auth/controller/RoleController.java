@@ -52,15 +52,13 @@ public class RoleController implements IController<Role, RoleQueryReq, Integer> 
 		}
 	}
 
-	@GetMapping
-	@RequestMapping("/{id}")
-	public Role loadById(Integer id) {
+	@GetMapping("/{id}")
+	public Role loadById(@PathVariable Integer id) {
 		return roleService.loadById(id);
 	}
 
-	@DeleteMapping
-	@RequestMapping("/{id}")
-	public void deleteById(Integer id) {
+	@DeleteMapping("/{id}")
+	public void deleteById(@PathVariable Integer id) {
 		roleService.deleteById(id);
 	}
 
@@ -70,14 +68,12 @@ public class RoleController implements IController<Role, RoleQueryReq, Integer> 
 		return roleService.selectAll();
 	}
 
-	@PostMapping
-	@RequestMapping("/list")
+	@PostMapping("/list")
 	public Page<Role> selectPage(RoleQueryReq queryReq) {
 		return roleService.selectPageList(queryReq);
 	}
 
-	@PostMapping
-	@RequestMapping("/permissions/{roleId}")
+	@PostMapping("/permissions/{roleId}")
 	public void setRolePermissions(@PathVariable Integer roleId, List<Permission> permissions) {
 		roleService.updateRolePermissions(roleId,permissions);
 	}

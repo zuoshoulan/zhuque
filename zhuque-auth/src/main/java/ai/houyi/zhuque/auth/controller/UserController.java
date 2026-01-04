@@ -57,53 +57,45 @@ public class UserController implements IController<User, UserQueryReq, Integer> 
 		}
 	}
 
-	@DeleteMapping
-	@RequestMapping("/{id}")
-	public void deleteById(Integer id) {
+	@DeleteMapping("/{id}")
+	public void deleteById(@PathVariable Integer id) {
 		userService.deleteById(id);
 	}
 
-	@GetMapping
-	@RequestMapping("/{id}")
-	public User loadById(Integer id) {
+	@GetMapping("/{id}")
+	public User loadById(@PathVariable Integer id) {
 		return userService.loadById(id);
 	}
 
-	@PostMapping
-	@RequestMapping("/list")
+	@PostMapping("/list")
 	public Page<User> selectPage(UserQueryReq queryReq) {
 		queryReq.initPageInfoIfNeed();
 		return userService.selectPageList(queryReq);
 	}
 
 	// 管理员强制更新用户密码
-	@PostMapping
-	@RequestMapping("/passwd/reset")
-	public void resetPasswd(ResetPasswdReq req) {
+	@PostMapping("/passwd/reset")
+	public void resetPasswd(@RequestBody ResetPasswdReq req) {
 		userService.resetPasswd(req);
 	}
 
-	@PostMapping
-	@RequestMapping("/passwd/update")
-	public void changePasswd(ChangePwdReq req) {
+	@PostMapping("/passwd/update")
+	public void changePasswd(@RequestBody ChangePwdReq req) {
 		userService.updatePasswd(req);
 	}
 
-	@PostMapping
-	@RequestMapping("/roles/{userId}")
+	@PostMapping("/roles/{userId}")
 	public void setRoles(@PathVariable Integer userId, @RequestBody List<Integer> roleIds) {
 		userService.updateUserRoles(userId, roleIds);
 	}
 
-	@GetMapping
-	@RequestMapping("/roles/{userId}")
-	public List<Role> getUserRoles(Integer userId) {
+	@GetMapping("/roles/{userId}")
+	public List<Role> getUserRoles(@PathVariable Integer userId) {
 		return userService.getUserRoles(userId);
 	}
 	
-	@GetMapping
-	@RequestMapping("/permissions/{userId}")
-	public List<Permission> getUserPermissions(Integer userId){
+	@GetMapping("/permissions/{userId}")
+	public List<Permission> getUserPermissions(@PathVariable Integer userId){
 		return userService.getUserPermissions(userId);
 	}
 }
