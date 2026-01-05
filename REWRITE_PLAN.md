@@ -50,30 +50,129 @@
 | **CSS框架** | Tailwind CSS / UnoCSS | - | 原子化CSS |
 | **图表库** | ECharts | 5.x | 数据可视化 |
 
-### 2.3 微服务架构（可选）
+### 2.3 单体应用架构（模块化）
+
+**架构说明：**
+- 采用单体应用架构，所有模块部署在一个应用中
+- 通过Maven多模块划分业务边界
+- 模块间通过接口依赖进行交互
+- 降低部署复杂度，提升开发效率
+
+**模块划分：**
+
+```
+zhuque-v2 (父模块)
+├── zhuque-commons              # 公共基础模块
+│   ├── common-core            # 核心工具类、常量、异常
+│   ├── common-web             # Web相关（统一响应、异常处理）
+│   ├── common-security        # 安全相关（JWT、权限注解）
+│   ├── common-redis           # Redis配置和工具
+│   └── common-database        # 数据库配置（MyBatis-Plus）
+│
+├── zhuque-model               # 数据模型模块
+│   ├── entity                 # 数据库实体
+│   ├── dto                    # 数据传输对象
+│   ├── vo                     # 视图对象
+│   └── query                  # 查询对象
+│
+├── zhuque-service-api         # 服务接口定义模块
+│   ├── auth-service-api       # 认证服务接口
+│   ├── advertiser-service-api # 广告主服务接口
+│   ├── campaign-service-api   # 推广活动服务接口
+│   ├── creative-service-api   # 创意服务接口
+│   ├── rtb-service-api        # RTB竞价服务接口
+│   └── pixel-service-api      # 监测服务接口
+│
+├── zhuque-service             # 服务实现模块
+│   ├── auth-service           # 认证服务实现
+│   ├── advertiser-service     # 广告主服务实现
+│   ├── campaign-service       # 推广活动服务实现
+│   ├── creative-service       # 创意服务实现
+│   ├── rtb-service            # RTB竞价服务实现
+│   └── pixel-service          # 监测服务实现
+│
+├── zhuque-dao                 # 数据访问模块
+│   ├── mapper                 # MyBatis Mapper接口
+│   └── xml                    # MyBatis XML映射文件
+│
+├── zhuque-web                 # Web应用模块（启动模块）
+│   ├── web-admin              # 管理后台API
+│   ├── web-openapi            # 开放平台API
+│   └── web-rtb                # RTB竞价接口
+│
+└── zhuque-rtb-proto           # RTB协议模块
+    └── proto                  # Protobuf协议文件
+```
+
+**模块依赖关系：**
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                    API Gateway                       │
-│              (Spring Cloud Gateway)                  │
-└──────────────────┬──────────────────────────────────┘
-                   │
-       ┌───────────┼───────────┬────────────┐
-       │           │           │            │
-┌──────▼──────┐ ┌──▼──────┐ ┌──▼───────┐ ┌──▼──────────┐
-│  Auth服务    │ │ Core    │ │ Dashboard│ │  Pixel      │
-│  (认证授权)  │ │ (核心业务)│ │(管理后台) │ │  (监测服务)  │
-└─────────────┘ └─────────┘ └──────────┘ └─────────────┘
-       │           │           │            │
-       └───────────┴───────────┴────────────┘
-                   │
-       ┌───────────┼───────────┬────────────┐
-       │           │           │            │
-┌──────▼──────┐ ┌──▼──────┐ ┌──▼───────┐ ┌──▼──────────┐
-│  MySQL      │ │ Redis   │ │ RabbitMQ │ │ Elastic     │
-│  (主从)      │ │ (集群)  │ │ (集群)   │ │  Search     │
-└─────────────┘ └─────────┘ └──────────┘ └─────────────┘
+│              zhuque-web (Web应用层)                  │
+│  ┌──────────┬──────────┬──────────┬──────────────┐  │
+│  │ web-admin│web-openap│ web-rtb  │  (启动模块)  │  │
+│  └────┬──────┴────┬─────┴────┬─────┴──────────────┘  │
+└───────┼───────────┼─────────┼────────────────────────┘
+        │           │         │
+        └───────────┴─────────┴─────────┐
+                    │                     │
+        ┌───────────▼─────────────────────▼───────┐
+        │      zhuque-service-api (接口层)        │
+        │  模块间交互通过接口定义，降低耦合        │
+        └───────────┬─────────────────────┬───────┘
+                    │                     │
+        ┌───────────▼─────────────────────▼───────┐
+        │      zhuque-service (业务实现层)        │
+        │  auth-service  │  advertiser-service   │
+        │  campaign-svc  │  creative-service     │
+        │  rtb-service   │  pixel-service        │
+        └───────────┬─────────────────────┬───────┘
+                    │                     │
+        ┌───────────▼─────────────────────▼───────┐
+        │      zhuque-dao (数据访问层)            │
+        │      zhuque-model (数据模型层)          │
+        └───────────┬─────────────────────┬───────┘
+                    │                     │
+        ┌───────────▼─────────────────────▼───────┐
+        │      zhuque-commons (公共基础层)         │
+        │  common-core │ common-web │ common-sec  │
+        └──────────────────────────────────────────┘
 ```
+
+**模块间交互规范：**
+
+1. **接口依赖原则**
+   ```java
+   // zhuque-service-api 模块定义接口
+   public interface CampaignService {
+       Long createCampaign(CampaignCreateDTO dto);
+       CampaignVO getCampaign(Long id);
+   }
+
+   // zhuque-service 模块实现接口
+   @Service
+   public class CampaignServiceImpl implements CampaignService {
+       // 实现逻辑
+   }
+
+   // zhuque-web 模块通过接口调用
+   @RestController
+   public class CampaignController {
+       @Autowired
+       private CampaignService campaignService; // 注入接口
+   }
+   ```
+
+2. **模块依赖规则**
+   - zhuque-web 依赖 zhuque-service-api
+   - zhuque-service 依赖 zhuque-service-api
+   - 所有模块可依赖 zhuque-commons 和 zhuque-model
+   - 禁止下层模块依赖上层模块
+
+3. **依赖注入方式**
+   - 优先使用接口注入（面向接口编程）
+   - 使用 `@Autowired` 或构造函数注入
+   - 服务间调用通过接口，不直接依赖实现类
 
 ---
 
@@ -862,21 +961,38 @@ Docker Compose
 
 ### 9.2 生产环境
 
+**部署说明：**
+- 采用单体应用部署，通过多实例实现高可用
+- 使用Nginx做负载均衡
+- 数据库采用主从架构实现读写分离
+- Redis哨兵模式保证高可用
+- 可选RabbitMQ用于异步处理
+
 ```
-                    Nginx (LB)
+                    Nginx (负载均衡)
                        │
         ┌──────────────┼──────────────┐
         │              │              │
-    App-1         App-2         App-3
-    (多实例)
+   zhuque-app    zhuque-app    zhuque-app
+   (实例1)        (实例2)        (实例3)
+   8080端口       8080端口       8080端口
         │              │              │
         └──────────────┼──────────────┘
                        │
         ┌──────────────┼──────────────┐
         │              │              │
-    MySQL主        Redis集群      RabbitMQ集群
-    MySQL从        (哨兵模式)      (镜像队列)
+    MySQL主        Redis集群      RabbitMQ
+    (写)           (哨兵模式)      (可选)
+    MySQL从        (缓存)
+    (读)
 ```
+
+**优势：**
+1. **部署简单**：单一应用包，无需复杂的微服务编排
+2. **资源高效**：所有模块共享JVM，资源利用率高
+3. **调试方便**：本地开发可运行完整应用
+4. **性能更好**：模块间调用无网络开销
+5. **事务管理**：可使用本地事务，数据一致性更易保证
 
 ### 9.3 CI/CD流程
 
@@ -885,18 +1001,25 @@ Git Push
    ↓
 GitHub Actions / GitLab CI
    ↓
-1. 代码检查 (SonarQube)
+1. 代码检查 (SonarQube / Checkstyle)
    ↓
 2. 运行测试 (JUnit + Vitest)
    ↓
-3. 构建镜像 (Docker Build)
+3. 构建应用 (Maven Package)
    ↓
-4. 推送镜像 (Harbor)
+4. 构建镜像 (Docker Build)
    ↓
-5. 部署 (Kubernetes / Docker Swarm)
+5. 推送镜像 (Docker Registry)
    ↓
-健康检查 & 回滚
+6. 部署 (Docker Compose / K8s)
+   ↓
+7. 健康检查 & 回滚
 ```
+
+**构建产物：**
+- `zhuque-app.jar`: 可执行JAR包（包含所有模块）
+- `Dockerfile`: Docker镜像构建文件
+- `frontend-dist`: 前端静态资源（可集成到JAR或独立部署）
 
 ---
 
@@ -957,15 +1080,18 @@ GitHub Actions / GitLab CI
 本技术方案从架构设计、技术选型、模块设计、开发规范、测试策略、部署架构等方面进行了全面规划，确保：
 
 1. **技术先进性**：采用最新稳定版本的技术栈
-2. **架构合理性**：清晰的分层和模块划分
-3. **可扩展性**：支持微服务演进
+2. **架构合理性**：单体应用 + 模块化分层，清晰明确
+3. **接口驱动**：模块间通过接口交互，降低耦合
 4. **可维护性**：完善的代码规范和文档
 5. **安全性**：JWT认证、RBAC权限、数据加密
 6. **高性能**：缓存、异步、读写分离
 7. **可观测性**：日志、监控、告警
+8. **部署简单**：单一应用包，无需复杂的微服务编排
 
 ---
 
-**文档版本：** v1.0
+**文档版本：** v2.0
 **编写日期：** 2025-01-05
+**更新日期：** 2025-01-05
+**架构调整：** 采用单体应用架构 + 模块化分层设计
 **维护者：** 开发团队
