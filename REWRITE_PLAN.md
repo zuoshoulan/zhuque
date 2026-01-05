@@ -959,40 +959,237 @@ Docker Compose
 └── 应用服务
 ```
 
-### 9.2 生产环境
+### 9.2 生产环境（轻量级部署）
 
-**部署说明：**
-- 采用单体应用部署，通过多实例实现高可用
-- 使用Nginx做负载均衡
-- 数据库采用主从架构实现读写分离
-- Redis哨兵模式保证高可用
-- 可选RabbitMQ用于异步处理
+**部署方式一：Docker Compose（推荐）**
 
+适用于：中小规模部署，单机或少量服务器
+
+```yaml
+# docker-compose.yml
+version: '3.8'
+services:
+  # MySQL数据库
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: zhuque
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: always
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    restart: always
+
+  # 后端应用
+  zhuque-app:
+    image: zhuque-app:latest
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      MYSQL_HOST: mysql
+      REDIS_HOST: redis
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - redis
+    restart: always
+
+  # Nginx前端服务
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./frontend-dist:/usr/share/nginx/html
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - zhuque-app
+    restart: always
+
+volumes:
+  mysql-data:
+  redis-data:
 ```
-                    Nginx (负载均衡)
-                       │
-        ┌──────────────┼──────────────┐
-        │              │              │
-   zhuque-app    zhuque-app    zhuque-app
-   (实例1)        (实例2)        (实例3)
-   8080端口       8080端口       8080端口
-        │              │              │
-        └──────────────┼──────────────┘
-                       │
-        ┌──────────────┼──────────────┐
-        │              │              │
-    MySQL主        Redis集群      RabbitMQ
-    (写)           (哨兵模式)      (可选)
-    MySQL从        (缓存)
-    (读)
+
+**部署命令：**
+```bash
+# 一键启动所有服务
+docker-compose up -d
+
+# 查看日志
+docker-compose logs -f zhuque-app
+
+# 停止服务
+docker-compose down
+
+# 更新部署
+docker-compose pull && docker-compose up -d
 ```
 
-**优势：**
-1. **部署简单**：单一应用包，无需复杂的微服务编排
-2. **资源高效**：所有模块共享JVM，资源利用率高
-3. **调试方便**：本地开发可运行完整应用
-4. **性能更好**：模块间调用无网络开销
-5. **事务管理**：可使用本地事务，数据一致性更易保证
+---
+
+**部署方式二：Systemd服务（传统方式）**
+
+适用于：无Docker环境，直接在Linux服务器运行
+
+```bash
+# 1. 安装Java 17+
+sudo apt install openjdk-17-jre
+
+# 2. 创建服务配置
+cat > /etc/systemd/system/zhuque.service <<'EOF'
+[Unit]
+Description=Zhuque Ad Platform Application
+After=network.target mysql.service
+
+[Service]
+Type=simple
+User=zhuque
+WorkingDirectory=/opt/zhuque
+ExecStart=/usr/bin/java -jar /opt/zhuque/zhuque-app.jar \
+  --spring.profiles.active=prod \
+  --server.port=8080
+Restart=always
+RestartSec=10
+
+EnvironmentFile=-/opt/zhuque/zhuque.conf
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 3. 启动服务
+sudo systemctl daemon-reload
+sudo systemctl enable zhuque
+sudo systemctl start zhuque
+
+# 4. 查看状态
+sudo systemctl status zhuque
+```
+
+**一键部署脚本：**
+
+```bash
+#!/bin/bash
+# deploy.sh
+
+set -e
+
+echo "=== 朱雀广告平台一键部署脚本 ==="
+
+# 1. 备份当前版本
+echo "备份当前版本..."
+BACKUP_DIR="/opt/backup/zhuque-$(date +%Y%m%d-%H%M%S)"
+mkdir -p $BACKUP_DIR
+cp -r /opt/zhuque/zhuque-app.jar $BACKUP_DIR/ 2>/dev/null || true
+
+# 2. 停止服务
+echo "停止服务..."
+sudo systemctl stop zhuque || docker-compose down
+
+# 3. 部署新版本
+echo "部署新版本..."
+cp zhuque-app.jar /opt/zhuque/
+cp -r frontend-dist /opt/zhuque/
+
+# 4. 启动服务
+echo "启动服务..."
+sudo systemctl start zhuque || docker-compose up -d
+
+# 5. 健康检查
+echo "健康检查..."
+for i in {1..30}; do
+  if curl -f http://localhost:8080/actuator/health; then
+    echo "部署成功！"
+    exit 0
+  fi
+  echo "等待服务启动... ($i/30)"
+  sleep 2
+done
+
+echo "部署失败，回滚..."
+cp $BACKUP_DIR/zhuque-app.jar /opt/zhuque/
+sudo systemctl restart zhuque
+exit 1
+```
+
+---
+
+**部署方式三：多实例负载均衡（生产推荐）**
+
+使用Nginx做反向代理，多个应用实例
+
+```nginx
+# nginx.conf
+upstream zhuque_backend {
+    # 负载均衡策略：轮询
+    least_conn;
+
+    server 192.168.1.10:8080 weight=1 max_fails=3 fail_timeout=30s;
+    server 192.168.1.11:8080 weight=1 max_fails=3 fail_timeout=30s;
+    server 192.168.1.12:8080 weight=1 max_fails=3 fail_timeout=30s;
+}
+
+server {
+    listen 80;
+    server_name ad.example.com;
+
+    # 前端静态资源
+    location / {
+        root /usr/share/nginx/html;
+        try_files $uri $uri/ /index.html;
+    }
+
+    # 后端API代理
+    location /api/ {
+        proxy_pass http://zhuque_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_connect_timeout 30s;
+        proxy_send_timeout 30s;
+        proxy_read_timeout 30s;
+    }
+
+    # RTB竞价接口（高性能要求）
+    location /rtb/ {
+        proxy_pass http://zhuque_backend;
+        proxy_set_header Host $host;
+        proxy_connect_timeout 1s;  # RTB需要快速响应
+        proxy_send_timeout 1s;
+        proxy_read_timeout 1s;
+    }
+}
+```
+
+---
+
+**部署架构对比：**
+
+| 方案 | 复杂度 | 成本 | 适用场景 |
+|-----|--------|------|---------|
+| Docker Compose | 低 | 低 | 开发/测试/小型生产 |
+| Systemd | 低 | 低 | 单机生产环境 |
+| Nginx + 多实例 | 中 | 中 | 中型生产环境 |
+| Kubernetes | 高 | 高 | 大规模集群 |
+
+**推荐选择：**
+- **开发/测试环境**: Docker Compose
+- **小型生产**（单机）: Docker Compose 或 Systemd
+- **中型生产**（3-5台服务器）: Nginx + 多实例 + Docker
+- **大型生产**（需要自动扩缩容）: 考虑迁移到K8s
 
 ### 9.3 CI/CD流程
 
@@ -1005,21 +1202,21 @@ GitHub Actions / GitLab CI
    ↓
 2. 运行测试 (JUnit + Vitest)
    ↓
-3. 构建应用 (Maven Package)
+3. 构建应用 (Mvn Package + Npm Build)
    ↓
-4. 构建镜像 (Docker Build)
+4. 构建镜像 (Docker Build - 可选)
    ↓
-5. 推送镜像 (Docker Registry)
+5. 部署 (Docker Compose / Systemd)
    ↓
-6. 部署 (Docker Compose / K8s)
-   ↓
-7. 健康检查 & 回滚
+6. 健康检查 & 回滚
 ```
 
 **构建产物：**
 - `zhuque-app.jar`: 可执行JAR包（包含所有模块）
-- `Dockerfile`: Docker镜像构建文件
-- `frontend-dist`: 前端静态资源（可集成到JAR或独立部署）
+- `frontend-dist/`: 前端静态资源（Nginx部署）
+- `docker-compose.yml`: Docker Compose配置
+- `deploy.sh`: 一键部署脚本
+- `zhuque.service`: Systemd服务配置（可选）
 
 ---
 
