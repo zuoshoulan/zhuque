@@ -28,10 +28,8 @@
 | **缓存** | Redis | 7.x | 数据缓存/分布式锁 |
 | **安全框架** | Spring Security + JWT | - | 认证授权 |
 | **API文档** | SpringDoc (OpenAPI 3) | - | 替代Swagger 2 |
-| **消息队列** | RabbitMQ / Kafka | - | 异步处理 |
-| **搜索** | Elasticsearch | 8.x | 日志检索/数据分析 |
 | **监控** | Micrometer + Prometheus | - | 指标收集 |
-| **日志** | Logback + ELK | - | 日志收集分析 |
+| **日志** | Logback | - | 日志记录 |
 | **构建工具** | Maven | 3.9.x | 依赖管理 |
 | **协议** | Protobuf | 3.25.x | RTB协议 |
 
@@ -472,13 +470,24 @@ public class RtbController {
 │  4. 转化监测 (Conversion)           │
 └──────────────────┬─────────────────┘
                    │
-       ┌───────────┼───────────┐
-       │           │           │
-┌──────▼──────┐ ┌──▼──────┐ ┌──▼──────┐
-│  Kafka队列   │ │ Redis   │ │ MySQL   │
-│  (异步处理)  │ │ (实时)  │ │ (持久化) │
-└─────────────┘ └─────────┘ └─────────┘
+       ┌───────────┴───────────┐
+       │                       │
+┌──────▼──────────┐    ┌──────▼──────┐
+│  异步线程池      │    │   MySQL     │
+│  (@Async)       │    │  (持久化)   │
+└─────────────────┘    └─────────────┘
+        │
+        ▼
+┌──────▼──────┐
+│   Redis     │  (实时统计/缓存)
+│  (可选)     │
+└─────────────┘
 ```
+
+**设计说明：**
+- 使用Spring `@Async`异步处理监测请求，快速响应
+- 数据批量写入MySQL，减少IO压力
+- Redis用于实时统计和热点数据缓存
 
 **接口实现：**
 
@@ -497,12 +506,12 @@ public class PixelController {
             HttpServletRequest request,
             HttpServletResponse response) {
 
-        // 异步上报曝光数据
-        pixelService.recordImpression(id, bid,
+        // 异步上报曝光数据（使用@Async）
+        pixelService.recordImpressionAsync(id, bid,
             request.getRemoteAddr(),
             getUserAgent(request));
 
-        // 返回1x1透明GIF
+        // 立即返回1x1透明GIF
         response.setContentType("image/gif");
         // ...
     }
@@ -517,8 +526,8 @@ public class PixelController {
             @RequestParam String landingUrl,
             HttpServletResponse response) throws IOException {
 
-        // 记录点击
-        pixelService.recordClick(id, bid,
+        // 异步记录点击（使用@Async）
+        pixelService.recordClickAsync(id, bid,
             request.getRemoteAddr(),
             getUserAgent(request));
 
@@ -955,7 +964,6 @@ chore: 构建/工具变更
 Docker Compose
 ├── MySQL 8.0
 ├── Redis 7.0
-├── RabbitMQ
 └── 应用服务
 ```
 

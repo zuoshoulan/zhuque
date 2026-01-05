@@ -102,7 +102,6 @@
   - [ ] Docker Compose开发环境
   - [ ] MySQL 8.0初始化脚本
   - [ ] Redis配置
-  - [ ] RabbitMQ配置（可选）
 
 - [ ] **1.4 认证授权模块**
   - [ ] Spring Security + JWT配置
