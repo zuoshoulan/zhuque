@@ -256,7 +256,7 @@
 
 ### 待创建的新项目位置建议
 ```
-/home/wake/code/zhuque-v2/          # 新项目根目录
+/home/wake/code/zhuque/v2/          # 新项目根目录
 ├── zhuque-backend/                 # 后端项目
 │   ├── zhuque-commons
 │   ├── zhuque-dao
@@ -267,12 +267,10 @@
     └── zhuque-dashboard-fe
 ```
 
-**或者采用Monorepo方式**:
-```
-/home/wake/code/zhuque-v2/
-├── backend/
-└── frontend/
-```
+**项目结构说明**:
+- v2目录作为新项目根目录，与旧项目在同一代码仓库
+- 方便对比新旧代码，也便于Git管理
+- 后续可以根据需要决定是否迁移到独立仓库
 
 ---
 

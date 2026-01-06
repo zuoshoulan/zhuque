@@ -59,47 +59,53 @@
 **模块划分：**
 
 ```
-zhuque-v2 (父模块)
-├── zhuque-commons              # 公共基础模块
-│   ├── common-core            # 核心工具类、常量、异常
-│   ├── common-web             # Web相关（统一响应、异常处理）
-│   ├── common-security        # 安全相关（JWT、权限注解）
-│   ├── common-redis           # Redis配置和工具
-│   └── common-database        # 数据库配置（MyBatis-Plus）
+/home/wake/code/zhuque/v2/          # 项目根目录
 │
-├── zhuque-model               # 数据模型模块
-│   ├── entity                 # 数据库实体
-│   ├── dto                    # 数据传输对象
-│   ├── vo                     # 视图对象
-│   └── query                  # 查询对象
+├── pom.xml                         # 父POM文件
 │
-├── zhuque-service-api         # 服务接口定义模块
-│   ├── auth-service-api       # 认证服务接口
-│   ├── advertiser-service-api # 广告主服务接口
-│   ├── campaign-service-api   # 推广活动服务接口
-│   ├── creative-service-api   # 创意服务接口
-│   ├── rtb-service-api        # RTB竞价服务接口
-│   └── pixel-service-api      # 监测服务接口
+├── zhuque-commons                  # 公共基础模块
+│   ├── common-core                 # 核心工具类、常量、异常
+│   ├── common-web                  # Web相关（统一响应、异常处理）
+│   ├── common-security             # 安全相关（JWT、权限注解）
+│   ├── common-redis                # Redis配置和工具
+│   └── common-database             # 数据库配置（MyBatis-Plus）
 │
-├── zhuque-service             # 服务实现模块
-│   ├── auth-service           # 认证服务实现
-│   ├── advertiser-service     # 广告主服务实现
-│   ├── campaign-service       # 推广活动服务实现
-│   ├── creative-service       # 创意服务实现
-│   ├── rtb-service            # RTB竞价服务实现
-│   └── pixel-service          # 监测服务实现
+├── zhuque-model                    # 数据模型模块
+│   ├── entity                      # 数据库实体
+│   ├── dto                         # 数据传输对象
+│   ├── vo                          # 视图对象
+│   └── query                       # 查询对象
 │
-├── zhuque-dao                 # 数据访问模块
-│   ├── mapper                 # MyBatis Mapper接口
-│   └── xml                    # MyBatis XML映射文件
+├── zhuque-service-api              # 服务接口定义模块
+│   ├── auth-service-api            # 认证服务接口
+│   ├── advertiser-service-api      # 广告主服务接口
+│   ├── campaign-service-api        # 推广活动服务接口
+│   ├── creative-service-api        # 创意服务接口
+│   ├── rtb-service-api             # RTB竞价服务接口
+│   └── pixel-service-api           # 监测服务接口
 │
-├── zhuque-web                 # Web应用模块（启动模块）
-│   ├── web-admin              # 管理后台API
-│   ├── web-openapi            # 开放平台API
-│   └── web-rtb                # RTB竞价接口
+├── zhuque-service                  # 服务实现模块
+│   ├── auth-service                # 认证服务实现
+│   ├── advertiser-service          # 广告主服务实现
+│   ├── campaign-service            # 推广活动服务实现
+│   ├── creative-service            # 创意服务实现
+│   ├── rtb-service                 # RTB竞价服务实现
+│   └── pixel-service               # 监测服务实现
 │
-└── zhuque-rtb-proto           # RTB协议模块
-    └── proto                  # Protobuf协议文件
+├── zhuque-dao                      # 数据访问模块
+│   ├── mapper                      # MyBatis Mapper接口
+│   └── xml                         # MyBatis XML映射文件
+│
+├── zhuque-web                      # Web应用模块（启动模块）
+│   ├── web-admin                   # 管理后台API（主启动类）
+│   ├── web-openapi                 # 开放平台API
+│   └── web-rtb                     # RTB竞价接口
+│
+├── zhuque-rtb-proto                # RTB协议模块
+│   └── proto                       # Protobuf协议文件
+│
+└── zhuque-frontend                 # 前端项目
+      └── zhuque-dashboard-fe       # 管理后台前端
 ```
 
 **模块依赖关系：**
