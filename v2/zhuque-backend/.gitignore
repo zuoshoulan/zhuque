@@ -1,3 +1,7 @@
+# 日志文件
+logs/
+*.log
+
 # Maven
 target/
 pom.xml.tag
@@ -10,27 +14,16 @@ buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
 
-# IntelliJ IDEA
+# IDE
 .idea/
-*.iws
 *.iml
 *.ipr
-
-# Eclipse
-.project
-.classpath
-.settings/
-bin/
-
-# VS Code
+*.iws
 .vscode/
-
-# Log
-*.log
-
-# OS
 .DS_Store
-Thumbs.db
 
-# Spring Boot
-application-local.yml
+# 其他
+*.class
+*.jar
+*.war
+*.ear

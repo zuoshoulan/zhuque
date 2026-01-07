@@ -7,6 +7,24 @@ spring:
     url: jdbc:mysql://124.221.166.184:3306/zhuque_v2?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: wake
     password: wake12345
+    # HikariCP 连接池配置
+    hikari:
+      # 最小空闲连接数
+      minimum-idle: 5
+      # 最大连接数
+      maximum-pool-size: 20
+      # 连接超时时间（毫秒）
+      connection-timeout: 30000
+      # 空闲连接存活最大时间（毫秒）- 10分钟
+      max-lifetime: 600000
+      # 空闲连接超时时间（毫秒）- 3分钟
+      idle-timeout: 180000
+      # 连接测试查询
+      connection-test-query: SELECT 1
+      # 心跳检测（毫秒）- 30秒
+      keepalive-time: 30000
+      # 连接验证超时（毫秒）
+      validation-timeout: 5000
 
 mybatis-plus:
   configuration:
@@ -14,4 +32,6 @@ mybatis-plus:
 
 logging:
   level:
-    ai.houyi.zhuque: DEBUG
+    root: INFO
+    "[wake.su.zhuque]": DEBUG
+    "[com.zaxxer.hikari]": INFO
