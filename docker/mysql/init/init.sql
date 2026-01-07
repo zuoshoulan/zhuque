@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS sys_user (
   avatar VARCHAR(255) COMMENT '头像URL',
   status TINYINT DEFAULT 1 COMMENT '状态：1-正常 0-禁用',
   user_type TINYINT DEFAULT 1 COMMENT '用户类型：1-管理员 2-广告主 3-运营',
+  force_change_password TINYINT DEFAULT 0 COMMENT '是否强制修改密码：1-是 0-否',
+  last_change_password_time DATETIME COMMENT '上次修改密码时间',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   INDEX idx_username (username),
@@ -105,9 +107,16 @@ INSERT INTO sys_role (role_name, role_code, description, status) VALUES
 ON DUPLICATE KEY UPDATE role_name=role_name;
 
 -- 插入超级管理员用户（密码：admin123）
-INSERT INTO sys_user (username, password, real_name, status, user_type) VALUES
-('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '系统管理员', 1, 1)
+-- 插入超级管理员用户（admin）
+-- 密码规则：创建日期(YYYYMMDD) + 用户名首字母
+-- admin创建于2025年01月07日，密码为：20250107a
+-- BCrypt加密后的密码（$2a$10$...）
+INSERT INTO sys_user (username, password, real_name, status, user_type, force_change_password) VALUES
+('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '系统管理员', 1, 1, 1)
 ON DUPLICATE KEY UPDATE username=username;
+
+-- 注意：force_change_password=1 表示首次登录必须修改密码
+-- 初始密码生成规则见文档：docs/INITIAL_USER_GUIDE.md
 
 -- 关联用户和角色
 INSERT INTO sys_user_role (user_id, role_id)

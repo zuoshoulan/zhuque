@@ -35,6 +35,7 @@
 | **[RBAC权限设计](../design/RBAC_DESIGN.md)** | 权限系统详细设计 | 后端开发者 |
 | **[渠道权限控制](../design/CHANNEL_PERMISSION.md)** | 渠道权限控制（简化版） | 后端开发者 |
 | **[数据库选型](../design/DATABASE_SELECTION.md)** | MySQL/PostgreSQL/MongoDB对比 | 架构师、技术负责人 |
+| **[前端界面原型](../design/FRONTEND_PROTOTYPE.md)** | 页面布局、交互流程 | 前端开发者 |
 | **[架构设计](../design/ARCHITECTURE.md)** | 系统架构、模块划分、依赖关系 | 架构师、后端开发者 |
 | **[配置管理](../design/CONFIGURATION.md)** | 配置文件、环境变量、Docker配置 | 运维、开发者 |
 | **[API设计规范](../design/API_DESIGN.md)** | RESTful API设计规范 | 前后端开发者 |

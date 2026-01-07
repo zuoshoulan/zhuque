@@ -9,6 +9,8 @@
 ### 快速导航
 
 - **[快速启动](./QUICKSTART.md)** 🚀 - 5分钟快速搭建开发环境
+- **[初始用户指南](./docs/INITIAL_USER_GUIDE.md)** 👤 - 第一个用户是谁？如何创建第二个用户？
+- **[权限开发任务](./docs/PERMISSION_TASKS.md)** 📋 - 权限功能开发的15个任务清单
 - **[文档中心](./docs/overview/README.md)** - 文档导航和索引
 - **[项目状态追踪](./docs/overview/PROJECT_STATUS.md)** - 当前进度和待办事项
 - **[开发策略](./docs/overview/DEVELOPMENT_STRATEGY.md)** - 渐进式开发路线图
