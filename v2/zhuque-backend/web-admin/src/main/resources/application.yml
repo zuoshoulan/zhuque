@@ -24,4 +24,14 @@ mybatis-plus:
 logging:
   level:
     root: INFO
-    ai.houyi.zhuque: DEBUG
+    wake.su.zhuque: DEBUG
+
+# Security 配置
+security:
+  # 允许匿名访问的路径
+  permit-all:
+    paths:
+      - /api/hello
+      - /api/health
+      - /actuator/**
+      - /error

@@ -1,0 +1,10 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar"
+    ],
+    "java.configuration.maven.userSettings": "",
+    "java.project.sourcePaths": [
+        "zhuque-backend/*/src/main/java"
+    ],
+    "java.debug.settings.enableRunDebugCodeLens": true
+}

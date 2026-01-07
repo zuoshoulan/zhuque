@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "WebAdminApplication",
+            "request": "launch",
+            "mainClass": "wake.su.zhuque.WebAdminApplication",
+            "projectName": "web-admin"
+        }
+    ]
+}

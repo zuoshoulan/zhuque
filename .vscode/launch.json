@@ -1,0 +1,58 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+    
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Application",
+            "request": "launch",
+            "mainClass": "ai.houyi.zhuque.adserv.ngx.server.Application",
+            "projectName": "zhuque-adserv-ngx-server"
+        },
+        {
+            "type": "java",
+            "name": "Application(1)",
+            "request": "launch",
+            "mainClass": "ai.houyi.zhuque.auth.Application",
+            "projectName": "zhuque-auth"
+        },
+        {
+            "type": "java",
+            "name": "RedisConfiguration",
+            "request": "launch",
+            "mainClass": "ai.houyi.zhuque.commons.redis.RedisConfiguration",
+            "projectName": "zhuque-commons"
+        },
+        {
+            "type": "java",
+            "name": "AgentQueryReq",
+            "request": "launch",
+            "mainClass": "ai.houyi.zhuque.core.model.query.AgentQueryReq",
+            "projectName": "zhuque-core"
+        },
+        {
+            "type": "java",
+            "name": "Application(2)",
+            "request": "launch",
+            "mainClass": "ai.houyi.zhuque.dashboard.Application",
+            "projectName": "zhuque-dashboard-api"
+        },
+        {
+            "type": "java",
+            "name": "WebAdminApplication (v2)",
+            "request": "launch",
+            "mainClass": "wake.su.zhuque.WebAdminApplication",
+            "projectName": "web-admin",
+            "cwd": "${workspaceFolder}/v2/zhuque-backend"
+        }
+    ]
+}
