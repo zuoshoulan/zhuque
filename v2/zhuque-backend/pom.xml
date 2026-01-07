@@ -47,7 +47,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- 依赖版本 -->
-        <mybatis-plus.version>3.5.5</mybatis-plus.version>
+        <mybatis-plus.version>3.5.15</mybatis-plus.version>
         <mysql.version>8.0.33</mysql.version>
         <druid.version>1.2.20</druid.version>
         <jwt.version>0.11.5</jwt.version>
@@ -87,7 +87,7 @@
             <!-- MyBatis-Plus -->
             <dependency>
                 <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
                 <version>${mybatis-plus.version}</version>
             </dependency>
 

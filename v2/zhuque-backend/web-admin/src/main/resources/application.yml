@@ -33,5 +33,6 @@ security:
     paths:
       - /api/hello
       - /api/health
+      - /api/user/**
       - /actuator/**
       - /error

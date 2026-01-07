@@ -4,9 +4,9 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/zhuque_dev?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: root
-    password: root
+    url: jdbc:mysql://124.221.166.184:3306/zhuque_v2?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: wake
+    password: wake12345
 
 mybatis-plus:
   configuration:

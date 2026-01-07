@@ -22,6 +22,18 @@
             <artifactId>zhuque-common</artifactId>
         </dependency>
 
+        <!-- 模型模块 -->
+        <dependency>
+            <groupId>wake.su</groupId>
+            <artifactId>zhuque-model</artifactId>
+        </dependency>
+
+        <!-- 服务模块 -->
+        <dependency>
+            <groupId>wake.su</groupId>
+            <artifactId>zhuque-service</artifactId>
+        </dependency>
+
         <!-- Spring Boot Starter -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
