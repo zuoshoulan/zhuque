@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://124.221.166.184:3306/zhuque_v2?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://124.221.166.184:3306/zhuque_v2?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: wake
     password: wake12345
     # HikariCP 连接池配置
