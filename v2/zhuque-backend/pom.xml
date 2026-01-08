@@ -48,9 +48,9 @@
 
         <!-- 依赖版本 -->
         <mybatis-plus.version>3.5.15</mybatis-plus.version>
+        <jwt.version>0.12.3</jwt.version>
         <mysql.version>8.0.33</mysql.version>
         <druid.version>1.2.20</druid.version>
-        <jwt.version>0.11.5</jwt.version>
         <commons-lang3.version>3.14.0</commons-lang3.version>
         <hutool.version>5.8.24</hutool.version>
     </properties>

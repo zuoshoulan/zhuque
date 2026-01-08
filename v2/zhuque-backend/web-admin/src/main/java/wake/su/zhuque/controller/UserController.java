@@ -2,7 +2,7 @@ package wake.su.zhuque.controller;
 
 import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.model.entity.SysUser;
-import wake.su.zhuque.service.api.SysUserService;
+import wake.su.zhuque.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
