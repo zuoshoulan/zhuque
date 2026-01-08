@@ -8,7 +8,7 @@ curl -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "account": "13800138001",
-    "password": "admin123"
+    "password": "123456"
   }' | jq .
 ```
 
@@ -55,9 +55,60 @@ curl -X GET http://localhost:8080/actuator/info | jq .
 
 ### 测试账号
 - **手机号**: 13800138001
-- **密码**: admin123
+- **密码**: 123456 (BCrypt加密)
 - **用户ID**: 3
 - **用户名**: admin
+
+## BCrypt密码加密测试
+
+### 1. 生成BCrypt密码(Python)
+```bash
+python3 << 'EOF'
+import bcrypt
+password = "123456"
+hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+print(f"原始密码: {password}")
+print(f"BCrypt密码: {hashed.decode('utf-8')}")
+EOF
+```
+
+### 2. 生成BCrypt密码(Java端点)
+```bash
+curl "http://localhost:8080/api/test/encrypt?password=123456"
+```
+
+### 3. 验证BCrypt登录
+```bash
+# 错误密码 - 应该失败
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"account": "13800138001", "password": "wrong_password"}' | jq .
+
+# 正确密码 - 应该成功
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"account": "13800138001", "password": "123456"}' | jq .
+```
+
+## JWT认证测试
+
+### 1. 无Token访问受保护接口(应该403)
+```bash
+curl http://localhost:8080/api/user/3
+```
+
+### 2. 使用Token访问受保护接口(应该200)
+```bash
+# 先登录获取Token
+TOKEN=$(curl -s -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"account": "13800138001", "password": "123456"}' \
+  | jq -r '.data.accessToken')
+
+# 使用Token访问
+curl http://localhost:8080/api/user/3 \
+  -H "Authorization: Bearer $TOKEN" | jq .
+```
 
 ## Tips
 
@@ -72,7 +123,7 @@ curl -X GET http://localhost:8080/actuator/info | jq .
 # 登录并保存响应
 curl -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"account": "13800138001", "password": "admin123"}' \
+  -d '{"account": "13800138001", "password": "123456"}' \
   -o login_response.json
 
 # 提取Token

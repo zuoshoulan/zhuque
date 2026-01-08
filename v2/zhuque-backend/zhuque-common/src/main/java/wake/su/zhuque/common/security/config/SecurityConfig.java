@@ -1,5 +1,6 @@
 package wake.su.zhuque.common.security.config;
 
+import jakarta.annotation.Resource;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import wake.su.zhuque.common.security.filter.JwtAuthenticationFilter;
 
 import java.util.List;
 
@@ -16,6 +18,9 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Resource
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     /**
      * Security 配置属性
@@ -46,6 +51,8 @@ public class SecurityConfig {
                 // 其他所有请求都需要认证
                 .anyRequest().authenticated()
             )
+            // 添加JWT过滤器
+            .addFilterBefore(jwtAuthenticationFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
             // 禁用 form 登录
             .formLogin(AbstractHttpConfigurer::disable)
             // 禁用 HTTP Basic

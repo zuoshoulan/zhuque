@@ -3,6 +3,7 @@ package wake.su.zhuque.service.impl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import wake.su.zhuque.common.security.util.PasswordUtil;
 import wake.su.zhuque.common.util.JwtUtil;
 import wake.su.zhuque.model.dto.LoginRequest;
 import wake.su.zhuque.model.dto.LoginResponse;
@@ -38,7 +39,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // 验证密码
-        if (!PasswordEncoder.matches(password, user.getPassword())) {
+        if (!PasswordUtil.matches(password, user.getPassword())) {
             throw new RuntimeException("用户名或密码错误");
         }
 
@@ -72,23 +73,5 @@ public class AuthServiceImpl implements AuthService {
     public void logout(String token) {
         // TODO: 实现登出逻辑，可以将token加入黑名单（使用Redis）
         log.info("用户登出");
-    }
-
-    /**
-     * 密码编码器（内部类）
-     */
-    private static class PasswordEncoder {
-        /**
-         * 匹配密码
-         *
-         * @param rawPassword     原始密码
-         * @param encodedPassword 加密后的密码
-         * @return 是否匹配
-         */
-        public static boolean matches(String rawPassword, String encodedPassword) {
-            // TODO: 实现BCrypt密码验证
-            // 暂时使用简单比较，后续需要替换为BCrypt
-            return rawPassword.equals(encodedPassword);
-        }
     }
 }

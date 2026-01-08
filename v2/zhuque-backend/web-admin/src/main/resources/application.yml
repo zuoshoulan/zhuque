@@ -44,6 +44,7 @@ security:
       - /api/hello
       - /api/health
       - /api/auth/login
-      - /api/user/**
+      - /api/auth/logout
+      - /api/test/**
       - /actuator/**
       - /error

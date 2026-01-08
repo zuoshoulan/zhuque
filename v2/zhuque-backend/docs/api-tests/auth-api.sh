@@ -29,15 +29,15 @@ echo_title() {
 # 1. 用户登录
 test_login() {
     echo_title "测试用户登录"
-    
+
     curl -X POST "${BASE_URL}/api/auth/login" \
         -H "Content-Type: application/json" \
         -d '{
             "account": "13800138001",
-            "password": "admin123"
+            "password": "123456"
         }' \
         | jq .
-    
+
     echo_info "登录成功后,会返回 accessToken 和 userInfo"
 }
 
@@ -54,11 +54,58 @@ test_get_user() {
 # 3. 健康检查
 test_health() {
     echo_title "测试健康检查"
-    
+
     curl -X GET "${BASE_URL}/actuator/health" \
         | jq .
-    
+
     echo_info "应用健康状态检查"
+}
+
+# 4. BCrypt密码测试
+test_bcrypt() {
+    echo_title "测试BCrypt密码加密"
+
+    echo_info "测试1: 使用错误密码登录"
+    curl -s -X POST "${BASE_URL}/api/auth/login" \
+        -H "Content-Type: application/json" \
+        -d '{"account": "13800138001", "password": "wrong_password"}' \
+        | jq .
+
+    echo ""
+    echo_info "测试2: 使用正确密码登录(123456)"
+    curl -s -X POST "${BASE_URL}/api/auth/login" \
+        -H "Content-Type: application/json" \
+        -d '{"account": "13800138001", "password": "123456"}' \
+        | jq .
+
+    echo ""
+    echo_info "BCrypt密码验证成功！"
+}
+
+# 5. JWT认证测试
+test_jwt() {
+    echo_title "测试JWT认证"
+
+    echo_info "测试1: 无Token访问受保护接口(应该403)"
+    curl -s -X GET "${BASE_URL}/api/user/3" | jq .
+
+    echo ""
+    echo_info "测试2: 使用Token访问受保护接口(应该200)"
+
+    # 获取Token
+    TOKEN=$(curl -s -X POST "${BASE_URL}/api/auth/login" \
+        -H "Content-Type: application/json" \
+        -d '{"account": "13800138001", "password": "123456"}' \
+        | jq -r '.data.accessToken')
+
+    echo "获取的Token: ${TOKEN:0:50}..."
+
+    curl -s -X GET "${BASE_URL}/api/user/3" \
+        -H "Authorization: Bearer $TOKEN" \
+        | jq .
+
+    echo ""
+    echo_info "JWT认证成功！"
 }
 
 # 主菜单
@@ -67,19 +114,25 @@ main() {
     echo "1. 用户登录"
     echo "2. 查询用户信息"
     echo "3. 健康检查"
-    echo "4. 运行所有测试"
+    echo "4. BCrypt密码测试"
+    echo "5. JWT认证测试"
+    echo "6. 运行所有测试"
     echo "0. 退出"
-    
-    read -p "请选择操作 [0-4]: " choice
-    
+
+    read -p "请选择操作 [0-6]: " choice
+
     case $choice in
         1) test_login ;;
         2) test_get_user ;;
         3) test_health ;;
-        4) 
+        4) test_bcrypt ;;
+        5) test_jwt ;;
+        6)
             test_login
             test_get_user
             test_health
+            test_bcrypt
+            test_jwt
             ;;
         0) echo_info "退出"; exit 0 ;;
         *) echo_error "无效选择" && exit 1 ;;
