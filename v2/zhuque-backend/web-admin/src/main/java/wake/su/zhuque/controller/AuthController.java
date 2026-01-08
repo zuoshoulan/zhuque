@@ -1,8 +1,8 @@
 package wake.su.zhuque.controller;
 
+import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.model.dto.LoginRequest;
@@ -17,7 +17,7 @@ import wake.su.zhuque.service.AuthService;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
+    @Resource
     private AuthService authService;
 
     /**

@@ -2,42 +2,61 @@ package wake.su.zhuque.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
+/**
+ * 系统用户实体
+ */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@TableName("sys_role")
-public class SysRole {
+@TableName("sys_user")
+public class SysUserDO {
 
+    /**
+     * 用户ID
+     */
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
-     * 角色编码
+     * 用户名
      */
-    private String roleCode;
+    private String username;
 
     /**
-     * 角色名称
+     * 密码
      */
-    private String roleName;
+    private String password;
 
     /**
-     * 描述
+     * 昵称
      */
-    private String description;
+    private String nickname;
 
     /**
-     * 状态：0-禁用 1-启用
+     * 邮箱
+     */
+    private String email;
+
+    /**
+     * 手机号
+     */
+    private String phone;
+
+    /**
+     * 头像
+     */
+    private String avatar;
+
+    /**
+     * 状态：0-禁用，1-正常
      */
     private Integer status;
 
     /**
-     * 排序
+     * 是否强制修改密码：0-否，1-是
      */
-    private Integer sortOrder;
+    private Integer forceChangePassword;
 
     /**
      * 创建时间
@@ -64,7 +83,7 @@ public class SysRole {
     private String updateBy;
 
     /**
-     * 删除标记：0-未删除 1-已删除
+     * 删除标记：0-未删除，1-已删除
      */
     @TableLogic
     private Integer deleted;

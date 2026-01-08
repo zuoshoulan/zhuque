@@ -1,9 +1,9 @@
 package wake.su.zhuque.controller;
 
+import jakarta.annotation.Resource;
 import wake.su.zhuque.common.core.result.Result;
-import wake.su.zhuque.model.entity.SysUser;
+import wake.su.zhuque.model.entity.SysUserDO;
 import wake.su.zhuque.service.SysUserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/user")
 public class UserController {
 
-    @Autowired
+    @Resource
     private SysUserService sysUserService;
 
     /**
@@ -23,8 +23,8 @@ public class UserController {
      * @return 用户信息
      */
     @GetMapping("/{userId}")
-    public Result<SysUser> getUserById(@PathVariable("userId") Long userId) {
-        SysUser user = sysUserService.getById(userId);
+    public Result<SysUserDO> getUserById(@PathVariable("userId") Long userId) {
+        SysUserDO user = sysUserService.getById(userId);
         if (user == null) {
             return Result.error("用户不存在");
         }

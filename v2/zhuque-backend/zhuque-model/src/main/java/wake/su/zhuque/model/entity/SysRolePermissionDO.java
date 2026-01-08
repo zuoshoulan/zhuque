@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("sys_role_permission")
-public class SysRolePermission {
+public class SysRolePermissionDO {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;

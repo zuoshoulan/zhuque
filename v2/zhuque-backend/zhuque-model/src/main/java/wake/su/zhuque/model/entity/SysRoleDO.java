@@ -8,56 +8,36 @@ import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@TableName("sys_permission")
-public class SysPermission {
+@TableName("sys_role")
+public class SysRoleDO {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
-     * 父权限ID，0表示根节点
+     * 角色编码
      */
-    private Long parentId;
+    private String roleCode;
 
     /**
-     * 权限编码
+     * 角色名称
      */
-    private String permissionCode;
+    private String roleName;
 
     /**
-     * 权限名称
+     * 描述
      */
-    private String permissionName;
-
-    /**
-     * 权限类型：1-菜单 2-按钮 3-接口
-     */
-    private Integer permissionType;
-
-    /**
-     * 路由路径
-     */
-    private String path;
-
-    /**
-     * 组件路径
-     */
-    private String component;
-
-    /**
-     * 图标
-     */
-    private String icon;
-
-    /**
-     * 排序
-     */
-    private Integer sortOrder;
+    private String description;
 
     /**
      * 状态：0-禁用 1-启用
      */
     private Integer status;
+
+    /**
+     * 排序
+     */
+    private Integer sortOrder;
 
     /**
      * 创建时间

@@ -1,13 +1,13 @@
 package wake.su.zhuque.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wake.su.zhuque.common.util.JwtUtil;
 import wake.su.zhuque.model.dto.LoginRequest;
 import wake.su.zhuque.model.dto.LoginResponse;
-import wake.su.zhuque.model.entity.SysUser;
+import wake.su.zhuque.model.entity.SysUserDO;
 import wake.su.zhuque.service.AuthService;
 import wake.su.zhuque.service.SysUserService;
 
@@ -18,10 +18,10 @@ import wake.su.zhuque.service.SysUserService;
 @Service
 public class AuthServiceImpl implements AuthService {
 
-    @Autowired
+    @Resource
     private SysUserService sysUserService;
 
-    @Autowired
+    @Resource
     private JwtUtil jwtUtil;
 
     @Override
@@ -32,9 +32,9 @@ public class AuthServiceImpl implements AuthService {
         log.info("用户登录: username={}", username);
 
         // 查询用户
-        SysUser user = sysUserService.getOne(
-            new LambdaQueryWrapper<SysUser>()
-                .eq(SysUser::getUsername, username)
+        SysUserDO user = sysUserService.getOne(
+            new LambdaQueryWrapper<SysUserDO>()
+                .eq(SysUserDO::getUsername, username)
         );
 
         if (user == null) {

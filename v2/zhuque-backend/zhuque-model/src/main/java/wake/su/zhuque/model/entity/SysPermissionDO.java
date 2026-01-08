@@ -2,61 +2,62 @@ package wake.su.zhuque.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
-/**
- * 系统用户实体
- */
 @Data
-@TableName("sys_user")
-public class SysUser {
+@EqualsAndHashCode(callSuper = false)
+@TableName("sys_permission")
+public class SysPermissionDO {
 
-    /**
-     * 用户ID
-     */
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
-     * 用户名
+     * 父权限ID，0表示根节点
      */
-    private String username;
+    private Long parentId;
 
     /**
-     * 密码
+     * 权限编码
      */
-    private String password;
+    private String permissionCode;
 
     /**
-     * 昵称
+     * 权限名称
      */
-    private String nickname;
+    private String permissionName;
 
     /**
-     * 邮箱
+     * 权限类型：1-菜单 2-按钮 3-接口
      */
-    private String email;
+    private Integer permissionType;
 
     /**
-     * 手机号
+     * 路由路径
      */
-    private String phone;
+    private String path;
 
     /**
-     * 头像
+     * 组件路径
      */
-    private String avatar;
+    private String component;
 
     /**
-     * 状态：0-禁用，1-正常
+     * 图标
+     */
+    private String icon;
+
+    /**
+     * 排序
+     */
+    private Integer sortOrder;
+
+    /**
+     * 状态：0-禁用 1-启用
      */
     private Integer status;
-
-    /**
-     * 是否强制修改密码：0-否，1-是
-     */
-    private Integer forceChangePassword;
 
     /**
      * 创建时间
@@ -83,7 +84,7 @@ public class SysUser {
     private String updateBy;
 
     /**
-     * 删除标记：0-未删除，1-已删除
+     * 删除标记：0-未删除 1-已删除
      */
     @TableLogic
     private Integer deleted;
