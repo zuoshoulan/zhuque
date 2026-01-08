@@ -28,7 +28,7 @@ public class AuthController {
      */
     @PostMapping("/login")
     public Result<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
-        log.info("用户登录请求: username={}", loginRequest.getUsername());
+        log.info("用户登录请求: account={}", loginRequest.getAccount());
         try {
             LoginResponse response = authService.login(loginRequest);
             return Result.success(response);

@@ -1,6 +1,5 @@
 package wake.su.zhuque.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,19 +25,16 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
-        String username = loginRequest.getUsername();
+        String account = loginRequest.getAccount();
         String password = loginRequest.getPassword();
 
-        log.info("用户登录: username={}", username);
+        log.info("用户登录: account={}", account);
 
         // 查询用户
-        SysUserDO user = sysUserService.getOne(
-            new LambdaQueryWrapper<SysUserDO>()
-                .eq(SysUserDO::getUsername, username)
-        );
+        SysUserDO user = sysUserService.getByAccount(account);
 
         if (user == null) {
-            throw new RuntimeException("用户名或密码错误");
+            throw new RuntimeException("账号或密码错误");
         }
 
         // 验证密码
