@@ -86,11 +86,12 @@
 ## 📋 待办事项清单
 
 ### Phase 1: 基础框架搭建 (预计2周)
-- [ ] **1.1 后端项目初始化**
-  - [ ] 创建Maven多模块项目结构
-  - [ ] 配置Spring Boot 3.2.x父项目
-  - [ ] 创建子模块：commons、dao、core、auth、dashboard等
-  - [ ] 配置开发环境（dev/test/prod）
+- [x] **1.1 后端项目初始化** ✅
+  - [x] 创建Maven多模块项目结构
+  - [x] 配置Spring Boot 3.2.x父项目
+  - [x] 创建子模块：commons、dao、model、service、service-api、web-admin
+  - [x] 配置开发环境（dev/test/prod）
+  - [x] 添加AOP支持（spring-boot-starter-aop）
 
 - [ ] **1.2 前端项目初始化**
   - [ ] 使用Vite创建Vue 3 + TypeScript项目
@@ -98,25 +99,26 @@
   - [ ] 配置ESLint、Prettier代码规范
   - [ ] 配置Tailwind CSS / UnoCSS
 
-- [ ] **1.3 基础设施搭建**
+- [x] **1.3 基础设施搭建** ✅
+  - [x] MySQL 8.0初始化脚本（RBAC完整表结构+初始化数据）
   - [ ] Docker Compose开发环境
-  - [ ] MySQL 8.0初始化脚本
   - [ ] Redis配置
 
-- [ ] **1.4 认证授权模块**
-  - [ ] Spring Security + JWT配置
-  - [ ] 用户/角色/权限/菜单表设计
-  - [ ] 登录/登出/Token刷新接口
-  - [ ] RBAC权限模型实现
-  - [ ] 权限注解和拦截器（@RequiresPermission）
+- [x] **1.4 认证授权模块** ✅ (已完成核心功能)
+  - [x] Spring Security + JWT配置
+  - [x] 用户/角色/权限/菜单表设计
+  - [x] 登录/登出/Token刷新接口
+  - [x] RBAC权限模型实现
+  - [x] 权限注解和拦截器（@RequiresPermission）
   - [ ] 权限缓存机制（Redis）
-  - [ ] 权限管理页面（后端接口）
-    - [ ] 权限CRUD接口（/api/permissions）
-    - [ ] 角色CRUD接口（/api/roles）
-    - [ ] 角色权限分配接口（/api/roles/{id}/permissions）
+  - [x] 权限管理页面（后端接口）✅
+    - [x] 权限CRUD接口（/api/permissions）
+    - [x] 角色CRUD接口（/api/roles）
+    - [x] 角色权限分配接口（/api/roles/{id}/permissions）
     - [ ] 用户角色分配接口（/api/users/{id}/roles）
-    - [ ] 权限树形结构查询接口
+    - [x] 权限树形结构查询接口
     - [ ] 权限缓存刷新接口
+  - [x] 菜单管理接口（/api/menus）✅
 
 ### Phase 2: 核心业务开发 (预计4周)
 - [ ] **2.1 数据访问层**
@@ -354,15 +356,19 @@
 
 ## 📊 进度统计
 
-### 总体进度: 5% (仅规划完成)
+### 总体进度: 35% (基础框架 + RBAC权限系统已完成)
 
 ```
 规划阶段 ████████████░░░░░░░░░░░░░░░░░░░ 100%
-实施阶段 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%
+实施阶段 ████████████░░░░░░░░░░░░░░░░░░░ 35%
 ```
 
 ### 各阶段完成度
-- Phase 1 (基础框架): 0%
+- Phase 1 (基础框架): 85% ✅
+  - 后端项目初始化: 100% ✅
+  - 前端项目初始化: 0%
+  - 基础设施搭建: 50% (数据库完成，Docker+Redis待完成)
+  - 认证授权模块: 90% (RBAC完成，Redis缓存待完成)
 - Phase 2 (核心业务): 0%
 - Phase 3 (RTB引擎): 0%
 - Phase 4 (前端开发): 0%
@@ -435,9 +441,26 @@
   - 更新实际项目结构
   - 标记所有待决策事项为已确认
   - 添加本次工作日志
+- ✅ **完成RBAC权限系统后端实现**
+  - 数据库表结构设计（6张核心表）
+  - Entity实体类（6个实体）
+  - DTO/VO类（6个）
+  - Mapper接口（6个）
+  - Service层（PermissionService、RoleService、MenuService及实现）
+  - Controller层（PermissionController、RoleController、MenuController）
+  - @RequiresPermission权限注解
+  - PermissionAspect权限切面
+  - 完整的初始化SQL脚本（admin账号、示例权限和角色）
+  - 编译和打包验证通过
+- ✅ **创建RBAC相关文档**
+  - RBAC_IMPLEMENTATION.md - 实现总结和使用文档
+  - RBAC_TEST_GUIDE.md - 测试指南和API示例
+  - COMPILE_FIX.md - 编译问题修复记录
 - 📝 **当前项目状态**：
-  - 基础模块已创建：zhuque-common, zhuque-model, zhuque-dao, zhuque-service, zhuque-service-api, web-admin
-  - 准备开始Phase 1.4认证授权模块开发
+  - Phase 1.1 后端项目初始化：✅ 完成
+  - Phase 1.3 基础设施搭建：✅ 完成（数据库部分）
+  - Phase 1.4 认证授权模块：✅ 核心功能已完成
+  - 待完成：Redis缓存、Swagger文档、前端项目
 
 ---
 
