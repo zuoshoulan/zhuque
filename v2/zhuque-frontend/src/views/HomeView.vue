@@ -1,167 +1,110 @@
 <template>
-  <div class="home-container">
-    <el-container>
-      <el-header class="header">
-        <div class="header-left">
-          <h2>朱雀广告平台</h2>
+  <div class="home-view">
+    <el-card class="welcome-card">
+      <template #header>
+        <div class="card-header">
+          <span>欢迎使用朱雀广告平台</span>
         </div>
-        <div class="header-right">
-          <el-dropdown>
-            <span class="user-info">
-              <el-avatar :size="32" :src="userStore.userInfo?.avatar || undefined">
-                {{ userStore.userInfo?.nickname?.charAt(0) }}
-              </el-avatar>
-              <span class="username">{{ userStore.userInfo?.nickname }}</span>
-            </span>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item>个人中心</el-dropdown-item>
-                <el-dropdown-item divided @click="handleLogout">退出登录</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </div>
-      </el-header>
+      </template>
 
-      <el-main class="main">
-        <el-card class="welcome-card">
-          <template #header>
-            <div class="card-header">
-              <span>欢迎使用朱雀广告平台</span>
+      <div class="user-info-list">
+        <el-descriptions :column="2" border>
+          <el-descriptions-item label="用户ID">
+            {{ userStore.userInfo?.id }}
+          </el-descriptions-item>
+          <el-descriptions-item label="用户名">
+            {{ userStore.userInfo?.username }}
+          </el-descriptions-item>
+          <el-descriptions-item label="昵称">
+            {{ userStore.userInfo?.nickname }}
+          </el-descriptions-item>
+          <el-descriptions-item label="手机号">
+            {{ userStore.userInfo?.phone }}
+          </el-descriptions-item>
+          <el-descriptions-item label="邮箱" :span="2">
+            {{ userStore.userInfo?.email }}
+          </el-descriptions-item>
+        </el-descriptions>
+      </div>
+    </el-card>
+
+    <el-row :gutter="20" class="stats-row">
+      <el-col :span="8">
+        <el-card class="stat-card">
+          <div class="stat-item">
+            <el-icon class="stat-icon" color="#409eff" :size="40">
+              <Promotion />
+            </el-icon>
+            <div class="stat-content">
+              <div class="stat-value">0</div>
+              <div class="stat-label">广告数量</div>
             </div>
-          </template>
-
-          <div class="user-info-list">
-            <el-descriptions :column="2" border>
-              <el-descriptions-item label="用户ID">
-                {{ userStore.userInfo?.id }}
-              </el-descriptions-item>
-              <el-descriptions-item label="用户名">
-                {{ userStore.userInfo?.username }}
-              </el-descriptions-item>
-              <el-descriptions-item label="昵称">
-                {{ userStore.userInfo?.nickname }}
-              </el-descriptions-item>
-              <el-descriptions-item label="手机号">
-                {{ userStore.userInfo?.phone }}
-              </el-descriptions-item>
-              <el-descriptions-item label="邮箱" :span="2">
-                {{ userStore.userInfo?.email }}
-              </el-descriptions-item>
-            </el-descriptions>
-          </div>
-
-          <div class="token-info">
-            <el-alert
-              title="Token信息"
-              type="info"
-              :closable="false"
-              show-icon
-            >
-              <template #default>
-                <p style="margin: 5px 0; word-break: break-all;">
-                  {{ userStore.token?.substring(0, 50) }}...
-                </p>
-              </template>
-            </el-alert>
           </div>
         </el-card>
+      </el-col>
+      <el-col :span="8">
+        <el-card class="stat-card">
+          <div class="stat-item">
+            <el-icon class="stat-icon" color="#67c23a" :size="40">
+              <TrendCharts />
+            </el-icon>
+            <div class="stat-content">
+              <div class="stat-value">0</div>
+              <div class="stat-label">活动数量</div>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="8">
+        <el-card class="stat-card">
+          <div class="stat-item">
+            <el-icon class="stat-icon" color="#e6a23c" :size="40">
+              <Document />
+            </el-icon>
+            <div class="stat-content">
+              <div class="stat-value">0</div>
+              <div class="stat-label">数据报告</div>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
 
-        <el-row :gutter="20" class="stats-row">
-          <el-col :span="8">
-            <el-card class="stat-card">
-              <div class="stat-item">
-                <div class="stat-value">0</div>
-                <div class="stat-label">广告数量</div>
-              </div>
-            </el-card>
-          </el-col>
-          <el-col :span="8">
-            <el-card class="stat-card">
-              <div class="stat-item">
-                <div class="stat-value">0</div>
-                <div class="stat-label">活动数量</div>
-              </div>
-            </el-card>
-          </el-col>
-          <el-col :span="8">
-            <el-card class="stat-card">
-              <div class="stat-item">
-                <div class="stat-value">0</div>
-                <div class="stat-label">数据报告</div>
-              </div>
-            </el-card>
-          </el-col>
-        </el-row>
-      </el-main>
-    </el-container>
+    <el-row :gutter="20" class="quick-actions">
+      <el-col :span="24">
+        <el-card>
+          <template #header>
+            <div class="card-header">
+              <span>快速操作</span>
+            </div>
+          </template>
+          <div class="action-buttons">
+            <el-button type="primary" :icon="Promotion" @click="$router.push('/ads')">
+              创建广告
+            </el-button>
+            <el-button type="success" :icon="TrendCharts" @click="$router.push('/campaigns')">
+              创建活动
+            </el-button>
+            <el-button type="warning" :icon="User" @click="$router.push('/users')">
+              添加用户
+            </el-button>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '@/stores/user'
+import { Promotion, TrendCharts, Document, User } from '@element-plus/icons-vue'
 
-const router = useRouter()
 const userStore = useUserStore()
-
-const handleLogout = async () => {
-  try {
-    await ElMessageBox.confirm('确定要退出登录吗？', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
-
-    userStore.logout()
-    ElMessage.success('退出成功')
-    router.push('/login')
-  } catch (error) {
-    // 用户取消
-  }
-}
 </script>
 
 <style scoped>
-.home-container {
-  min-height: 100vh;
-  background: #f5f5f5;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 0 20px;
-}
-
-.header-left h2 {
-  margin: 0;
-  color: #333;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-}
-
-.username {
-  color: #333;
-  font-size: 14px;
-}
-
-.main {
-  padding: 20px;
+.home-view {
+  padding: 0;
 }
 
 .welcome-card {
@@ -175,34 +118,55 @@ const handleLogout = async () => {
 }
 
 .user-info-list {
-  margin-bottom: 20px;
-}
-
-.token-info {
-  margin-top: 20px;
+  margin-bottom: 0;
 }
 
 .stats-row {
-  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .stat-card {
-  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .stat-item {
-  padding: 20px;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.stat-icon {
+  margin-right: 20px;
+}
+
+.stat-content {
+  flex: 1;
 }
 
 .stat-value {
-  font-size: 36px;
+  font-size: 32px;
   font-weight: bold;
-  color: #409eff;
-  margin-bottom: 10px;
+  color: #333;
+  margin-bottom: 5px;
 }
 
 .stat-label {
   font-size: 14px;
   color: #666;
+}
+
+.quick-actions {
+  margin-top: 20px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
 }
 </style>

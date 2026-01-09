@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import Layout from '@/components/Layout.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -12,15 +13,52 @@ const router = createRouter({
     },
     {
       path: '/',
-      name: 'Home',
-      component: () => import('@/views/HomeView.vue'),
-      meta: { requiresAuth: true, title: '首页 - 朱雀广告平台' }
+      component: Layout,
+      meta: { requiresAuth: true },
+      children: [
+        {
+          path: '',
+          name: 'Home',
+          component: () => import('@/views/HomeView.vue'),
+          meta: { title: '首页 - 朱雀广告平台' }
+        },
+        {
+          path: 'users',
+          name: 'Users',
+          component: () => import('@/views/UsersView.vue'),
+          meta: { title: '用户管理 - 朱雀广告平台' }
+        },
+        {
+          path: 'ads',
+          name: 'Ads',
+          component: () => import('@/views/AdsView.vue'),
+          meta: { title: '广告管理 - 朱雀广告平台' }
+        },
+        {
+          path: 'campaigns',
+          name: 'Campaigns',
+          component: () => import('@/views/CampaignsView.vue'),
+          meta: { title: '活动管理 - 朱雀广告平台' }
+        },
+        {
+          path: 'roles',
+          name: 'Roles',
+          component: () => import('@/views/RolesView.vue'),
+          meta: { title: '角色管理 - 朱雀广告平台' }
+        },
+        {
+          path: 'permissions',
+          name: 'Permissions',
+          component: () => import('@/views/PermissionsView.vue'),
+          meta: { title: '权限管理 - 朱雀广告平台' }
+        }
+      ]
     }
   ]
 })
 
 // 路由守卫
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   const userStore = useUserStore()
 
   // 设置页面标题
