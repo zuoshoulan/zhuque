@@ -59,9 +59,10 @@
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column label="操作" width="200" align="center" fixed="right">
+        <el-table-column label="操作" width="280" align="center" fixed="right">
           <template #default="{ row }">
             <el-button size="small" :icon="Edit" @click="handleEdit(row)">编辑</el-button>
+            <el-button size="small" type="warning" :icon="RefreshRight">重置密码</el-button>
             <el-button size="small" type="danger" :icon="Delete" @click="handleDelete(row)">
               删除
             </el-button>
@@ -134,7 +135,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox, FormInstance, FormRules } from 'element-plus'
-import { Plus, Search, Refresh, Edit, Delete } from '@element-plus/icons-vue'
+import { Plus, Search, Refresh, Edit, Delete, RefreshRight } from '@element-plus/icons-vue'
 import { getUserPage, createUser, updateUser, deleteUser, updateUserStatus } from '@/api/user'
 import type { UserInfo } from '@/api/user'
 
