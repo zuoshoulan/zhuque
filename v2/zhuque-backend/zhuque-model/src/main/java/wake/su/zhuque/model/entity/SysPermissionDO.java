@@ -30,22 +30,22 @@ public class SysPermissionDO {
     private String permissionName;
 
     /**
-     * 权限类型：1-菜单 2-按钮 3-接口
+     * 权限类型：1-路由 2-按钮 3-接口
      */
     private Integer permissionType;
 
     /**
-     * 路由路径
+     * 路由路径/接口路径
      */
     private String path;
 
     /**
-     * 组件路径
+     * HTTP方法：GET/POST/PUT/DELETE等
      */
-    private String component;
+    private String method;
 
     /**
-     * 图标
+     * 图标（用于菜单展示）
      */
     private String icon;
 

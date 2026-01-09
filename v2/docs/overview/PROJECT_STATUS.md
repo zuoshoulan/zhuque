@@ -276,31 +276,33 @@
 
 ### 工作目录
 ```
-/home/wake/code/zhuque
+/home/wake/code/zhuque.worktrees/20260109_v2_dev/v2/
 ```
 
 ### 当前Git分支
 ```
-20251231_zwk_dev
+20260109_v2_dev (worktree)
 ```
 
-### 待创建的新项目位置建议
+### 实际项目结构
 ```
-/home/wake/code/zhuque/v2/          # 新项目根目录
+/home/wake/code/zhuque.worktrees/20260109_v2_dev/v2/
 ├── zhuque-backend/                 # 后端项目
-│   ├── zhuque-commons
-│   ├── zhuque-dao
-│   ├── zhuque-core
-│   ├── zhuque-auth
-│   └── zhuque-dashboard
+│   ├── zhuque-common/              # 公共模块（内部分包）
+│   ├── zhuque-model/               # 数据模型
+│   ├── zhuque-dao/                 # 数据访问
+│   ├── zhuque-service/             # 服务实现
+│   ├── zhuque-service-api/         # 服务接口
+│   └── web-admin/                  # 管理后台启动模块
 └── zhuque-frontend/                # 前端项目
-    └── zhuque-dashboard-fe
+    └── zhuque-dashboard-fe/
 ```
 
 **项目结构说明**:
-- v2目录作为新项目根目录，与旧项目在同一代码仓库
-- 方便对比新旧代码，也便于Git管理
-- 后续可以根据需要决定是否迁移到独立仓库
+- 使用Git worktree进行开发，分支：`20260109_v2_dev`
+- 包名规范：`wake.su`
+- `zhuque-common` 单一模块，内部通过package分包
+- `web-admin` 独立启动模块，后续可添加 `web-openapi`、`web-rtb`
 
 ---
 
@@ -316,11 +318,12 @@
 - ✅ **采用单体应用架构**（2025-01-05更新）
 - ✅ **使用Maven多模块划分**（2025-01-05更新）
 - ✅ **模块间通过接口交互**（2025-01-05更新）
+- ✅ **包名使用 wake.su**（2026-01-09确认）
+- ✅ **zhuque-common保持单一模块，内部分包**（2026-01-09确认）
+- ✅ **web-admin独立作为启动模块**（2026-01-09确认）
 
 ### 待决策
-- ❓ 项目命名方式（zhuque-v2？直接覆盖？）
-- ❓ 包名规范（ai.houyi.zhuque → ?）
-- ❓ Git分支策略（新建branch？新仓库？）
+- 无（已全部确认）
 
 ---
 
@@ -416,6 +419,25 @@
   - 三层权限：路由级（菜单）、按钮级（操作）、API级（接口）
   - 后端使用@RequiresPermission注解，前端使用v-permission指令
   - 权限变更后自动刷新Redis缓存
+
+### 2026-01-09
+- ✅ **确认项目结构和命名规范**
+  - 确认包名使用 `wake.su`
+  - 确认 `zhuque-common` 保持单一模块，内部通过package分包
+  - 确认 `web-admin` 独立作为启动模块
+  - 查看已创建的模块结构
+- ✅ **更新REWRITE_PLAN.md文档**
+  - 更新模块划分章节，反映实际项目结构
+  - 添加项目路径说明：`/home/wake/code/zhuque.worktrees/20260109_v2_dev/v2/`
+  - 更新文档版本至 v2.1
+- ✅ **更新PROJECT_STATUS.md文档**
+  - 更新开发环境信息
+  - 更新实际项目结构
+  - 标记所有待决策事项为已确认
+  - 添加本次工作日志
+- 📝 **当前项目状态**：
+  - 基础模块已创建：zhuque-common, zhuque-model, zhuque-dao, zhuque-service, zhuque-service-api, web-admin
+  - 准备开始Phase 1.4认证授权模块开发
 
 ---
 

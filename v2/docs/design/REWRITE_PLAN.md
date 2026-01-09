@@ -56,57 +56,72 @@
 - 模块间通过接口依赖进行交互
 - 降低部署复杂度，提升开发效率
 
-**模块划分：**
+**模块划分（实际采用）：**
 
 ```
-/home/wake/code/zhuque/v2/          # 项目根目录
+/home/wake/code/zhuque.worktrees/20260109_v2_dev/v2/  # 项目根目录
 │
-├── pom.xml                         # 父POM文件
+├── zhuque-backend/                # 后端项目根目录
+│   ├── pom.xml                    # 父POM文件
+│   │
+│   ├── zhuque-common/             # 公共基础模块（单一模块，内部分包）
+│   │   ├── core/                  # 核心工具类、常量、异常
+│   │   ├── web/                   # Web相关（统一响应、异常处理）
+│   │   ├── security/              # 安全相关（JWT、权限注解）
+│   │   ├── redis/                 # Redis配置和工具
+│   │   └── database/              # 数据库配置（MyBatis-Plus）
+│   │
+│   ├── zhuque-model/              # 数据模型模块
+│   │   ├── entity/                # 数据库实体
+│   │   ├── dto/                   # 数据传输对象
+│   │   ├── vo/                    # 视图对象
+│   │   └── query/                 # 查询对象
+│   │
+│   ├── zhuque-service-api/        # 服务接口定义模块
+│   │   ├── auth-service-api/      # 认证服务接口
+│   │   ├── advertiser-service-api/# 广告主服务接口
+│   │   ├── campaign-service-api/  # 推广活动服务接口
+│   │   ├── creative-service-api/  # 创意服务接口
+│   │   ├── rtb-service-api/       # RTB竞价服务接口
+│   │   └── pixel-service-api/     # 监测服务接口
+│   │
+│   ├── zhuque-service/            # 服务实现模块
+│   │   ├── auth-service/          # 认证服务实现
+│   │   ├── advertiser-service/    # 广告主服务实现
+│   │   ├── campaign-service/      # 推广活动服务实现
+│   │   ├── creative-service/      # 创意服务实现
+│   │   ├── rtb-service/           # RTB竞价服务实现
+│   │   └── pixel-service/         # 监测服务实现
+│   │
+│   ├── zhuque-dao/                # 数据访问模块
+│   │   ├── mapper/                # MyBatis Mapper接口
+│   │   └── xml/                   # MyBatis XML映射文件
+│   │
+│   ├── web-admin/                 # 管理后台Web模块（启动模块）
+│   │   └── src/main/java/
+│   │       └── su/
+│   │           └── zhuque/
+│   │               └── admin/
+│   │                   └── AdminApplication.java
+│   │
+│   └── web-openapi/               # 开放平台API（待添加）
+│   └── web-rtb/                   # RTB竞价接口（待添加）
 │
-├── zhuque-commons                  # 公共基础模块
-│   ├── common-core                 # 核心工具类、常量、异常
-│   ├── common-web                  # Web相关（统一响应、异常处理）
-│   ├── common-security             # 安全相关（JWT、权限注解）
-│   ├── common-redis                # Redis配置和工具
-│   └── common-database             # 数据库配置（MyBatis-Plus）
+├── zhuque-frontend/               # 前端项目
+│   └── zhuque-dashboard-fe/       # 管理后台前端
 │
-├── zhuque-model                    # 数据模型模块
-│   ├── entity                      # 数据库实体
-│   ├── dto                         # 数据传输对象
-│   ├── vo                          # 视图对象
-│   └── query                       # 查询对象
+├── docs/                          # 文档目录
+│   ├── overview/                  # 概览文档
+│   └── design/                    # 设计文档
 │
-├── zhuque-service-api              # 服务接口定义模块
-│   ├── auth-service-api            # 认证服务接口
-│   ├── advertiser-service-api      # 广告主服务接口
-│   ├── campaign-service-api        # 推广活动服务接口
-│   ├── creative-service-api        # 创意服务接口
-│   ├── rtb-service-api             # RTB竞价服务接口
-│   └── pixel-service-api           # 监测服务接口
-│
-├── zhuque-service                  # 服务实现模块
-│   ├── auth-service                # 认证服务实现
-│   ├── advertiser-service          # 广告主服务实现
-│   ├── campaign-service            # 推广活动服务实现
-│   ├── creative-service            # 创意服务实现
-│   ├── rtb-service                 # RTB竞价服务实现
-│   └── pixel-service               # 监测服务实现
-│
-├── zhuque-dao                      # 数据访问模块
-│   ├── mapper                      # MyBatis Mapper接口
-│   └── xml                         # MyBatis XML映射文件
-│
-├── zhuque-web                      # Web应用模块（启动模块）
-│   ├── web-admin                   # 管理后台API（主启动类）
-│   ├── web-openapi                 # 开放平台API
-│   └── web-rtb                     # RTB竞价接口
-│
-├── zhuque-rtb-proto                # RTB协议模块
-│   └── proto                       # Protobuf协议文件
-│
-└── zhuque-frontend                 # 前端项目
-      └── zhuque-dashboard-fe       # 管理后台前端
+└── logs/                          # 日志目录
 ```
+
+**说明：**
+- 包名：`wake.su`（保持现状）
+- `zhuque-common` 采用单一模块，内部通过 package 分包（core/web/security/redis/database）
+- `web-admin` 独立作为启动模块，后续可添加 `web-openapi`、`web-rtb`
+- 项目位于 Git worktree: `/home/wake/code/zhuque.worktrees/20260109_v2_dev/v2/`
 
 **模块依赖关系：**
 
@@ -1301,8 +1316,10 @@ GitHub Actions / GitLab CI
 
 ---
 
-**文档版本：** v2.0
+**文档版本：** v2.1
 **编写日期：** 2025-01-05
-**更新日期：** 2025-01-05
+**更新日期：** 2026-01-09
 **架构调整：** 采用单体应用架构 + 模块化分层设计
+**项目结构：** 简化common模块，统一web模块命名
+**包名规范：** wake.su
 **维护者：** 开发团队

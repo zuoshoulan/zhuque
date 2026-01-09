@@ -2,66 +2,73 @@ package wake.su.zhuque.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
 /**
- * 系统用户实体
+ * 系统菜单实体
+ *
+ * @author wake.su
+ * @since 2026-01-09
  */
 @Data
-@TableName("sys_user")
-public class SysUserDO {
+@EqualsAndHashCode(callSuper = false)
+@TableName("sys_menu")
+public class SysMenuDO {
 
-    /**
-     * 用户ID
-     */
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
-     * 用户名
+     * 父菜单ID，0表示根节点
      */
-    private String username;
+    private Long parentId;
 
     /**
-     * 密码
+     * 菜单名称
      */
-    private String password;
+    private String menuName;
 
     /**
-     * 昵称
+     * 菜单类型：1-目录 2-菜单 3-按钮
      */
-    private String nickname;
+    private Integer menuType;
 
     /**
-     * 真实姓名
+     * 菜单图标
      */
-    private String realName;
+    private String icon;
 
     /**
-     * 邮箱
+     * 路由路径
      */
-    private String email;
+    private String path;
 
     /**
-     * 手机号
+     * 组件路径
      */
-    private String phone;
+    private String component;
 
     /**
-     * 头像
+     * 权限编码（关联sys_permission）
      */
-    private String avatar;
+    private String permissionCode;
 
     /**
-     * 状态：0-禁用，1-正常
+     * 排序号
+     */
+    private Integer sortOrder;
+
+    /**
+     * 是否显示：0-隐藏 1-显示
+     */
+    private Integer visible;
+
+    /**
+     * 状态：0-禁用 1-启用
      */
     private Integer status;
-
-    /**
-     * 是否强制修改密码：0-否，1-是
-     */
-    private Integer forceChangePassword;
 
     /**
      * 创建时间
@@ -88,7 +95,7 @@ public class SysUserDO {
     private String updateBy;
 
     /**
-     * 删除标记：0-未删除，1-已删除
+     * 删除标记：0-未删除 1-已删除
      */
     @TableLogic
     private Integer deleted;
