@@ -62,7 +62,7 @@
         <el-table-column label="操作" width="280" align="center" fixed="right">
           <template #default="{ row }">
             <el-button size="small" :icon="Edit" @click="handleEdit(row)">编辑</el-button>
-            <el-button size="small" type="warning" :icon="RefreshRight">重置密码</el-button>
+            <el-button size="small" type="warning" :icon="RefreshRight" @click="handleResetPassword(row)">重置密码</el-button>
             <el-button size="small" type="danger" :icon="Delete" @click="handleDelete(row)">
               删除
             </el-button>
@@ -136,8 +136,8 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox, FormInstance, FormRules } from 'element-plus'
 import { Plus, Search, Refresh, Edit, Delete, RefreshRight } from '@element-plus/icons-vue'
-import { getUserPage, createUser, updateUser, deleteUser, updateUserStatus } from '@/api/user'
-import type { UserInfo } from '@/api/user'
+import { getUserPage, createUser, updateUser, deleteUser, updateUserStatus, resetUserPassword } from '@/api/user'
+import type { UserInfo, ResetPasswordResponse } from '@/api/user'
 
 // 查询参数
 const queryParams = reactive({
@@ -291,6 +291,69 @@ const handleStatusChange = async (row: UserInfo) => {
   } catch (error) {
     row.status = row.status === 1 ? 0 : 1 // 恢复原状态
     ElMessage.error('状态修改失败')
+  }
+}
+
+// 重置密码
+const handleResetPassword = async (row: UserInfo) => {
+  try {
+    await ElMessageBox.confirm(
+      `确定要重置用户 "${row.username}" 的密码吗？重置后密码将使用默认规则（yyyyMMdd+手机号）生成。`,
+      '重置密码',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    )
+
+    const data = await resetUserPassword(row.id, {})
+
+    // 使用 h 函数创建自定义内容
+    const { h } = await import('vue')
+
+    ElMessageBox({
+      title: '重置成功',
+      message: h('div', { style: { lineHeight: '1.8' } }, [
+        h('p', { style: { marginBottom: '10px' } }, `密码重置成功！`),
+        h('p', { style: { marginBottom: '5px' } }, `用户名: ${data.username}`),
+        h('p', { style: { marginBottom: '5px' } }, `手机号: ${data.phone}`),
+        h('div', { style: { marginBottom: '5px' } }, [
+          h('span', { style: { fontWeight: 'bold', color: '#409eff' } }, `新密码: ${data.password} `),
+          h('span', { style: { color: '#e6a23c', fontSize: '12px' } }, '(只显示一次)')
+        ]),
+        h('p', { style: { marginTop: '10px', color: '#909399' } }, '请立即复制并妥善保管，关闭后无法再次查看。')
+      ]),
+      confirmButtonText: '我已复制',
+      type: 'success',
+      beforeClose: async (action, instance, done) => {
+        if (action === 'confirm') {
+          // 复制密码到剪贴板
+          try {
+            await navigator.clipboard.writeText(data.password)
+            // 更改按钮文字显示对勾
+            instance.confirmButtonText = '✓ 我已复制'
+          } catch {
+            // 降级方案：使用传统方法
+            const textArea = document.createElement('textarea')
+            textArea.value = data.password
+            textArea.style.position = 'fixed'
+            textArea.style.opacity = '0'
+            document.body.appendChild(textArea)
+            textArea.select()
+            document.execCommand('copy')
+            document.body.removeChild(textArea)
+            instance.confirmButtonText = '✓ 我已复制'
+          }
+          // 延迟关闭，让用户看到对勾
+          setTimeout(done, 300)
+        } else {
+          done()
+        }
+      }
+    })
+  } catch (error) {
+    // 用户取消或请求失败
   }
 }
 

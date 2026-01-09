@@ -77,3 +77,28 @@ export const deleteUser = (id: number) => {
 export const updateUserStatus = (id: number, status: number) => {
   return request.put(`/api/user/${id}/status`, { status })
 }
+
+/**
+ * 重置密码请求
+ */
+export interface ResetPasswordRequest {
+  newPassword?: string
+}
+
+/**
+ * 重置密码响应
+ */
+export interface ResetPasswordResponse {
+  userId: number
+  username: string
+  phone: string
+  password: string
+  passwordType: 'custom' | 'default'
+}
+
+/**
+ * 重置用户密码
+ */
+export const resetUserPassword = (userId: number, data: ResetPasswordRequest) => {
+  return request.post<any, ResetPasswordResponse>(`/api/user/${userId}/reset-password`, data)
+}
