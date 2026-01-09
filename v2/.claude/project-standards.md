@@ -3,7 +3,7 @@
 > 本文件定义了项目的编码规范和约定,Claude Code 在执行任何任务前必须先阅读并严格遵守这些规范。
 
 ## 最后更新时间
-2026-01-08
+2026-01-09
 
 ## 核心规范
 
@@ -206,6 +206,68 @@ public SysUserDO getById(Long userId) {
 - Hutool: 5.8.24
 - Commons Lang3: 3.14.0
 
+### 11. 应用程序管理规范
+
+#### 11.1 测试后必须关闭应用程序
+⚠️ **非常重要: 测试完成后必须关闭所有前后端应用程序!**
+
+**前端应用关闭流程:**
+```bash
+# 1. 查找前端进程
+ps aux | grep -E "(npm|vite|node.*zhuque-frontend)" | grep -v grep
+
+# 2. 如果有进程在运行,使用 kill 命令关闭
+kill -9 <进程ID>
+
+# 3. 或者查找并关闭占用3000端口的进程
+lsof -ti:3000 | xargs kill -9
+```
+
+**后端应用关闭流程:**
+```bash
+# 1. 查找后端Java进程
+ps aux | grep "zhuque-backend" | grep -v grep
+
+# 2. 或者查找占用8080端口的进程
+lsof -ti:8080 | xargs kill -9
+
+# 3. 如果是使用 nohup 启动的,查找并关闭 nohup 进程
+ps aux | grep "nohup.*java" | grep -v grep
+```
+
+**验证关闭成功:**
+```bash
+# 确认没有进程在运行
+lsof -ti:3000
+lsof -ti:8080
+
+# 上述命令应该返回空(没有输出)
+```
+
+#### 11.2 应用程序启动命令记录
+
+**前端启动:**
+```bash
+cd /home/wake/code/zhuque.worktrees/20260109_v2_dev/v2/zhuque-frontend
+npm run dev
+# 前端运行在: http://localhost:3000
+```
+
+**后端启动:**
+```bash
+cd /home/wake/code/zhuque.worktrees/20260109_v2_dev/v2/zhuque-backend
+mvn clean package -DskipTests
+nohup java -jar web-admin/target/web-admin-2.0.0.jar > app.log 2>&1 &
+# 后端运行在: http://localhost:8080
+```
+
+#### 11.3 开发工作流程
+1. ✅ 启动应用程序(如果未启动)
+2. ✅ 进行开发和测试
+3. ✅ **测试完成后立即关闭应用程序**
+4. ✅ 验证所有进程已终止
+5. ✅ 记录任何重要的发现或问题
+
 ## 重要提醒
 
 ⚠️ **每次执行任务前,必须先阅读本配置文件!**
@@ -213,3 +275,5 @@ public SysUserDO getById(Long userId) {
 ⚠️ **遇到冲突时,以本配置文件为准!**
 
 ⚠️ **本配置文件会持续更新,每次更新后需要重新读取!**
+
+⚠️ **⚠️ 测试完成后必须关闭所有前后端应用程序!这是强制要求!**

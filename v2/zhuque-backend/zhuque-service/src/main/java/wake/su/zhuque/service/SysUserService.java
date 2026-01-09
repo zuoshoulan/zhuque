@@ -1,0 +1,86 @@
+package wake.su.zhuque.service;
+
+import wake.su.zhuque.model.dto.PageResult;
+import wake.su.zhuque.model.dto.UserQueryRequest;
+import wake.su.zhuque.model.dto.UserUpdateRequest;
+import wake.su.zhuque.model.entity.SysUserDO;
+
+/**
+ * 系统用户服务接口
+ */
+public interface SysUserService {
+
+    /**
+     * 根据ID查询用户
+     *
+     * @param userId 用户ID
+     * @return 用户信息
+     */
+    SysUserDO getById(Long userId);
+
+    /**
+     * 根据账号（手机号）查询用户
+     *
+     * @param account 账号
+     * @return 用户信息
+     */
+    SysUserDO getByAccount(String account);
+
+    /**
+     * 保存用户
+     *
+     * @param user 用户信息
+     * @return 是否成功
+     */
+    boolean save(SysUserDO user);
+
+    /**
+     * 更新用户
+     *
+     * @param user 用户信息
+     * @return 是否成功
+     */
+    boolean updateById(SysUserDO user);
+
+    /**
+     * 删除用户
+     *
+     * @param userId 用户ID
+     * @return 是否成功
+     */
+    boolean removeById(Long userId);
+
+    /**
+     * 分页查询用户
+     *
+     * @param request 查询请求
+     * @return 分页结果
+     */
+    PageResult<SysUserDO> page(UserQueryRequest request);
+
+    /**
+     * 创建用户
+     *
+     * @param request 创建请求
+     * @return 用户ID
+     */
+    Long createUser(UserUpdateRequest request);
+
+    /**
+     * 更新用户信息
+     *
+     * @param userId  用户ID
+     * @param request 更新请求
+     * @return 是否成功
+     */
+    boolean updateUser(Long userId, UserUpdateRequest request);
+
+    /**
+     * 更新用户状态
+     *
+     * @param userId 用户ID
+     * @param status 状态
+     * @return 是否成功
+     */
+    boolean updateStatus(Long userId, Integer status);
+}
