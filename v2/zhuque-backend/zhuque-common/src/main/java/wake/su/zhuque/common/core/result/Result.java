@@ -2,6 +2,9 @@ package wake.su.zhuque.common.core.result;
 
 import lombok.Data;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+
 /**
  * 统一响应结果
  *
@@ -14,15 +17,21 @@ public class Result<T> {
     private String message;
     private T data;
     private Long timestamp;
+    private String beijingTime;
+
+    private static final DateTimeFormatter BEIJING_TIME_FORMATTER =
+        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS").withZone(ZoneId.of("Asia/Shanghai"));
 
     public Result() {
         this.timestamp = System.currentTimeMillis();
+        this.beijingTime = BEIJING_TIME_FORMATTER.format(java.time.Instant.ofEpochMilli(this.timestamp));
     }
 
     public Result(Integer code, String message) {
         this.code = code;
         this.message = message;
         this.timestamp = System.currentTimeMillis();
+        this.beijingTime = BEIJING_TIME_FORMATTER.format(java.time.Instant.ofEpochMilli(this.timestamp));
     }
 
     public Result(Integer code, String message, T data) {
@@ -30,6 +39,7 @@ public class Result<T> {
         this.message = message;
         this.data = data;
         this.timestamp = System.currentTimeMillis();
+        this.beijingTime = BEIJING_TIME_FORMATTER.format(java.time.Instant.ofEpochMilli(this.timestamp));
     }
 
     /**
