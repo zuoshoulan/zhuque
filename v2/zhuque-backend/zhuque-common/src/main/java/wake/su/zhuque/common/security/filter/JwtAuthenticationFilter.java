@@ -43,6 +43,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (jwtUtil.validateToken(token)) {
                     // 获取用户ID
                     Long userId = jwtUtil.getUserId(token);
+                    String username = jwtUtil.getUsername(token);
+
+                    // 将用户名放入请求头，供MetaObjectHandler使用
+                    request.setAttribute("X-User-Name", username);
 
                     // 创建认证信息
                     UsernamePasswordAuthenticationToken authentication =
@@ -60,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     // 设置到Security上下文
                     SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                    log.debug("JWT认证成功: userId={}", userId);
+                    log.debug("JWT认证成功: userId={}, username={}", userId, username);
                 } else {
                     log.warn("JWT Token无效或已过期: {}", token.substring(0, Math.min(20, token.length())) + "...");
                 }

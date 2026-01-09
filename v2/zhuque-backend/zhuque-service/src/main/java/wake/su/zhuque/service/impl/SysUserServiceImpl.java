@@ -3,8 +3,11 @@ package wake.su.zhuque.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import wake.su.zhuque.common.security.util.PasswordGenerator;
 import wake.su.zhuque.common.security.util.PasswordUtil;
 import wake.su.zhuque.dao.mapper.SysUserMapper;
@@ -14,6 +17,8 @@ import wake.su.zhuque.model.dto.UserQueryRequest;
 import wake.su.zhuque.model.dto.UserUpdateRequest;
 import wake.su.zhuque.model.entity.SysUserDO;
 import wake.su.zhuque.service.SysUserService;
+
+import java.time.LocalDateTime;
 
 /**
  * 系统用户服务实现
@@ -139,6 +144,14 @@ public class SysUserServiceImpl implements SysUserService {
         user.setPassword(PasswordUtil.encode(request.getPassword()));
         user.setStatus(request.getStatus() != null ? request.getStatus() : 1);
 
+        // 设置创建人和创建时间
+        String currentUsername = getCurrentUsername();
+        user.setCreateBy(currentUsername);
+        user.setUpdateBy(currentUsername);
+        LocalDateTime now = LocalDateTime.now();
+        user.setCreateTime(now);
+        user.setUpdateTime(now);
+
         sysUserMapper.insert(user);
 
         return user.getId();
@@ -169,6 +182,11 @@ public class SysUserServiceImpl implements SysUserService {
         if (request.getStatus() != null) {
             user.setStatus(request.getStatus());
         }
+
+        // 设置更新人和更新时间
+        String currentUsername = getCurrentUsername();
+        user.setUpdateBy(currentUsername);
+        user.setUpdateTime(LocalDateTime.now());
 
         return sysUserMapper.updateById(user) > 0;
     }
@@ -234,5 +252,25 @@ public class SysUserServiceImpl implements SysUserService {
                 .password(finalPassword)  // 明文密码，仅此一次返回
                 .passwordType(passwordType)
                 .build();
+    }
+
+    /**
+     * 获取当前登录用户名
+     */
+    private String getCurrentUsername() {
+        try {
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attributes != null) {
+                HttpServletRequest request = attributes.getRequest();
+                // 从请求属性获取用户名（在JwtAuthenticationFilter中设置）
+                String username = (String) request.getAttribute("X-User-Name");
+                if (username != null && !username.isEmpty()) {
+                    return username;
+                }
+            }
+        } catch (Exception e) {
+            log.warn("获取当前登录用户失败: {}", e.getMessage());
+        }
+        return "system";
     }
 }
