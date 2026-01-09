@@ -1,6 +1,7 @@
 package wake.su.zhuque.service;
 
 import wake.su.zhuque.model.dto.PageResult;
+import wake.su.zhuque.model.dto.ResetPasswordResponse;
 import wake.su.zhuque.model.dto.UserQueryRequest;
 import wake.su.zhuque.model.dto.UserUpdateRequest;
 import wake.su.zhuque.model.entity.SysUserDO;
@@ -83,4 +84,13 @@ public interface SysUserService {
      * @return 是否成功
      */
     boolean updateStatus(Long userId, Integer status);
+
+    /**
+     * 重置用户密码
+     *
+     * @param userId     用户ID
+     * @param newPassword 新密码（可选，为null则使用默认规则生成）
+     * @return 重置密码响应（包含明文密码，仅此一次返回）
+     */
+    ResetPasswordResponse resetPassword(Long userId, String newPassword);
 }

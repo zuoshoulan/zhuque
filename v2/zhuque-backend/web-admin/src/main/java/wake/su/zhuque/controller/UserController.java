@@ -1,10 +1,16 @@
 package wake.su.zhuque.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.model.dto.PageResult;
+import wake.su.zhuque.model.dto.ResetPasswordRequest;
+import wake.su.zhuque.model.dto.ResetPasswordResponse;
 import wake.su.zhuque.model.dto.UserQueryRequest;
 import wake.su.zhuque.model.dto.UserUpdateRequest;
 import wake.su.zhuque.model.entity.SysUserDO;
@@ -13,6 +19,7 @@ import wake.su.zhuque.service.SysUserService;
 /**
  * 用户管理控制器
  */
+@Tag(name = "用户管理", description = "用户CRUD、密码重置接口")
 @Slf4j
 @RestController
 @RequestMapping("/api/user")
@@ -27,6 +34,7 @@ public class UserController {
      * @param userId 用户ID
      * @return 用户信息
      */
+    @Operation(summary = "获取用户详情", description = "根据ID查询用户信息")
     @GetMapping("/{userId}")
     public Result<SysUserDO> getUserById(@PathVariable("userId") Long userId) {
         SysUserDO user = sysUserService.getById(userId);
@@ -44,6 +52,7 @@ public class UserController {
      * @param request 查询请求
      * @return 分页结果
      */
+    @Operation(summary = "分页查询用户", description = "支持关键词搜索、状态筛选")
     @GetMapping("/page")
     public Result<PageResult<SysUserDO>> page(UserQueryRequest request) {
         PageResult<SysUserDO> pageResult = sysUserService.page(request);
@@ -60,6 +69,7 @@ public class UserController {
      * @param request 创建请求
      * @return 用户ID
      */
+    @Operation(summary = "创建用户", description = "创建新用户，密码使用默认规则生成")
     @PostMapping
     public Result<Long> createUser(@RequestBody UserUpdateRequest request) {
         Long userId = sysUserService.createUser(request);
@@ -73,6 +83,7 @@ public class UserController {
      * @param request 更新请求
      * @return 是否成功
      */
+    @Operation(summary = "更新用户", description = "更新用户基本信息")
     @PutMapping("/{userId}")
     public Result<Void> updateUser(@PathVariable("userId") Long userId, @RequestBody UserUpdateRequest request) {
         boolean success = sysUserService.updateUser(userId, request);
@@ -85,6 +96,7 @@ public class UserController {
      * @param userId 用户ID
      * @return 是否成功
      */
+    @Operation(summary = "删除用户", description = "删除指定用户")
     @DeleteMapping("/{userId}")
     public Result<Void> deleteUser(@PathVariable("userId") Long userId) {
         boolean success = sysUserService.removeById(userId);
@@ -98,9 +110,36 @@ public class UserController {
      * @param request 更新请求
      * @return 是否成功
      */
+    @Operation(summary = "更新用户状态", description = "启用或禁用用户")
     @PutMapping("/{userId}/status")
     public Result<Void> updateStatus(@PathVariable("userId") Long userId, @RequestBody UserUpdateRequest request) {
         boolean success = sysUserService.updateStatus(userId, request.getStatus());
         return success ? Result.success() : Result.error("更新失败");
+    }
+
+    /**
+     * 重置用户密码
+     *
+     * @param userId  用户ID
+     * @param request 重置密码请求
+     * @return 重置密码响应（包含明文密码，仅此一次返回）
+     */
+    @Operation(
+        summary = "重置用户密码",
+        description = "重置用户密码，可选择自定义密码或使用默认规则（yyyyMMdd+手机号）。成功后返回明文密码，请妥善保管。"
+    )
+    @PostMapping("/{userId}/reset-password")
+    public Result<ResetPasswordResponse> resetPassword(
+            @Parameter(description = "用户ID", required = true, example = "3")
+            @PathVariable Long userId,
+            @Valid @RequestBody ResetPasswordRequest request) {
+        log.info("重置用户密码: userId={}", userId);
+        try {
+            ResetPasswordResponse response = sysUserService.resetPassword(userId, request.getNewPassword());
+            return Result.success(response);
+        } catch (Exception e) {
+            log.error("重置密码失败: {}", e.getMessage());
+            return Result.error(e.getMessage());
+        }
     }
 }

@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import wake.su.zhuque.common.security.util.PasswordGenerator;
 import wake.su.zhuque.common.security.util.PasswordUtil;
 import wake.su.zhuque.dao.mapper.SysUserMapper;
 import wake.su.zhuque.model.dto.PageResult;
+import wake.su.zhuque.model.dto.ResetPasswordResponse;
 import wake.su.zhuque.model.dto.UserQueryRequest;
 import wake.su.zhuque.model.dto.UserUpdateRequest;
 import wake.su.zhuque.model.entity.SysUserDO;
@@ -180,5 +182,57 @@ public class SysUserServiceImpl implements SysUserService {
         user.setStatus(status);
 
         return sysUserMapper.updateById(user) > 0;
+    }
+
+    @Override
+    public ResetPasswordResponse resetPassword(Long userId, String newPassword) {
+        log.info("重置用户密码: userId={}, customPassword={}", userId, newPassword != null);
+
+        // 查询用户
+        SysUserDO user = sysUserMapper.selectById(userId);
+        if (user == null) {
+            throw new RuntimeException("用户不存在");
+        }
+
+        // 生成密码
+        String finalPassword;
+        String passwordType;
+        if (newPassword != null && !newPassword.trim().isEmpty()) {
+            // 使用自定义密码
+            finalPassword = newPassword;
+            passwordType = "custom";
+            log.info("使用自定义密码重置: userId={}", userId);
+        } else {
+            // 使用默认规则生成
+            if (user.getPhone() == null || user.getPhone().trim().isEmpty()) {
+                throw new RuntimeException("用户手机号为空，无法生成默认密码");
+            }
+            finalPassword = PasswordGenerator.generate(user.getPhone());
+            passwordType = "default";
+            log.info("使用默认规则生成密码: userId={}, phone={}", userId, user.getPhone());
+        }
+
+        // 加密密码
+        String hashedPassword = PasswordUtil.encode(finalPassword);
+
+        // 更新数据库
+        SysUserDO updateUser = new SysUserDO();
+        updateUser.setId(userId);
+        updateUser.setPassword(hashedPassword);
+        updateUser.setForceChangePassword(1); // 强制用户下次登录时修改密码
+        boolean success = sysUserMapper.updateById(updateUser) > 0;
+
+        if (!success) {
+            throw new RuntimeException("密码重置失败");
+        }
+
+        // 构建响应（返回明文密码，仅此一次）
+        return ResetPasswordResponse.builder()
+                .userId(user.getId())
+                .username(user.getUsername())
+                .phone(user.getPhone())
+                .password(finalPassword)  // 明文密码，仅此一次返回
+                .passwordType(passwordType)
+                .build();
     }
 }
