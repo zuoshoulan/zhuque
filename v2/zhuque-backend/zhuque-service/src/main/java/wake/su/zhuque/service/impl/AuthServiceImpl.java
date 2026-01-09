@@ -48,8 +48,10 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("账号已被禁用");
         }
 
-        // 生成Token
-        String token = jwtUtil.generateToken(user.getId().toString());
+        // 生成Token，将username存入claims
+        java.util.Map<String, Object> claims = new java.util.HashMap<>();
+        claims.put("username", user.getUsername());
+        String token = jwtUtil.generateToken(user.getId().toString(), claims);
 
         // 构建响应
         LoginResponse.UserInfo userInfo = LoginResponse.UserInfo.builder()

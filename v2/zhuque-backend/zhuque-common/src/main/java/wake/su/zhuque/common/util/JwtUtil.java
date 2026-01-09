@@ -124,6 +124,17 @@ public class JwtUtil {
     }
 
     /**
+     * 从Token中获取用户名
+     *
+     * @param token Token字符串
+     * @return 用户名
+     */
+    public String getUsername(String token) {
+        Claims claims = parseToken(token);
+        return claims.get("username", String.class);
+    }
+
+    /**
      * 检查Token是否即将过期（剩余时间少于1小时）
      *
      * @param token Token字符串
