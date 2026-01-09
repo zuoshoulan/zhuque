@@ -1,35 +1,42 @@
 package wake.su.zhuque.controller;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import wake.su.zhuque.common.security.util.PasswordGenerator;
+import wake.su.zhuque.common.security.util.PasswordUtil;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 测试控制器
- * <p>
- * 用于生成BCrypt密码等测试功能
- * </p>
  */
-@Slf4j
+@Tag(name = "测试")
 @RestController
 @RequestMapping("/api/test")
+@RequiredArgsConstructor
 public class TestController {
 
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Operation(summary = "生成今日密码（规则：yyyyMMdd + 手机号）")
+    @GetMapping("/gen-password")
+    public Map<String, String> generatePassword(String phone) {
+        if (phone == null || phone.isEmpty()) {
+            phone = "13800138001"; // 默认测试手机号
+        }
 
-    /**
-     * 生成BCrypt密码
-     *
-     * @param password 原始密码
-     * @return 加密后的密码
-     */
-    @GetMapping("/encrypt")
-    public String encryptPassword(@RequestParam(defaultValue = "123456") String password) {
-        String encoded = passwordEncoder.encode(password);
-        log.info("生成BCrypt密码: {} -> {}", password, encoded);
-        return "原始密码: " + password + "\n加密密码: " + encoded;
+        String password = PasswordGenerator.generate(phone);
+        String hash = PasswordUtil.encode(password);
+
+        Map<String, String> result = new HashMap<>();
+        result.put("phone", phone);
+        result.put("password", password);
+        result.put("hash", hash);
+        result.put("date", java.time.LocalDate.now().toString());
+
+        return result;
     }
 }

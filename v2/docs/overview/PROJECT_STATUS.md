@@ -456,11 +456,18 @@
   - RBAC_IMPLEMENTATION.md - 实现总结和使用文档
   - RBAC_TEST_GUIDE.md - 测试指南和API示例
   - COMPILE_FIX.md - 编译问题修复记录
+- ✅ **集成Swagger/OpenAPI文档**
+  - 添加 springdoc-openapi-starter-webmvc-ui 依赖（v2.3.0）
+  - 创建 OpenApiConfig 配置类（支持JWT认证）
+  - 配置 application.yml（Swagger UI + API文档）
+  - 为 Controller 和 DTO 添加 Swagger 注解
+  - 创建 SWAGGER_INTEGRATION.md 和 SWAGGER_USER_GUIDE.md 文档
 - 📝 **当前项目状态**：
   - Phase 1.1 后端项目初始化：✅ 完成
   - Phase 1.3 基础设施搭建：✅ 完成（数据库部分）
   - Phase 1.4 认证授权模块：✅ 核心功能已完成
-  - 待完成：Redis缓存、Swagger文档、前端项目
+  - API文档系统：✅ 完成
+  - 待完成：Redis缓存、前端项目
 
 ---
 

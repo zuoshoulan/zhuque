@@ -63,11 +63,15 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public SysUserDO getByAccount(String account) {
-        log.debug("根据手机号查询用户: account={}", account);
+        log.debug("根据账号查询用户（第一版仅支持手机号）: account={}", account);
+        // 第一版：account 仅支持手机号
         return sysUserMapper.selectOne(
             new LambdaQueryWrapper<SysUserDO>()
                 .eq(SysUserDO::getPhone, account)
         );
+        // TODO: 后续版本可能扩展支持邮箱、用户名等
+        // .or().eq(SysUserDO::getEmail, account)
+        // .or().eq(SysUserDO::getUsername, account)
     }
 
     @Override

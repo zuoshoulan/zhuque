@@ -47,4 +47,27 @@ security:
       - /api/auth/logout
       - /api/test/**
       - /actuator/**
+      - /swagger-ui/**
+      - /swagger-ui.html
+      - /v3/api-docs/**
       - /error
+      - /webjars/**
+
+# SpringDoc OpenAPI (Swagger) 配置
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    tags-sorter: alpha           # 按字母顺序排序Tag
+    operations-sorter: alpha     # 按字母顺序排序操作
+    display-request-duration: true  # 显示请求耗时
+    display-operation-id: true   # 显示操作ID
+  show-actuator: false          # 不显示actuator端点
+  group-configs:
+    - group: 'zhuque-api'
+      paths-to-match: '/api/**'
+      packages-to-scan: 'wake.su.zhuque.controller'
+  default-flat-param-object: false  # 禁用扁平化参数对象

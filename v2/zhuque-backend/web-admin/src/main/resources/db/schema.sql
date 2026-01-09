@@ -2,8 +2,17 @@
 -- RBAC权限管理相关表
 -- ================================
 
+-- 清空并重建表（仅用于开发环境初始化）
+-- 注意：生产环境请勿执行 DROP TABLE
+DROP TABLE IF EXISTS `sys_role_permission`;
+DROP TABLE IF EXISTS `sys_user_role`;
+DROP TABLE IF EXISTS `sys_menu`;
+DROP TABLE IF EXISTS `sys_permission`;
+DROP TABLE IF EXISTS `sys_role`;
+DROP TABLE IF EXISTS `sys_user`;
+
 -- 用户表
-CREATE TABLE IF NOT EXISTS `sys_user` (
+CREATE TABLE `sys_user` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '用户ID',
     `username` VARCHAR(50) NOT NULL COMMENT '用户名',
     `password` VARCHAR(255) NOT NULL COMMENT '密码(BCrypt加密)',
