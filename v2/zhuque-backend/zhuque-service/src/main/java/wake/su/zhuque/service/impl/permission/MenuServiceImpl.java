@@ -1,7 +1,7 @@
 package wake.su.zhuque.service.impl.permission;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import lombok.RequiredArgsConstructor;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import wake.su.zhuque.dao.mapper.SysMenuMapper;
@@ -22,11 +22,12 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class MenuServiceImpl implements MenuService {
 
-    private final SysMenuMapper menuMapper;
-    private final SysUserRoleMapper userRoleMapper;
+    @Resource
+    private SysMenuMapper menuMapper;
+    @Resource
+    private SysUserRoleMapper userRoleMapper;
 
     @Override
     public List<MenuVO> getUserMenuTree(Long userId) {

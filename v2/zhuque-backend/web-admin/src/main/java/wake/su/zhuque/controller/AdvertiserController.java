@@ -1,6 +1,5 @@
 package wake.su.zhuque.controller;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.common.security.annotation.RequiresPermission;
@@ -13,7 +12,6 @@ import wake.su.zhuque.common.security.annotation.RequiresPermission;
  */
 @RestController
 @RequestMapping("/api/advertisers")
-@RequiredArgsConstructor
 public class AdvertiserController {
 
     /**

@@ -44,14 +44,65 @@
 
 ### 2. 依赖注入规范
 
-#### 2.1 注解选择
-- ✅ **必须使用 `@Resource`**
-- ❌ **禁止使用 `@Autowired`**
-- 示例:
+#### 2.1 统一使用@Resource字段注入
+⚠️ **禁止使用带参数的构造函数进行依赖注入**
+
+**核心原则:**
+- ✅ **所有注入到Spring容器的对象,必须使用@Resource字段注入**
+- ❌ **禁止使用带参数的构造函数**
+- ❌ **禁止使用@Autowired(除非特殊场景需要延迟注入)**
+
+**✅ 正确写法 - 使用@Resource字段注入:**
 ```java
-@Resource
-private SysUserService sysUserService;
+@Service
+public class PermissionServiceImpl implements PermissionService {
+
+    @Resource
+    private PermissionMapper permissionMapper;
+
+    @Resource
+    private UserRoleMapper userRoleMapper;
+
+    @Override
+    public List<String> getUserPermissions(Long userId) {
+        // 业务逻辑
+    }
+}
 ```
+
+**❌ 错误写法1 - 使用带参数的构造函数:**
+```java
+@Service
+public class PermissionServiceImpl implements PermissionService {
+
+    private final PermissionMapper permissionMapper;
+
+    // 禁止使用带参数的构造函数!
+    public PermissionServiceImpl(PermissionMapper permissionMapper) {
+        this.permissionMapper = permissionMapper;
+    }
+}
+```
+
+**❌ 错误写法2 - 使用@RequiredArgsConstructor:**
+```java
+@Service
+@RequiredArgsConstructor  // 禁止使用!
+public class PermissionServiceImpl implements PermissionService {
+
+    private final PermissionMapper permissionMapper;
+}
+```
+
+**为什么使用@Resource:**
+1. 代码更简洁直观,依赖关系一目了然
+2. 不需要编写构造函数
+3. @Resource是JSR-250标准,框架无关
+4. 适合字段较少的场景(大部分Service/Controller都符合)
+
+**特殊场景说明:**
+- 如果需要构造函数进行初始化逻辑,可以添加无参构造函数配合@PostConstruct使用
+- 如果依赖数量很多(>10个),建议重构Service职责
 
 ### 3. Service层设计规范
 

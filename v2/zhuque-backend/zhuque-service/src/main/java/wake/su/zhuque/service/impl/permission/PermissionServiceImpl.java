@@ -1,7 +1,7 @@
 package wake.su.zhuque.service.impl.permission;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import lombok.RequiredArgsConstructor;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,12 +32,16 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class PermissionServiceImpl implements PermissionService {
 
-    private final SysPermissionMapper permissionMapper;
-    private final SysUserRoleMapper userRoleMapper;
-    private final SysRolePermissionMapper rolePermissionMapper;
+    @Resource
+    private SysPermissionMapper permissionMapper;
+    @Resource
+    private SysUserRoleMapper userRoleMapper;
+    @Resource
+    private SysRolePermissionMapper rolePermissionMapper;
+    @Resource
+    private PermissionCacheService permissionCacheService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -140,6 +144,16 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public List<String> getUserPermissionCodes(Long userId) {
+        // 先从Redis缓存获取
+        java.util.Set<String> cachedPermissions = permissionCacheService.getUserPermissions(userId);
+        if (cachedPermissions != null) {
+            log.debug("从缓存获取用户权限: userId={}, permissionsCount={}", userId, cachedPermissions.size());
+            return new ArrayList<>(cachedPermissions);
+        }
+
+        // 缓存未命中，从数据库查询
+        log.debug("缓存未命中，从数据库查询用户权限: userId={}", userId);
+
         // 查询用户的所有角色
         List<SysUserRoleDO> userRoles = userRoleMapper.selectList(
             new LambdaQueryWrapper<SysUserRoleDO>()
@@ -147,6 +161,8 @@ public class PermissionServiceImpl implements PermissionService {
         );
 
         if (userRoles.isEmpty()) {
+            // 缓存空结果，避免频繁查询
+            permissionCacheService.cacheUserPermissions(userId, java.util.Set.of());
             return new ArrayList<>();
         }
 
@@ -161,6 +177,8 @@ public class PermissionServiceImpl implements PermissionService {
         );
 
         if (rolePermissions.isEmpty()) {
+            // 缓存空结果，避免频繁查询
+            permissionCacheService.cacheUserPermissions(userId, java.util.Set.of());
             return new ArrayList<>();
         }
 
@@ -176,9 +194,16 @@ public class PermissionServiceImpl implements PermissionService {
                 .eq(SysPermissionDO::getStatus, 1)
         );
 
-        return permissions.stream()
+        // 转换为Set并缓存
+        java.util.Set<String> permissionCodes = permissions.stream()
             .map(SysPermissionDO::getPermissionCode)
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
+
+        // 缓存到Redis
+        permissionCacheService.cacheUserPermissions(userId, permissionCodes);
+        log.info("缓存用户权限: userId={}, permissionsCount={}", userId, permissionCodes.size());
+
+        return new ArrayList<>(permissionCodes);
     }
 
     @Override

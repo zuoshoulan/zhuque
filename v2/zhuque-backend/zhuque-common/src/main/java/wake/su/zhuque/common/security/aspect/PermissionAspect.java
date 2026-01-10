@@ -1,16 +1,18 @@
 package wake.su.zhuque.common.security.aspect;
 
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import wake.su.zhuque.common.core.exception.BusinessException;
 import wake.su.zhuque.common.security.annotation.RequiresPermission;
+import wake.su.zhuque.common.security.validator.PermissionValidator;
 import wake.su.zhuque.common.util.JwtUtil;
 
 import java.util.Arrays;
@@ -25,13 +27,17 @@ import java.util.List;
 @Slf4j
 @Aspect
 @Component
-@RequiredArgsConstructor
 public class PermissionAspect {
 
-    private final JwtUtil jwtUtil;
+    @Resource
+    private JwtUtil jwtUtil;
 
-    // TODO: 注入PermissionService（需要解决循环依赖问题）
-    // private final PermissionService permissionService;
+    /**
+     * 使用@Autowired延迟注入，避免循环依赖
+     * PermissionValidator在service模块中实现，而此切面在common模块
+     */
+    @Autowired(required = false)
+    private PermissionValidator permissionValidator;
 
     /**
      * 拦截@RequiresPermission注解
@@ -53,18 +59,28 @@ public class PermissionAspect {
         List<String> permissionList = Arrays.asList(permissionCodes);
         RequiresPermission.LogicalType logicalType = requiresPermission.logical();
 
-        // TODO: 实现权限校验逻辑
-        // 暂时跳过权限校验，等Redis缓存实现后再完善
-        log.debug("用户{}请求权限校验：{}，逻辑类型：{}", userId, permissionList, logicalType);
+        // 检查是否安装了PermissionValidator
+        if (permissionValidator == null) {
+            log.warn("PermissionValidator未注入，跳过权限校验: userId={}, permissions={}",
+                     userId, permissionList);
+            // 在开发环境可以跳过，生产环境应该强制校验
+            return;
+        }
 
-        /*
-        boolean hasPermission = permissionService.hasPermissions(userId, permissionList,
-            logicalType == RequiresPermission.LogicalType.AND);
+        // 执行权限校验
+        boolean hasPermission = permissionValidator.hasPermissions(
+            userId,
+            permissionList,
+            logicalType == RequiresPermission.LogicalType.AND
+        );
 
         if (!hasPermission) {
-            throw new BusinessException("权限不足，需要权限：" + String.join(",", permissionList));
+            log.warn("权限不足: userId={}, requiredPermissions={}, logicalType={}",
+                     userId, permissionList, logicalType);
+            throw new BusinessException("权限不足，需要权限：" + String.join(" 或 ", permissionList));
         }
-        */
+
+        log.debug("权限校验通过: userId={}, permissions={}", userId, permissionList);
     }
 
     /**
