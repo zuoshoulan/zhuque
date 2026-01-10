@@ -118,6 +118,23 @@ public class UserController {
     }
 
     /**
+     * 更新用户主题偏好
+     *
+     * @param userId 用户ID
+     * @param theme  主题偏好 (light/dark/auto)
+     * @return 是否成功
+     */
+    @Operation(summary = "更新用户主题偏好", description = "更新用户主题偏好：light-亮色，dark-暗色，auto-自动")
+    @PutMapping("/{userId}/theme")
+    public Result<Void> updateThemePreference(
+            @PathVariable("userId") Long userId,
+            @RequestBody java.util.Map<String, String> request) {
+        String theme = request.get("theme");
+        boolean success = sysUserService.updateThemePreference(userId, theme);
+        return success ? Result.success() : Result.error("更新失败");
+    }
+
+    /**
      * 重置用户密码
      *
      * @param userId  用户ID

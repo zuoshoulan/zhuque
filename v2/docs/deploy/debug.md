@@ -1,4 +1,6 @@
-cd /home/wake/code/zhuque/v2/zhuque-backend/web-admin
-mvn spring-boot:run
+cd /home/wake/code/zhuque.worktrees/20260109_v2_dev/v2/zhuque-backend \
+&& mvn clean package -Dmaven.test.skip=true \
+&& cd /home/wake/code/zhuque.worktrees/20260109_v2_dev/v2/zhuque-backend/web-admin \
+&& mvn spring-boot:run
 
-cd /home/wake/code/zhuque/v2/zhuque-backend/web-admin && java -jar target/web-admin-2.0.0.jar 2>&1 &
+cd /home/wake/code/zhuque.worktrees/20260109_v2_dev/v2/zhuque-backend/web-admin && java -jar target/web-admin-2.0.0.jar 2>&1 &

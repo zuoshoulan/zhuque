@@ -1,5 +1,14 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { RouterView } from 'vue-router'
+import { useTheme } from '@/composables/useTheme'
+
+const { initTheme } = useTheme()
+
+// 初始化主题
+onMounted(() => {
+  initTheme()
+})
 </script>
 
 <template>
@@ -21,5 +30,75 @@ body {
 #app {
   width: 100%;
   min-height: 100vh;
+}
+
+/* 暗色主题样式 */
+html.dark body {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+}
+
+html.dark .el-card {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+
+html.dark .el-table {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+}
+
+html.dark .el-table th,
+html.dark .el-table tr {
+  background-color: #2a2a2a;
+}
+
+html.dark .el-table td,
+html.dark .el-table th.is-leaf {
+  border-color: #3a3a3a;
+}
+
+html.dark .el-table--enable-row-hover .el-table__body tr:hover > td {
+  background-color: #3a3a3a !important;
+}
+
+html.dark .el-input__wrapper {
+  background-color: #2a2a2a;
+  box-shadow: 0 0 0 1px #3a3a3a inset;
+}
+
+html.dark .el-input__wrapper:hover {
+  box-shadow: 0 0 0 1px #4a4a4a inset;
+}
+
+html.dark .el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 1px #409eff inset;
+}
+
+html.dark .el-textarea__inner {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+  color: #e0e0e0;
+}
+
+html.dark .el-dialog {
+  background-color: #2a2a2a;
+}
+
+html.dark .el-drawer {
+  background-color: #2a2a2a;
+}
+
+html.dark .layout-container .sidebar {
+  background-color: #1a1a1a;
+}
+
+html.dark .layout-container .header {
+  background-color: #2a2a2a;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+html.dark .main-content {
+  background: #0f0f0f;
 }
 </style>

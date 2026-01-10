@@ -86,6 +86,15 @@ public interface SysUserService {
     boolean updateStatus(Long userId, Integer status);
 
     /**
+     * 更新用户主题偏好
+     *
+     * @param userId 用户ID
+     * @param theme  主题偏好 (light/dark/auto)
+     * @return 是否成功
+     */
+    boolean updateThemePreference(Long userId, String theme);
+
+    /**
      * 重置用户密码
      *
      * @param userId     用户ID

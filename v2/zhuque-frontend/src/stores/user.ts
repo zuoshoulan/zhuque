@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import request from '@/utils/request'
 import type { LoginResponse } from '@/api/auth'
 import { login as loginApi } from '@/api/auth'
 
@@ -42,11 +43,25 @@ export const useUserStore = defineStore('user', () => {
     return !!token.value
   }
 
+  /**
+   * 更新用户主题偏好
+   */
+  const updateThemePreference = async (theme: 'light' | 'dark' | 'auto') => {
+    if (!userInfo.value?.id) return
+
+    await request.put(`/api/user/${userInfo.value.id}/theme`, { theme })
+
+    // 更新本地存储
+    userInfo.value.themePreference = theme
+    localStorage.setItem('userInfo', JSON.stringify(userInfo.value))
+  }
+
   return {
     token,
     userInfo,
     login,
     logout,
-    isLoggedIn
+    isLoggedIn,
+    updateThemePreference
   }
 })

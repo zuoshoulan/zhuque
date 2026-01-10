@@ -16,6 +16,7 @@ import wake.su.zhuque.model.dto.ResetPasswordResponse;
 import wake.su.zhuque.model.dto.UserQueryRequest;
 import wake.su.zhuque.model.dto.UserUpdateRequest;
 import wake.su.zhuque.model.entity.SysUserDO;
+import wake.su.zhuque.model.enums.ThemePreferenceEnum;
 import wake.su.zhuque.service.SysUserService;
 
 import java.time.LocalDateTime;
@@ -198,6 +199,20 @@ public class SysUserServiceImpl implements SysUserService {
         SysUserDO user = new SysUserDO();
         user.setId(userId);
         user.setStatus(status);
+
+        return sysUserMapper.updateById(user) > 0;
+    }
+
+    @Override
+    public boolean updateThemePreference(Long userId, String theme) {
+        log.info("更新用户主题偏好: userId={}, theme={}", userId, theme);
+
+        // 将字符串转换为枚举
+        ThemePreferenceEnum themeEnum = ThemePreferenceEnum.fromValue(theme);
+
+        SysUserDO user = new SysUserDO();
+        user.setId(userId);
+        user.setThemePreference(themeEnum);
 
         return sysUserMapper.updateById(user) > 0;
     }

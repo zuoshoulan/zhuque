@@ -34,6 +34,12 @@
             <artifactId>zhuque-service</artifactId>
         </dependency>
 
+        <!-- 服务API模块 -->
+        <dependency>
+            <groupId>wake.su</groupId>
+            <artifactId>zhuque-service-api</artifactId>
+        </dependency>
+
         <!-- Spring Boot Starter -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

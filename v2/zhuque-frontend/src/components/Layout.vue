@@ -60,6 +60,40 @@
           </div>
 
           <div class="header-right">
+            <!-- 主题切换按钮 -->
+            <el-dropdown @command="handleThemeChange" style="margin-right: 20px">
+              <span class="theme-switcher">
+                <el-icon><Sunny /></el-icon>
+                <span style="margin-left: 5px">主题</span>
+                <el-icon class="el-icon--right"><ArrowDown /></el-icon>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item command="light">
+                    <el-icon><Sunny /></el-icon>
+                    亮色模式
+                    <el-icon v-if="themeMode === 'light'" style="margin-left: 10px; color: #409eff">
+                      <Check />
+                    </el-icon>
+                  </el-dropdown-item>
+                  <el-dropdown-item command="dark">
+                    <el-icon><Moon /></el-icon>
+                    暗色模式
+                    <el-icon v-if="themeMode === 'dark'" style="margin-left: 10px; color: #409eff">
+                      <Check />
+                    </el-icon>
+                  </el-dropdown-item>
+                  <el-dropdown-item command="auto">
+                    <el-icon><Clock /></el-icon>
+                    自动切换
+                    <el-icon v-if="themeMode === 'auto'" style="margin-left: 10px; color: #409eff">
+                      <Check />
+                    </el-icon>
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+
             <el-dropdown>
               <span class="user-info">
                 <el-avatar :size="32" :src="userStore.userInfo?.avatar || undefined">
@@ -97,11 +131,14 @@
 import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { Sunny, Moon, Clock, Check, ArrowDown, User, SwitchButton, HomeFilled, Promotion, Setting } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
+import { useTheme } from '@/composables/useTheme'
 
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
+const { themeMode, setTheme } = useTheme()
 
 // 当前激活的菜单
 const activeMenu = computed(() => route.path)
@@ -118,6 +155,16 @@ const currentBreadcrumb = computed(() => {
   }
   return breadcrumbMap[path] || ''
 })
+
+// 主题切换
+const handleThemeChange = async (theme: 'light' | 'dark' | 'auto') => {
+  try {
+    await setTheme(theme)
+    ElMessage.success(`已切换到${theme === 'light' ? '亮色' : theme === 'dark' ? '暗色' : '自动'}模式`)
+  } catch (error: any) {
+    ElMessage.error(error?.message || '主题切换失败')
+  }
+}
 
 // 个人中心
 const handleProfile = () => {
@@ -213,6 +260,20 @@ const handleLogout = async () => {
 .username {
   color: #333;
   font-size: 14px;
+}
+
+.theme-switcher {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 8px 12px;
+  transition: background-color 0.3s;
+  border-radius: 4px;
+}
+
+.theme-switcher:hover {
+  background-color: #f5f5f5;
 }
 
 /* 主内容区样式 */

@@ -2,6 +2,7 @@ package wake.su.zhuque.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
+import wake.su.zhuque.model.enums.ThemePreferenceEnum;
 
 import java.time.LocalDateTime;
 
@@ -62,6 +63,11 @@ public class SysUserDO {
      * 是否强制修改密码：0-否，1-是
      */
     private Integer forceChangePassword;
+
+    /**
+     * 主题偏好：0-亮色，1-暗色，2-自动
+     */
+    private ThemePreferenceEnum themePreference;
 
     /**
      * 创建时间

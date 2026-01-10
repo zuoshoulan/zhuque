@@ -6,5 +6,6 @@
     "java.project.sourcePaths": [
         "zhuque-backend/*/src/main/java"
     ],
-    "java.debug.settings.enableRunDebugCodeLens": true
+    "java.debug.settings.enableRunDebugCodeLens": true,
+    "java.configuration.updateBuildConfiguration": "interactive"
 }
