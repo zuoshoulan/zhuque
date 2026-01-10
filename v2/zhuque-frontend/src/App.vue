@@ -62,6 +62,32 @@ html.dark .el-table--enable-row-hover .el-table__body tr:hover > td {
   background-color: #3a3a3a !important;
 }
 
+/* 描述列表(个人信息表格) */
+html.dark .el-descriptions {
+  --el-descriptions-table-border-color: #3a3a3a;
+}
+
+html.dark .el-descriptions__label {
+  color: #e0e0e0;
+}
+
+html.dark .el-descriptions__content {
+  color: #e0e0e0;
+}
+
+html.dark .el-descriptions__body {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+}
+
+html.dark .el-descriptions__cell {
+  border-color: #3a3a3a;
+}
+
+html.dark .el-descriptions-item__label {
+  color: #e0e0e0;
+}
+
 html.dark .el-input__wrapper {
   background-color: #2a2a2a;
   box-shadow: 0 0 0 1px #3a3a3a inset;
