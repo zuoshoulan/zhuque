@@ -1,6 +1,6 @@
 package wake.su.zhuque.service.impl.permission;
 
-import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import wake.su.zhuque.common.security.validator.PermissionValidator;
@@ -17,10 +17,10 @@ import java.util.List;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class PermissionValidatorImpl implements PermissionValidator {
 
-    @Resource
-    private PermissionService permissionService;
+    private final PermissionService permissionService;
 
     @Override
     public boolean hasPermissions(Long userId, List<String> permissionCodes, boolean requireAll) {

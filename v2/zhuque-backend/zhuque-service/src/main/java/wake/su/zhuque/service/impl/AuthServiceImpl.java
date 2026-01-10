@@ -1,6 +1,6 @@
 package wake.su.zhuque.service.impl;
 
-import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import wake.su.zhuque.common.security.util.PasswordUtil;
@@ -16,13 +16,11 @@ import wake.su.zhuque.service.SysUserService;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    @Resource
-    private SysUserService sysUserService;
-
-    @Resource
-    private JwtUtil jwtUtil;
+    private final SysUserService sysUserService;
+    private final JwtUtil jwtUtil;
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {

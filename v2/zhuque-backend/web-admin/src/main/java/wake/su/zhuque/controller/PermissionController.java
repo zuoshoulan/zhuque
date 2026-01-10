@@ -6,8 +6,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.model.dto.PermissionCreateRequest;
@@ -25,10 +25,10 @@ import java.util.List;
 @Tag(name = "权限管理", description = "权限CRUD、树形结构查询接口")
 @RestController
 @RequestMapping("/api/permissions")
+@RequiredArgsConstructor
 public class PermissionController {
 
-    @Resource
-    private PermissionService permissionService;
+    private final PermissionService permissionService;
 
     /**
      * 创建权限

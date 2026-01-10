@@ -44,65 +44,150 @@
 
 ### 2. 依赖注入规范
 
-#### 2.1 统一使用@Resource字段注入
-⚠️ **禁止使用带参数的构造函数进行依赖注入**
+#### 2.1 统一使用构造函数注入
+⚠️ **强制要求:所有Spring Bean必须使用构造函数注入**
 
 **核心原则:**
-- ✅ **所有注入到Spring容器的对象,必须使用@Resource字段注入**
-- ❌ **禁止使用带参数的构造函数**
-- ❌ **禁止使用@Autowired(除非特殊场景需要延迟注入)**
+- ✅ **所有注入到Spring容器的对象,必须使用构造函数注入**
+- ✅ **依赖字段必须声明为final**
+- ✅ **使用Lombok的@RequiredArgsConstructor注解简化代码**
+- ❌ **禁止使用字段注入(@Autowired/@Resource)**
+- ❌ **禁止使用非final字段**
 
-**✅ 正确写法 - 使用@Resource字段注入:**
+**✅ 正确写法 - 使用@RequiredArgsConstructor:**
 ```java
 @Service
+@RequiredArgsConstructor  // Lombok自动生成构造函数
 public class PermissionServiceImpl implements PermissionService {
 
-    @Resource
-    private PermissionMapper permissionMapper;
-
-    @Resource
-    private UserRoleMapper userRoleMapper;
+    private final PermissionMapper permissionMapper;    // final字段,不可变
+    private final UserRoleMapper userRoleMapper;        // final字段,不可变
 
     @Override
     public List<String> getUserPermissions(Long userId) {
         // 业务逻辑
+        // permissionMapper 和 userRoleMapper 保证不为null
     }
 }
 ```
 
-**❌ 错误写法1 - 使用带参数的构造函数:**
+**❌ 错误写法1 - 使用字段注入:**
+```java
+@Service
+public class PermissionServiceImpl implements PermissionService {
+
+    @Resource
+    private PermissionMapper permissionMapper;  // ❌ 禁止字段注入!
+
+    @Autowired
+    private UserRoleMapper userRoleMapper;      // ❌ 禁止字段注入!
+}
+```
+
+**❌ 错误写法2 - 使用非final字段:**
+```java
+@Service
+@RequiredArgsConstructor
+public class PermissionServiceImpl implements PermissionService {
+
+    private PermissionMapper permissionMapper;  // ❌ 禁止!必须使用final
+}
+```
+
+**为什么强制使用构造函数注入:**
+1. **不可变性**: final字段保证依赖不会被修改,编译期检查
+2. **空指针安全**: Spring启动时检查依赖,运行时不会出现NPE
+3. **便于测试**: 单元测试可直接通过构造函数注入Mock对象
+4. **依赖明确**: 构造函数参数清晰展示依赖关系
+5. **强制设计**: 循环依赖会在启动时报错,强制修复设计问题
+6. **Spring官方推荐**: Spring Framework官方文档明确推荐
+
+**依赖过多时的处理:**
+- 如果依赖数量>7个,说明Service职责过重,建议拆分
+- 示例: 将PermissionServiceImpl拆分为PermissionService和PermissionCacheService
+
+**特殊场景 - 循环依赖处理:**
+
+**场景1: 使用@Lazy打破循环依赖**
+```java
+// 如果确实存在循环依赖(通常说明设计有问题),使用@Lazy延迟加载
+@Service
+@RequiredArgsConstructor
+public class ServiceA {
+    private final ServiceB serviceB;
+}
+
+@Service
+@RequiredArgsConstructor
+public class ServiceB {
+    @Lazy  // 延迟加载,打破循环依赖
+    private final ServiceA serviceA;
+}
+```
+
+**场景2: 跨模块循环依赖 - 推荐方案:拆分接口**
+
+当存在跨模块循环依赖时,推荐通过接口拆分来解决:
+
+```java
+// ✅ 推荐: 将接口定义在common模块
+// common/src/main/java/wake/su/zhuque/common/security/validator/PermissionValidator.java
+public interface PermissionValidator {
+    boolean hasPermissions(Long userId, List<String> codes, boolean requireAll);
+}
+
+// service模块实现接口
+@Service
+@RequiredArgsConstructor
+public class PermissionValidatorImpl implements PermissionValidator {
+    private final PermissionService permissionService;
+}
+
+// common模块通过接口注入,使用@Lazy打破循环依赖
+@Aspect
+@Component
+@RequiredArgsConstructor
+public class PermissionAspect {
+    private final JwtUtil jwtUtil;
+
+    @Lazy  // 打破循环依赖,但仍然是构造函数注入
+    private final PermissionValidator permissionValidator;
+}
+```
+
+**方案优势:**
+- ✅ 完全符合构造函数注入规范
+- ✅ 依赖关系清晰,通过接口解耦
+- ✅ 编译期检查,类型安全
+- ✅ 便于单元测试(可直接Mock接口)
+
+**场景3: 其他特殊情况 (不推荐使用@Autowired)**
+
+⚠️ **禁止使用 @Autowired 字段注入**,即使是跨模块循环依赖也不推荐使用。
+
+如果确实无法使用接口拆分方案,应该:
+1. 重新审视架构设计,消除循环依赖
+2. 考虑使用事件驱动架构
+3. 使用ApplicationContext按需查找(仅作为最后手段)
+
+**无Lombok环境的手写构造函数:**
 ```java
 @Service
 public class PermissionServiceImpl implements PermissionService {
 
     private final PermissionMapper permissionMapper;
+    private final UserRoleMapper userRoleMapper;
 
-    // 禁止使用带参数的构造函数!
-    public PermissionServiceImpl(PermissionMapper permissionMapper) {
+    // 手写构造函数(不推荐,建议使用@RequiredArgsConstructor)
+    public PermissionServiceImpl(
+        PermissionMapper permissionMapper,
+        UserRoleMapper userRoleMapper
+    ) {
         this.permissionMapper = permissionMapper;
+        this.userRoleMapper = userRoleMapper;
     }
 }
 ```
-
-**❌ 错误写法2 - 使用@RequiredArgsConstructor:**
-```java
-@Service
-@RequiredArgsConstructor  // 禁止使用!
-public class PermissionServiceImpl implements PermissionService {
-
-    private final PermissionMapper permissionMapper;
-}
-```
-
-**为什么使用@Resource:**
-1. 代码更简洁直观,依赖关系一目了然
-2. 不需要编写构造函数
-3. @Resource是JSR-250标准,框架无关
-4. 适合字段较少的场景(大部分Service/Controller都符合)
-
-**特殊场景说明:**
-- 如果需要构造函数进行初始化逻辑,可以添加无参构造函数配合@PostConstruct使用
-- 如果依赖数量很多(>10个),建议重构Service职责
 
 ### 3. Service层设计规范
 

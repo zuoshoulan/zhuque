@@ -1,6 +1,6 @@
 package wake.su.zhuque.controller;
 
-import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.model.vo.MenuVO;
@@ -16,10 +16,10 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/menus")
+@RequiredArgsConstructor
 public class MenuController {
 
-    @Resource
-    private MenuService menuService;
+    private final MenuService menuService;
 
     /**
      * 获取当前用户的菜单树

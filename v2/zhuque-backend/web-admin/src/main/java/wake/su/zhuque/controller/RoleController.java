@@ -1,7 +1,7 @@
 package wake.su.zhuque.controller;
 
-import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.model.dto.AssignPermissionsRequest;
@@ -23,10 +23,10 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api/role")
+@RequiredArgsConstructor
 public class RoleController {
 
-    @Resource
-    private RoleService roleService;
+    private final RoleService roleService;
 
     /**
      * 创建角色

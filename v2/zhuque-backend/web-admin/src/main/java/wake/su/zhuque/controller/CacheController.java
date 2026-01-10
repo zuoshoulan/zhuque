@@ -3,7 +3,7 @@ package wake.su.zhuque.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import wake.su.zhuque.common.core.result.Result;
@@ -23,10 +23,10 @@ import java.util.Set;
 @Slf4j
 @RestController
 @RequestMapping("/api/cache/permissions")
+@RequiredArgsConstructor
 public class CacheController {
 
-    @Resource
-    private PermissionCacheService permissionCacheService;
+    private final PermissionCacheService permissionCacheService;
 
     /**
      * 刷新指定用户的权限缓存

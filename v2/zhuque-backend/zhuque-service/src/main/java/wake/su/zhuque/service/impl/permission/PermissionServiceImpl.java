@@ -1,7 +1,7 @@
 package wake.su.zhuque.service.impl.permission;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,16 +32,13 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class PermissionServiceImpl implements PermissionService {
 
-    @Resource
-    private SysPermissionMapper permissionMapper;
-    @Resource
-    private SysUserRoleMapper userRoleMapper;
-    @Resource
-    private SysRolePermissionMapper rolePermissionMapper;
-    @Resource
-    private PermissionCacheService permissionCacheService;
+    private final SysPermissionMapper permissionMapper;
+    private final SysUserRoleMapper userRoleMapper;
+    private final SysRolePermissionMapper rolePermissionMapper;
+    private final PermissionCacheService permissionCacheService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)

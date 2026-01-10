@@ -2,8 +2,8 @@ package wake.su.zhuque.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,16 +34,12 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class SysUserServiceImpl implements SysUserService {
 
-    @Resource
-    private SysUserMapper sysUserMapper;
-
-    @Resource
-    private SysRoleMapper sysRoleMapper;
-
-    @Resource
-    private SysUserRoleMapper sysUserRoleMapper;
+    private final SysUserMapper sysUserMapper;
+    private final SysRoleMapper sysRoleMapper;
+    private final SysUserRoleMapper sysUserRoleMapper;
 
     @Override
     public SysUserDO getById(Long userId) {

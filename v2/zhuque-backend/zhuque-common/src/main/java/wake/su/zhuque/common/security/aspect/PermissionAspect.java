@@ -1,12 +1,12 @@
 package wake.su.zhuque.common.security.aspect;
 
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -27,17 +27,18 @@ import java.util.List;
 @Slf4j
 @Aspect
 @Component
+@RequiredArgsConstructor
 public class PermissionAspect {
 
-    @Resource
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
     /**
-     * 使用@Autowired延迟注入，避免循环依赖
-     * PermissionValidator在service模块中实现，而此切面在common模块
+     * 使用@Lazy延迟注入，避免循环依赖
+     * PermissionValidator接口在common模块，实现在service模块
+     * 通过@Lazy打破循环依赖，使用构造函数注入
      */
-    @Autowired(required = false)
-    private PermissionValidator permissionValidator;
+    @Lazy
+    private final PermissionValidator permissionValidator;
 
     /**
      * 拦截@RequiresPermission注解
