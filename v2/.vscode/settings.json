@@ -7,5 +7,7 @@
         "zhuque-backend/*/src/main/java"
     ],
     "java.debug.settings.enableRunDebugCodeLens": true,
-    "java.configuration.updateBuildConfiguration": "interactive"
+    // interactive 模式下，需要手动点击 Build Project 才能更新构建配置
+    // automatic 模式下，会自动更新构建配置
+    "java.configuration.updateBuildConfiguration": "automatic"
 }

@@ -22,6 +22,7 @@ public class HelloController {
         data.put("message", "Hello, 朱雀广告平台！");
         data.put("time", LocalDateTime.now());
         data.put("version", "2.0.0");
+        data.put("action", "say hi");
         return Result.success(data);
     }
 
