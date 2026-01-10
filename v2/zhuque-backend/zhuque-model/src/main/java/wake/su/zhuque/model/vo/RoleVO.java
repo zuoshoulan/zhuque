@@ -45,6 +45,11 @@ public class RoleVO {
     private LocalDateTime createTime;
 
     /**
+     * 更新时间
+     */
+    private LocalDateTime updateTime;
+
+    /**
      * 权限ID列表
      */
     private List<Long> permissionIds;

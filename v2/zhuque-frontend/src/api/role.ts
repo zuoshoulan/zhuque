@@ -74,3 +74,17 @@ export const deleteRole = (id: number) => {
 export const updateRoleStatus = (id: number, status: number) => {
   return request.put(`/api/role/${id}/status`, { status })
 }
+
+/**
+ * 获取角色的权限ID列表
+ */
+export const getRolePermissionIds = (id: number) => {
+  return request.get<any, number[]>(`/api/role/${id}/permission-ids`)
+}
+
+/**
+ * 为角色分配权限
+ */
+export const assignPermissions = (id: number, permissionIds: number[]) => {
+  return request.post(`/api/role/${id}/permissions`, { permissionIds })
+}

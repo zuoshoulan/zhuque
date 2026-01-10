@@ -5,12 +5,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.model.dto.AssignPermissionsRequest;
+import wake.su.zhuque.model.dto.PageResult;
 import wake.su.zhuque.model.dto.RoleCreateRequest;
+import wake.su.zhuque.model.query.RolePageQuery;
 import wake.su.zhuque.model.vo.PermissionVO;
 import wake.su.zhuque.model.vo.RoleVO;
 import wake.su.zhuque.service.api.RoleService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 角色管理Controller
@@ -19,7 +22,7 @@ import java.util.List;
  * @since 2026-01-09
  */
 @RestController
-@RequestMapping("/api/roles")
+@RequestMapping("/api/role")
 @RequiredArgsConstructor
 public class RoleController {
 
@@ -70,6 +73,27 @@ public class RoleController {
     public Result<List<RoleVO>> getRoleList() {
         List<RoleVO> list = roleService.getRoleList();
         return Result.success(list);
+    }
+
+    /**
+     * 分页查询角色列表
+     */
+    @GetMapping("/page")
+    public Result<PageResult<RoleVO>> getRolePage(RolePageQuery query) {
+        PageResult<RoleVO> pageResult = roleService.getRolePage(query);
+        return Result.success(pageResult);
+    }
+
+    /**
+     * 修改角色状态
+     */
+    @PutMapping("/{id}/status")
+    public Result<Void> updateRoleStatus(
+            @PathVariable Long id,
+            @RequestBody Map<String, Integer> request) {
+        Integer status = request.get("status");
+        roleService.updateRoleStatus(id, status);
+        return Result.success();
     }
 
     /**

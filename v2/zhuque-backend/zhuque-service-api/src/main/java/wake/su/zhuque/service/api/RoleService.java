@@ -1,7 +1,9 @@
 package wake.su.zhuque.service.api;
 
 import wake.su.zhuque.model.dto.AssignPermissionsRequest;
+import wake.su.zhuque.model.dto.PageResult;
 import wake.su.zhuque.model.dto.RoleCreateRequest;
+import wake.su.zhuque.model.query.RolePageQuery;
 import wake.su.zhuque.model.vo.PermissionVO;
 import wake.su.zhuque.model.vo.RoleVO;
 
@@ -52,6 +54,22 @@ public interface RoleService {
      * @return 角色列表
      */
     List<RoleVO> getRoleList();
+
+    /**
+     * 分页查询角色列表
+     *
+     * @param query 查询参数
+     * @return 分页结果
+     */
+    PageResult<RoleVO> getRolePage(RolePageQuery query);
+
+    /**
+     * 修改角色状态
+     *
+     * @param id 角色ID
+     * @param status 状态：0-禁用，1-启用
+     */
+    void updateRoleStatus(Long id, Integer status);
 
     /**
      * 为角色分配权限

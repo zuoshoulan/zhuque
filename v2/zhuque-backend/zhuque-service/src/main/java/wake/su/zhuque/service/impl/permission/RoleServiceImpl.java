@@ -1,6 +1,7 @@
 package wake.su.zhuque.service.impl.permission;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -9,13 +10,16 @@ import wake.su.zhuque.dao.mapper.SysPermissionMapper;
 import wake.su.zhuque.dao.mapper.SysRoleMapper;
 import wake.su.zhuque.dao.mapper.SysRolePermissionMapper;
 import wake.su.zhuque.model.dto.AssignPermissionsRequest;
+import wake.su.zhuque.model.dto.PageResult;
 import wake.su.zhuque.model.dto.RoleCreateRequest;
 import wake.su.zhuque.model.entity.SysPermissionDO;
 import wake.su.zhuque.model.entity.SysRoleDO;
 import wake.su.zhuque.model.entity.SysRolePermissionDO;
+import wake.su.zhuque.model.query.RolePageQuery;
 import wake.su.zhuque.model.vo.PermissionVO;
 import wake.su.zhuque.model.vo.RoleVO;
 import wake.su.zhuque.service.api.RoleService;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -213,5 +217,63 @@ public class RoleServiceImpl implements RoleService {
                 return vo;
             })
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public PageResult<RoleVO> getRolePage(RolePageQuery query) {
+        // 构建查询条件
+        LambdaQueryWrapper<SysRoleDO> wrapper = new LambdaQueryWrapper<>();
+
+        // 关键词搜索
+        if (StringUtils.isNotBlank(query.getKeyword())) {
+            wrapper.and(w -> w
+                .like(SysRoleDO::getRoleName, query.getKeyword())
+                .or()
+                .like(SysRoleDO::getRoleCode, query.getKeyword())
+            );
+        }
+
+        // 状态筛选
+        if (query.getStatus() != null) {
+            wrapper.eq(SysRoleDO::getStatus, query.getStatus());
+        }
+
+        // 按创建时间倒序
+        wrapper.orderByDesc(SysRoleDO::getCreateTime);
+
+        // 分页查询
+        Page<SysRoleDO> page = new Page<>(
+            query.getCurrent() != null ? query.getCurrent() : 1,
+            query.getSize() != null ? query.getSize() : 10
+        );
+
+        Page<SysRoleDO> result = roleMapper.selectPage(page, wrapper);
+
+        // 转换为VO
+        List<RoleVO> vos = result.getRecords().stream()
+            .map(role -> {
+                RoleVO vo = new RoleVO();
+                vo.setId(role.getId());
+                vo.setRoleCode(role.getRoleCode());
+                vo.setRoleName(role.getRoleName());
+                vo.setDescription(role.getDescription());
+                vo.setStatus(role.getStatus());
+                vo.setCreateTime(role.getCreateTime());
+                vo.setUpdateTime(role.getUpdateTime());
+                return vo;
+            })
+            .collect(Collectors.toList());
+
+        return PageResult.of(vos, result.getTotal(), result.getCurrent(), result.getSize());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateRoleStatus(Long id, Integer status) {
+        SysRoleDO role = new SysRoleDO();
+        role.setId(id);
+        role.setStatus(status);
+        roleMapper.updateById(role);
+        log.info("修改角色状态成功：roleId={}, status={}", id, status);
     }
 }

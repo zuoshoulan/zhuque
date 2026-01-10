@@ -124,6 +124,41 @@
         <el-button type="primary" :loading="submitLoading" @click="handleSubmit">确定</el-button>
       </template>
     </el-dialog>
+
+    <!-- 权限分配对话框 -->
+    <el-dialog
+      v-model="permissionDialogVisible"
+      title="权限分配"
+      width="600px"
+      :close-on-click-modal="false"
+    >
+      <el-form label-width="80px">
+        <el-form-item label="角色名称">
+          <span>{{ currentRole?.roleName }}</span>
+        </el-form-item>
+        <el-form-item label="角色编码">
+          <span>{{ currentRole?.roleCode }}</span>
+        </el-form-item>
+        <el-form-item label="权限">
+          <el-tree
+            ref="permissionTreeRef"
+            :data="permissionTree"
+            :props="{ label: 'permissionName', children: 'children' }"
+            node-key="id"
+            show-checkbox
+            default-expand-all
+            :default-checked-keys="checkedPermissionIds"
+            style="border: 1px solid #dcdfe6; border-radius: 4px; padding: 10px"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="permissionDialogVisible = false">取消</el-button>
+        <el-button type="primary" :loading="permissionSubmitLoading" @click="handlePermissionSubmit">
+          确定
+        </el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -131,8 +166,10 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox, FormInstance, FormRules } from 'element-plus'
 import { Plus, Search, Refresh, Edit, Delete, Key } from '@element-plus/icons-vue'
-import { getRolePage, createRole, updateRole, deleteRole, updateRoleStatus } from '@/api/role'
+import { getRolePage, createRole, updateRole, deleteRole, updateRoleStatus, getRolePermissionIds, assignPermissions } from '@/api/role'
+import { getPermissionTree } from '@/api/permission'
 import type { RoleInfo } from '@/api/role'
+import type { PermissionInfo } from '@/api/permission'
 
 // 查询参数
 const queryParams = reactive({
@@ -151,6 +188,14 @@ const loading = ref(false)
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const submitLoading = ref(false)
+
+// 权限对话框
+const permissionDialogVisible = ref(false)
+const permissionSubmitLoading = ref(false)
+const currentRole = ref<RoleInfo | null>(null)
+const permissionTree = ref<PermissionInfo[]>([])
+const checkedPermissionIds = ref<number[]>([])
+const permissionTreeRef = ref()
 
 // 表单数据
 const formData = reactive<Partial<RoleInfo>>({
@@ -219,8 +264,45 @@ const handleEdit = (row: RoleInfo) => {
 }
 
 // 配置权限
-const handlePermission = (row: RoleInfo) => {
-  ElMessage.info('权限配置功能开发中...')
+const handlePermission = async (row: RoleInfo) => {
+  currentRole.value = row
+  permissionDialogVisible.value = true
+
+  try {
+    // 加载权限树
+    const tree = await getPermissionTree()
+    permissionTree.value = tree
+
+    // 加载角色的权限ID列表
+    const ids = await getRolePermissionIds(row.id)
+    checkedPermissionIds.value = ids
+  } catch (error) {
+    console.error('加载权限数据失败:', error)
+    ElMessage.error('加载权限数据失败')
+  }
+}
+
+// 提交权限分配
+const handlePermissionSubmit = async () => {
+  if (!currentRole.value) return
+
+  try {
+    permissionSubmitLoading.value = true
+
+    // 获取选中的权限ID
+    const checkedKeys = permissionTreeRef.value.getCheckedKeys()
+    const halfCheckedKeys = permissionTreeRef.value.getHalfCheckedKeys()
+    const allCheckedKeys = [...checkedKeys, ...halfCheckedKeys]
+
+    await assignPermissions(currentRole.value.id, allCheckedKeys)
+    ElMessage.success('权限分配成功')
+    permissionDialogVisible.value = false
+  } catch (error) {
+    console.error('权限分配失败:', error)
+    ElMessage.error('权限分配失败')
+  } finally {
+    permissionSubmitLoading.value = false
+  }
 }
 
 // 提交表单
