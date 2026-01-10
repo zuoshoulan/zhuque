@@ -213,6 +213,8 @@ public class SysUserServiceImpl implements SysUserService {
         SysUserDO user = new SysUserDO();
         user.setId(userId);
         user.setStatus(status);
+        user.setUpdateBy(getCurrentUsername());  // 必须显式设置更新人
+        user.setUpdateTime(LocalDateTime.now());  // 必须显式设置更新时间
 
         return sysUserMapper.updateById(user) > 0;
     }
@@ -227,6 +229,8 @@ public class SysUserServiceImpl implements SysUserService {
         SysUserDO user = new SysUserDO();
         user.setId(userId);
         user.setThemePreference(themeEnum);
+        user.setUpdateBy(getCurrentUsername());  // 必须显式设置更新人
+        user.setUpdateTime(LocalDateTime.now());  // 必须显式设置更新时间
 
         return sysUserMapper.updateById(user) > 0;
     }
@@ -267,6 +271,8 @@ public class SysUserServiceImpl implements SysUserService {
         updateUser.setId(userId);
         updateUser.setPassword(hashedPassword);
         updateUser.setForceChangePassword(1); // 强制用户下次登录时修改密码
+        updateUser.setUpdateBy(getCurrentUsername());  // 必须显式设置更新人
+        updateUser.setUpdateTime(LocalDateTime.now());  // 必须显式设置更新时间
         boolean success = sysUserMapper.updateById(updateUser) > 0;
 
         if (!success) {

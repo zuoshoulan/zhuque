@@ -115,6 +115,34 @@ log.error("系统异常", e);
 - 表字符集: `utf8mb4`
 - 排序规则: `utf8mb4_0900_ai_ci`
 
+#### 6.1.1 数据库时间戳字段定义规范
+⚠️ **禁止使用数据库自动更新时间戳**
+
+**数据库表定义规范:**
+```sql
+-- ✅ 正确: 不使用 ON UPDATE CURRENT_TIMESTAMP
+CREATE TABLE `sys_user` (
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',  -- 没有 ON UPDATE
+  `create_by` VARCHAR(50) DEFAULT NULL COMMENT '创建人',
+  `update_by` VARCHAR(50) DEFAULT NULL COMMENT '更新人'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ❌ 错误: 使用 ON UPDATE CURRENT_TIMESTAMP
+CREATE TABLE `sys_user` (
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',  -- 禁止!
+  `create_by` VARCHAR(50) DEFAULT NULL COMMENT '创建人',
+  `update_by` VARCHAR(50) DEFAULT NULL COMMENT '更新人'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+**为什么禁止数据库自动更新:**
+1. ❌ 无法记录更新人(`update_by`)的准确信息
+2. ❌ 无法在业务逻辑中控制更新时机
+3. ❌ 不符合审计字段需要同时记录"谁在何时修改"的要求
+4. ✅ Java代码显式控制更明确、更可追溯
+
 #### 6.2 时间戳和审计字段管理
 ⚠️ **核心原则: 不要依赖数据库默认值,必须在Java代码中显式设置**
 

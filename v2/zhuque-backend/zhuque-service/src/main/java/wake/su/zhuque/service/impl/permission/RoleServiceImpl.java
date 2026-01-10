@@ -20,7 +20,11 @@ import wake.su.zhuque.model.vo.PermissionVO;
 import wake.su.zhuque.model.vo.RoleVO;
 import wake.su.zhuque.service.api.RoleService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,6 +85,8 @@ public class RoleServiceImpl implements RoleService {
 
         role.setRoleName(request.getRoleName());
         role.setDescription(request.getDescription());
+        role.setUpdateBy(getCurrentUsername());  // 必须显式设置更新人
+        role.setUpdateTime(LocalDateTime.now());  // 必须显式设置更新时间
         roleMapper.updateById(role);
 
         log.info("更新角色成功：{}", role.getRoleCode());
@@ -273,7 +279,29 @@ public class RoleServiceImpl implements RoleService {
         SysRoleDO role = new SysRoleDO();
         role.setId(id);
         role.setStatus(status);
+        role.setUpdateBy(getCurrentUsername());  // 必须显式设置更新人
+        role.setUpdateTime(LocalDateTime.now());  // 必须显式设置更新时间
         roleMapper.updateById(role);
         log.info("修改角色状态成功：roleId={}, status={}", id, status);
+    }
+
+    /**
+     * 获取当前登录用户名
+     */
+    private String getCurrentUsername() {
+        try {
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attributes != null) {
+                HttpServletRequest request = attributes.getRequest();
+                // 从请求属性获取用户名（在JwtAuthenticationFilter中设置）
+                String username = (String) request.getAttribute("X-User-Name");
+                if (username != null && !username.isEmpty()) {
+                    return username;
+                }
+            }
+        } catch (Exception e) {
+            log.warn("获取当前登录用户失败: {}", e.getMessage());
+        }
+        return "system";
     }
 }

@@ -15,7 +15,11 @@ import wake.su.zhuque.model.entity.SysRolePermissionDO;
 import wake.su.zhuque.model.entity.SysUserRoleDO;
 import wake.su.zhuque.model.vo.PermissionVO;
 import wake.su.zhuque.service.api.PermissionService;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,6 +81,8 @@ public class PermissionServiceImpl implements PermissionService {
         permission.setMethod(request.getMethod());
         permission.setIcon(request.getIcon());
         permission.setSortOrder(request.getSortOrder());
+        permission.setUpdateBy(getCurrentUsername());  // 必须显式设置更新人
+        permission.setUpdateTime(LocalDateTime.now());  // 必须显式设置更新时间
 
         permissionMapper.updateById(permission);
         log.info("更新权限成功：{}", permission.getPermissionCode());
@@ -232,5 +238,25 @@ public class PermissionServiceImpl implements PermissionService {
         vo.setStatus(entity.getStatus());
         vo.setCreateTime(entity.getCreateTime());
         return vo;
+    }
+
+    /**
+     * 获取当前登录用户名
+     */
+    private String getCurrentUsername() {
+        try {
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attributes != null) {
+                HttpServletRequest request = attributes.getRequest();
+                // 从请求属性获取用户名（在JwtAuthenticationFilter中设置）
+                String username = (String) request.getAttribute("X-User-Name");
+                if (username != null && !username.isEmpty()) {
+                    return username;
+                }
+            }
+        } catch (Exception e) {
+            log.warn("获取当前登录用户失败: {}", e.getMessage());
+        }
+        return "system";
     }
 }
