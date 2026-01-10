@@ -27,12 +27,12 @@ public class SysRolePermissionDO {
     /**
      * 创建时间
      */
-    @TableField(fill = FieldFill.INSERT)
+    @TableField("create_time")
     private LocalDateTime createTime;
 
     /**
      * 创建人
      */
-    @TableField(fill = FieldFill.INSERT)
+    @TableField("create_by")
     private String createBy;
 }

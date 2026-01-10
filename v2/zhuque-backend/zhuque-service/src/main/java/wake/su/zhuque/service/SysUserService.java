@@ -5,6 +5,9 @@ import wake.su.zhuque.model.dto.ResetPasswordResponse;
 import wake.su.zhuque.model.dto.UserQueryRequest;
 import wake.su.zhuque.model.dto.UserUpdateRequest;
 import wake.su.zhuque.model.entity.SysUserDO;
+import wake.su.zhuque.model.vo.RoleVO;
+
+import java.util.List;
 
 /**
  * 系统用户服务接口
@@ -102,4 +105,21 @@ public interface SysUserService {
      * @return 重置密码响应（包含明文密码，仅此一次返回）
      */
     ResetPasswordResponse resetPassword(Long userId, String newPassword);
+
+    /**
+     * 获取用户的角色列表
+     *
+     * @param userId 用户ID
+     * @return 角色列表
+     */
+    List<RoleVO> getUserRoles(Long userId);
+
+    /**
+     * 为用户分配角色
+     *
+     * @param userId  用户ID
+     * @param roleIds 角色ID列表
+     * @return 是否成功
+     */
+    boolean assignRoles(Long userId, List<Long> roleIds);
 }

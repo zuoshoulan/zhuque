@@ -17,6 +17,19 @@ export interface UserInfo {
 }
 
 /**
+ * 角色信息
+ */
+export interface RoleInfo {
+  id: number
+  roleName: string
+  roleCode: string
+  description: string
+  status: number
+  createTime: string
+  updateTime: string
+}
+
+/**
  * 用户查询参数
  */
 export interface UserQuery {
@@ -101,4 +114,18 @@ export interface ResetPasswordResponse {
  */
 export const resetUserPassword = (userId: number, data: ResetPasswordRequest) => {
   return request.post<any, ResetPasswordResponse>(`/api/user/${userId}/reset-password`, data)
+}
+
+/**
+ * 获取用户的角色列表
+ */
+export const getUserRoles = (userId: number) => {
+  return request.get<any, RoleInfo[]>(`/api/user/${userId}/roles`)
+}
+
+/**
+ * 为用户分配角色
+ */
+export const assignUserRoles = (userId: number, roleIds: number[]) => {
+  return request.post(`/api/user/${userId}/roles`, { roleIds })
 }

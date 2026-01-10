@@ -115,7 +115,67 @@ log.error("系统异常", e);
 - 表字符集: `utf8mb4`
 - 排序规则: `utf8mb4_0900_ai_ci`
 
-#### 6.2 实体类注解
+#### 6.2 时间戳和审计字段管理
+⚠️ **核心原则: 不要依赖数据库默认值,必须在Java代码中显式设置**
+
+**必须显式设置的字段:**
+- `create_time`: 创建时间
+- `update_time`: 更新时间
+- `create_by`: 创建人
+- `update_by`: 更新人
+
+**实现规范:**
+
+1. **INSERT操作时必须设置:**
+```java
+// ✅ 正确: 在插入前显式设置所有审计字段
+SysUserDO user = new SysUserDO();
+user.setUsername("admin");
+user.setCreateTime(LocalDateTime.now());  // 必须设置
+user.setCreateBy(getCurrentUsername());   // 必须设置
+sysUserMapper.insert(user);
+
+// ❌ 错误: 依赖数据库DEFAULT值或自动填充
+SysUserDO user = new SysUserDO();
+user.setUsername("admin");
+sysUserMapper.insert(user);  // create_time 和 create_by 可能为 null
+```
+
+2. **UPDATE操作时必须设置:**
+```java
+// ✅ 正确: 更新时显式设置 update_time 和 update_by
+SysUserDO user = new SysUserDO();
+user.setId(1L);
+user.setUsername("new_admin");
+user.setUpdateTime(LocalDateTime.now());  // 必须设置
+user.setUpdateBy(getCurrentUsername());   // 必须设置
+sysUserMapper.updateById(user);
+
+// ❌ 错误: 依赖数据库触发器或自动填充
+SysUserDO user = new SysUserDO();
+user.setId(1L);
+user.setUsername("new_admin");
+sysUserMapper.updateById(user);  // update_time 和 update_by 不会被更新
+```
+
+3. **批量插入时也要设置:**
+```java
+// ✅ 正确: 批量插入时为每个记录设置审计字段
+List<SysUserRoleDO> userRoleList = roleIds.stream()
+    .map(roleId -> {
+        SysUserRoleDO userRole = new SysUserRoleDO();
+        userRole.setUserId(userId);
+        userRole.setRoleId(roleId);
+        userRole.setCreateTime(LocalDateTime.now());  // 必须设置
+        userRole.setCreateBy(getCurrentUsername());   // 必须设置
+        return userRole;
+    })
+    .collect(Collectors.toList());
+
+userRoleList.forEach(sysUserRoleMapper::insert);
+```
+
+4. **实体类字段定义:**
 ```java
 @Data
 @TableName("sys_user")
@@ -123,8 +183,57 @@ public class SysUserDO {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @TableField(fill = FieldFill.INSERT)
+    // ⚠️ 必须显式使用 @TableField 注解指定数据库字段名
+    // 不要依赖 MyBatis-Plus 的自动填充功能
+    @TableField("create_time")
     private LocalDateTime createTime;
+
+    @TableField("update_time")
+    private LocalDateTime updateTime;
+
+    @TableField("create_by")
+    private String createBy;
+
+    @TableField("update_by")
+    private String updateBy;
+
+    @TableLogic
+    private Integer deleted;
+}
+```
+
+**重要说明:**
+- ✅ **必须**使用 `@TableField("create_time")` 显式指定数据库字段名
+- ✅ **禁止**依赖 MyBatis-Plus 的驼峰自动映射
+- ✅ **禁止**使用 `@TableField(fill = FieldFill.INSERT)` 自动填充
+- ✅ 所有审计字段(create_time, update_time, create_by, update_by)都必须添加 `@TableField` 注解
+
+**为什么这个规范很重要:**
+- ✅ 确保数据完整性: 避免因数据库配置不同导致的数据不一致
+- ✅ 明确性: 代码中明确知道谁在何时创建/修改了数据
+- ✅ 可追溯性: 审计字段准确反映操作人和操作时间
+- ✅ 避免空值错误: 防止 `Column 'create_time' cannot be null` 等错误
+
+**获取当前用户工具方法:**
+```java
+private String getCurrentUsername() {
+    // 从 Spring Security 上下文获取当前登录用户
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && authentication.isAuthenticated()) {
+        return authentication.getName();
+    }
+    return "system";  // 默认值
+}
+```
+
+#### 6.3 实体类注解
+除了时间戳字段外的其他注解规范:
+```java
+@Data
+@TableName("sys_user")
+public class SysUserDO {
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
 
     @TableLogic
     private Integer deleted;

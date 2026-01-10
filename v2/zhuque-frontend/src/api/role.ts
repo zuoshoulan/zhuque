@@ -41,6 +41,13 @@ export const getRolePage = (params: RoleQuery) => {
 }
 
 /**
+ * 获取角色列表（不分页）
+ */
+export const getRoleList = () => {
+  return request.get<any, RoleInfo[]>('/api/role/list')
+}
+
+/**
  * 根据ID查询角色
  */
 export const getRoleById = (id: number) => {

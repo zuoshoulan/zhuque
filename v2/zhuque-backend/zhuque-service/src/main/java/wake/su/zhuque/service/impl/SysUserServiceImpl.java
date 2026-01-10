@@ -6,20 +6,28 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import wake.su.zhuque.common.security.util.PasswordGenerator;
 import wake.su.zhuque.common.security.util.PasswordUtil;
+import wake.su.zhuque.dao.mapper.SysRoleMapper;
 import wake.su.zhuque.dao.mapper.SysUserMapper;
+import wake.su.zhuque.dao.mapper.SysUserRoleMapper;
 import wake.su.zhuque.model.dto.PageResult;
 import wake.su.zhuque.model.dto.ResetPasswordResponse;
 import wake.su.zhuque.model.dto.UserQueryRequest;
 import wake.su.zhuque.model.dto.UserUpdateRequest;
+import wake.su.zhuque.model.entity.SysRoleDO;
+import wake.su.zhuque.model.entity.SysUserRoleDO;
 import wake.su.zhuque.model.entity.SysUserDO;
 import wake.su.zhuque.model.enums.ThemePreferenceEnum;
+import wake.su.zhuque.model.vo.RoleVO;
 import wake.su.zhuque.service.SysUserService;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 系统用户服务实现
@@ -30,6 +38,12 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Resource
     private SysUserMapper sysUserMapper;
+
+    @Resource
+    private SysRoleMapper sysRoleMapper;
+
+    @Resource
+    private SysUserRoleMapper sysUserRoleMapper;
 
     @Override
     public SysUserDO getById(Long userId) {
@@ -287,5 +301,86 @@ public class SysUserServiceImpl implements SysUserService {
             log.warn("获取当前登录用户失败: {}", e.getMessage());
         }
         return "system";
+    }
+
+    @Override
+    public List<RoleVO> getUserRoles(Long userId) {
+        // 查询用户的角色ID列表
+        List<SysUserRoleDO> userRoles = sysUserRoleMapper.selectList(
+            new LambdaQueryWrapper<SysUserRoleDO>()
+                .eq(SysUserRoleDO::getUserId, userId)
+        );
+
+        if (userRoles.isEmpty()) {
+            return List.of();
+        }
+
+        // 获取角色ID列表
+        List<Long> roleIds = userRoles.stream()
+            .map(SysUserRoleDO::getRoleId)
+            .collect(Collectors.toList());
+
+        // 查询角色详情
+        List<SysRoleDO> roles = sysRoleMapper.selectBatchIds(roleIds);
+
+        // 转换为VO
+        return roles.stream()
+            .filter(role -> role.getStatus() == 1) // 只返回启用的角色
+            .map(role -> {
+                RoleVO vo = new RoleVO();
+                vo.setId(role.getId());
+                vo.setRoleCode(role.getRoleCode());
+                vo.setRoleName(role.getRoleName());
+                vo.setDescription(role.getDescription());
+                vo.setStatus(role.getStatus());
+                vo.setCreateTime(role.getCreateTime());
+                vo.setUpdateTime(role.getUpdateTime());
+                return vo;
+            })
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean assignRoles(Long userId, List<Long> roleIds) {
+        // 验证用户是否存在
+        SysUserDO user = sysUserMapper.selectById(userId);
+        if (user == null) {
+            throw new RuntimeException("用户不存在");
+        }
+
+        // 删除用户的所有角色
+        sysUserRoleMapper.delete(
+            new LambdaQueryWrapper<SysUserRoleDO>()
+                .eq(SysUserRoleDO::getUserId, userId)
+        );
+
+        // 分配新角色
+        if (roleIds != null && !roleIds.isEmpty()) {
+            // 验证角色是否存在
+            List<SysRoleDO> roles = sysRoleMapper.selectBatchIds(roleIds);
+            if (roles.size() != roleIds.size()) {
+                throw new RuntimeException("部分角色不存在");
+            }
+
+            // 插入用户角色关联
+            String currentUser = getCurrentUsername();
+            LocalDateTime now = LocalDateTime.now();
+            List<SysUserRoleDO> userRoleList = roleIds.stream()
+                .map(roleId -> {
+                    SysUserRoleDO userRole = new SysUserRoleDO();
+                    userRole.setUserId(userId);
+                    userRole.setRoleId(roleId);
+                    userRole.setCreateTime(now);  // 必须显式设置创建时间
+                    userRole.setCreateBy(currentUser);  // 必须显式设置创建人
+                    return userRole;
+                })
+                .collect(Collectors.toList());
+
+            userRoleList.forEach(sysUserRoleMapper::insert);
+        }
+
+        log.info("为用户分配角色成功: userId={}, roleIds={}, operator={}", userId, roleIds, getCurrentUsername());
+        return true;
     }
 }

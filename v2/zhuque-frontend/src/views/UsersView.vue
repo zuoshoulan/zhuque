@@ -59,9 +59,12 @@
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column label="操作" width="280" align="center" fixed="right">
+        <el-table-column label="操作" width="350" align="center" fixed="right">
           <template #default="{ row }">
             <el-button size="small" :icon="Edit" @click="handleEdit(row)">编辑</el-button>
+            <el-button size="small" type="primary" :icon="User" @click="handleRole(row)">
+              角色
+            </el-button>
             <el-button size="small" type="warning" :icon="RefreshRight" @click="handleResetPassword(row)">重置密码</el-button>
             <el-button size="small" type="danger" :icon="Delete" @click="handleDelete(row)">
               删除
@@ -129,15 +132,54 @@
         <el-button type="primary" :loading="submitLoading" @click="handleSubmit">确定</el-button>
       </template>
     </el-dialog>
+
+    <!-- 角色分配对话框 -->
+    <el-dialog
+      v-model="roleDialogVisible"
+      title="角色分配"
+      width="500px"
+      :close-on-click-modal="false"
+    >
+      <el-form label-width="80px">
+        <el-form-item label="用户名">
+          <span>{{ currentUser?.username }}</span>
+        </el-form-item>
+        <el-form-item label="昵称">
+          <span>{{ currentUser?.nickname }}</span>
+        </el-form-item>
+        <el-form-item label="角色">
+          <el-select
+            v-model="selectedRoleIds"
+            multiple
+            placeholder="请选择角色"
+            style="width: 100%"
+          >
+            <el-option
+              v-for="role in allRoles"
+              :key="role.id"
+              :label="role.roleName"
+              :value="role.id"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="roleDialogVisible = false">取消</el-button>
+        <el-button type="primary" :loading="roleSubmitLoading" @click="handleRoleSubmit">
+          确定
+        </el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox, FormInstance, FormRules } from 'element-plus'
-import { Plus, Search, Refresh, Edit, Delete, RefreshRight } from '@element-plus/icons-vue'
-import { getUserPage, createUser, updateUser, deleteUser, updateUserStatus, resetUserPassword } from '@/api/user'
-import type { UserInfo, ResetPasswordResponse } from '@/api/user'
+import { Plus, Search, Refresh, Edit, Delete, User, RefreshRight } from '@element-plus/icons-vue'
+import { getUserPage, createUser, updateUser, deleteUser, updateUserStatus, resetUserPassword, getUserRoles, assignUserRoles } from '@/api/user'
+import { getRoleList } from '@/api/role'
+import type { UserInfo, ResetPasswordResponse, RoleInfo } from '@/api/user'
 
 // 查询参数
 const queryParams = reactive({
@@ -156,6 +198,13 @@ const loading = ref(false)
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const submitLoading = ref(false)
+
+// 角色对话框
+const roleDialogVisible = ref(false)
+const roleSubmitLoading = ref(false)
+const currentUser = ref<UserInfo | null>(null)
+const allRoles = ref<RoleInfo[]>([])
+const selectedRoleIds = ref<number[]>([])
 
 // 表单数据
 const formData = reactive<Partial<UserInfo>>({
@@ -262,6 +311,42 @@ const handleSubmit = async () => {
     }
   } finally {
     submitLoading.value = false
+  }
+}
+
+// 分配角色
+const handleRole = async (row: UserInfo) => {
+  currentUser.value = row
+  roleDialogVisible.value = true
+
+  try {
+    // 加载所有角色列表
+    const roles = await getRoleList()
+    allRoles.value = roles
+
+    // 加载用户的角色
+    const userRoles = await getUserRoles(row.id)
+    selectedRoleIds.value = userRoles.map((r) => r.id)
+  } catch (error) {
+    console.error('加载角色数据失败:', error)
+    ElMessage.error('加载角色数据失败')
+  }
+}
+
+// 提交角色分配
+const handleRoleSubmit = async () => {
+  if (!currentUser.value) return
+
+  try {
+    roleSubmitLoading.value = true
+    await assignUserRoles(currentUser.value.id, selectedRoleIds.value)
+    ElMessage.success('角色分配成功')
+    roleDialogVisible.value = false
+  } catch (error) {
+    console.error('角色分配失败:', error)
+    ElMessage.error('角色分配失败')
+  } finally {
+    roleSubmitLoading.value = false
   }
 }
 

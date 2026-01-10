@@ -14,7 +14,11 @@ import wake.su.zhuque.model.dto.ResetPasswordResponse;
 import wake.su.zhuque.model.dto.UserQueryRequest;
 import wake.su.zhuque.model.dto.UserUpdateRequest;
 import wake.su.zhuque.model.entity.SysUserDO;
+import wake.su.zhuque.model.vo.RoleVO;
 import wake.su.zhuque.service.SysUserService;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 用户管理控制器
@@ -158,5 +162,35 @@ public class UserController {
             log.error("重置密码失败: {}", e.getMessage());
             return Result.error(e.getMessage());
         }
+    }
+
+    /**
+     * 获取用户的角色列表
+     *
+     * @param userId 用户ID
+     * @return 角色列表
+     */
+    @Operation(summary = "获取用户的角色列表", description = "获取指定用户拥有的所有角色")
+    @GetMapping("/{userId}/roles")
+    public Result<List<RoleVO>> getUserRoles(@PathVariable("userId") Long userId) {
+        List<RoleVO> roles = sysUserService.getUserRoles(userId);
+        return Result.success(roles);
+    }
+
+    /**
+     * 为用户分配角色
+     *
+     * @param userId 用户ID
+     * @param request 包含角色ID列表的请求
+     * @return 是否成功
+     */
+    @Operation(summary = "为用户分配角色", description = "为用户分配多个角色，会覆盖用户原有的所有角色")
+    @PostMapping("/{userId}/roles")
+    public Result<Void> assignRoles(
+            @PathVariable("userId") Long userId,
+            @RequestBody Map<String, List<Long>> request) {
+        List<Long> roleIds = request.get("roleIds");
+        boolean success = sysUserService.assignRoles(userId, roleIds);
+        return success ? Result.success() : Result.error("分配角色失败");
     }
 }
