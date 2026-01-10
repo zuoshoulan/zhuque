@@ -3,6 +3,8 @@
 > **开发顺序**: 从底向上，先基础后业务
 > **数据库**: MySQL 8.0
 > **最后更新**: 2025-01-07
+>
+> **📖 详细实现文档**: 参见 [design/permission-guide.md](design/permission-guide.md) - 三层权限架构完整技术文档
 
 ---
 
