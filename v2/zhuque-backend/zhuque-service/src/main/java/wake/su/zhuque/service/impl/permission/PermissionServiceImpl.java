@@ -15,6 +15,8 @@ import wake.su.zhuque.model.entity.SysRolePermissionDO;
 import wake.su.zhuque.model.entity.SysUserRoleDO;
 import wake.su.zhuque.model.vo.PermissionVO;
 import wake.su.zhuque.service.api.PermissionService;
+import wake.su.zhuque.common.config.SuperAdminConfig;
+import wake.su.zhuque.common.core.exception.BusinessException;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -38,7 +40,9 @@ public class PermissionServiceImpl implements PermissionService {
     private final SysPermissionMapper permissionMapper;
     private final SysUserRoleMapper userRoleMapper;
     private final SysRolePermissionMapper rolePermissionMapper;
+    private final SysRoleMapper roleMapper;
     private final PermissionCacheService permissionCacheService;
+    private final SuperAdminConfig superAdminConfig;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -99,6 +103,30 @@ public class PermissionServiceImpl implements PermissionService {
         );
         if (childCount > 0) {
             throw new RuntimeException("存在子权限，无法删除");
+        }
+
+        // 检查是否有超级管理员的角色拥有该权限
+        if (superAdminConfig.isEnabled()) {
+            List<Long> superAdminIds = superAdminConfig.getUserIds();
+            if (superAdminIds != null && !superAdminIds.isEmpty()) {
+                // 查询超级管理员的角色ID列表
+                List<Long> roleIds = userRoleMapper.selectList(
+                    new LambdaQueryWrapper<SysUserRoleDO>()
+                        .in(SysUserRoleDO::getUserId, superAdminIds)
+                ).stream().map(SysUserRoleDO::getRoleId).collect(Collectors.toList());
+
+                if (!roleIds.isEmpty()) {
+                    // 查询这些角色是否拥有该权限
+                    Long count = rolePermissionMapper.selectCount(
+                        new LambdaQueryWrapper<SysRolePermissionDO>()
+                            .in(SysRolePermissionDO::getRoleId, roleIds)
+                            .eq(SysRolePermissionDO::getPermissionId, id)
+                    );
+                    if (count != null && count > 0) {
+                        throw new BusinessException("该权限已分配给超级管理员的角色，禁止删除");
+                    }
+                }
+            }
         }
 
         permissionMapper.deleteById(id);

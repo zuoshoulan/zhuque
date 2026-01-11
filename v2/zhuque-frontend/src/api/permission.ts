@@ -31,6 +31,7 @@ export interface CreatePermissionRequest {
   method?: string
   icon?: string
   sortOrder?: number
+  status: number
 }
 
 /**
@@ -76,13 +77,15 @@ export const deletePermission = (id: number) => {
 }
 
 /**
- * 权限类型枚举
+ * 权限类型常量
  */
-export enum PermissionType {
-  ROUTE = 1, // 路由
-  BUTTON = 2, // 按钮
-  API = 3 // 接口
-}
+export const PermissionType = {
+  ROUTE: 1, // 路由
+  BUTTON: 2, // 按钮
+  API: 3 // 接口
+} as const
+
+export type PermissionType = typeof PermissionType[keyof typeof PermissionType]
 
 /**
  * 权限类型映射

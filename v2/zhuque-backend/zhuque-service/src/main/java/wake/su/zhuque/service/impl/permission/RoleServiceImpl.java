@@ -9,16 +9,21 @@ import org.springframework.transaction.annotation.Transactional;
 import wake.su.zhuque.dao.mapper.SysPermissionMapper;
 import wake.su.zhuque.dao.mapper.SysRoleMapper;
 import wake.su.zhuque.dao.mapper.SysRolePermissionMapper;
+import wake.su.zhuque.dao.mapper.SysUserRoleMapper;
 import wake.su.zhuque.model.dto.AssignPermissionsRequest;
 import wake.su.zhuque.model.dto.PageResult;
 import wake.su.zhuque.model.dto.RoleCreateRequest;
 import wake.su.zhuque.model.entity.SysPermissionDO;
 import wake.su.zhuque.model.entity.SysRoleDO;
 import wake.su.zhuque.model.entity.SysRolePermissionDO;
+import wake.su.zhuque.model.entity.SysUserRoleDO;
 import wake.su.zhuque.model.query.RolePageQuery;
 import wake.su.zhuque.model.vo.PermissionVO;
 import wake.su.zhuque.model.vo.RoleVO;
 import wake.su.zhuque.service.api.RoleService;
+import wake.su.zhuque.common.config.SuperAdminConfig;
+import wake.su.zhuque.common.core.exception.BusinessException;
+import wake.su.zhuque.common.security.SuperAdminHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -42,6 +47,8 @@ public class RoleServiceImpl implements RoleService {
     private final SysRoleMapper roleMapper;
     private final SysPermissionMapper permissionMapper;
     private final SysRolePermissionMapper rolePermissionMapper;
+    private final SysUserRoleMapper userRoleMapper;
+    private final SuperAdminConfig superAdminConfig;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -95,6 +102,22 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteRole(Long id) {
+        // 检查是否有超级管理员关联该角色
+        if (superAdminConfig.isEnabled()) {
+            List<Long> superAdminIds = superAdminConfig.getUserIds();
+            if (superAdminIds != null && !superAdminIds.isEmpty()) {
+                // 查询超级管理员是否拥有该角色
+                Long count = userRoleMapper.selectCount(
+                    new LambdaQueryWrapper<SysUserRoleDO>()
+                        .in(SysUserRoleDO::getUserId, superAdminIds)
+                        .eq(SysUserRoleDO::getRoleId, id)
+                );
+                if (count != null && count > 0) {
+                    throw new BusinessException("该角色已分配给超级管理员，禁止删除");
+                }
+            }
+        }
+
         // 检查是否有用户关联该角色
         // TODO: 实现用户角色关联检查
 
