@@ -12,7 +12,7 @@ public class BusinessException extends RuntimeException {
 
     public BusinessException(String message) {
         super(message);
-        this.code = 500;
+        this.code = 400;  // 业务异常使用 400，避免前端认为是服务器错误
     }
 
     public BusinessException(Integer code, String message) {
@@ -22,7 +22,7 @@ public class BusinessException extends RuntimeException {
 
     public BusinessException(String message, Throwable cause) {
         super(message, cause);
-        this.code = 500;
+        this.code = 400;
     }
 
 }

@@ -5,6 +5,7 @@
 - [二、权限设计理念](#二权限设计理念)
 - [三、数据库设计](#三数据库设计)
 - [四、后端实现](#四后端实现)
+- [四点五、超级管理员机制](#四点五超级管理员机制)
 - [五、前端实现](#五前端实现)
 - [六、权限配置策略](#六权限配置策略)
 - [七、实际应用场景](#七实际应用场景)
@@ -629,6 +630,384 @@ public class AdvertiserController {
     }
 }
 ```
+
+---
+
+## 四点五、超级管理员机制
+
+### 4.5.1 设计理念
+
+超级管理员是系统中的最高权限账号，具有以下特性：
+
+1. **不依赖数据库权限配置** - 通过配置文件指定用户ID列表，即使权限表被清空仍可访问
+2. **自动拥有所有权限** - 绕过所有权限校验，包括菜单、按钮、API三层权限
+3. **账号保护机制** - 禁止删除、禁用、分配角色等操作
+4. **灵活配置** - 支持配置多个超级管理员，可动态启用/禁用
+
+### 4.5.2 配置方式
+
+#### application.yml 配置
+
+```yaml
+# 超级管理员配置
+super-admin:
+  # 是否启用超级管理员保护
+  enabled: true
+  # 超级管理员的用户ID列表
+  # 注意：这些用户ID必须在数据库中存在
+  user-ids:
+    - 1  # admin用户（默认超级管理员）
+    - 2  # 系统维护账号
+    - 3  # 应急响应账号
+```
+
+#### 配置说明
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `enabled` | Boolean | 是 | 是否启用超级管理员保护功能 |
+| `user-ids` | List&lt;Long&gt; | 是 | 超级管理员的用户ID列表 |
+
+**重要提示：**
+- 配置的用户ID必须在数据库 `sys_user` 表中存在
+- 超级管理员仍然使用数据库中的用户名和密码登录
+- 配置文件只是指定哪些用户需要特殊保护
+
+### 4.5.3 核心实现
+
+#### SuperAdminConfig 配置类
+
+```java
+@Data
+@Component
+@ConfigurationProperties(prefix = "super-admin")
+public class SuperAdminConfig {
+
+    /**
+     * 是否启用超级管理员保护
+     */
+    private boolean enabled = true;
+
+    /**
+     * 超级管理员的用户ID列表
+     */
+    private List<Long> userIds = new ArrayList<>();
+
+    /**
+     * 判断是否为超级管理员
+     */
+    public boolean isSuperAdmin(Long userId) {
+        if (!enabled || userId == null) {
+            return false;
+        }
+        return userIds.contains(userId);
+    }
+
+    /**
+     * 判断列表中是否包含超级管理员
+     */
+    public boolean isAnySuperAdmin(List<Long> userIds) {
+        if (!enabled || userIds == null || userIds.isEmpty()) {
+            return false;
+        }
+        return userIds.stream().anyMatch(this.userIds::contains);
+    }
+}
+```
+
+#### SuperAdminHolder 工具类
+
+```java
+@Slf4j
+public class SuperAdminHolder {
+
+    /**
+     * 判断是否为超级管理员
+     */
+    public static boolean isSuperAdmin(Long userId, SuperAdminConfig config) {
+        if (userId == null || config == null) {
+            return false;
+        }
+        return config.isSuperAdmin(userId);
+    }
+
+    /**
+     * 超级管理员自动拥有所有权限
+     */
+    public static boolean hasPermissions(Long userId,
+                                        SuperAdminConfig config,
+                                        Set<String> requiredPermissions,
+                                        boolean logical) {
+        // 超级管理员自动拥有所有权限
+        return isSuperAdmin(userId, config);
+    }
+
+    /**
+     * 检查是否可以删除（禁止删除超级管理员）
+     */
+    public static void checkNotSuperAdmin(Long userId, SuperAdminConfig config) {
+        if (isSuperAdmin(userId, config)) {
+            throw new BusinessException("超级管理员账号受保护，禁止删除或禁用");
+        }
+    }
+
+    /**
+     * 批量检查是否包含超级管理员
+     */
+    public static void checkNotSuperAdmin(List<Long> userIds, SuperAdminConfig config) {
+        if (config.isAnySuperAdmin(userIds)) {
+            throw new BusinessException("超级管理员账号受保护，禁止删除或禁用");
+        }
+    }
+}
+```
+
+### 4.5.4 权限校验集成
+
+#### PermissionValidatorImpl 权限校验
+
+```java
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class PermissionValidatorImpl implements PermissionValidator {
+
+    private final PermissionService permissionService;
+    private final SuperAdminConfig superAdminConfig;
+
+    @Override
+    public boolean hasPermissions(Long userId, List<String> permissionCodes, boolean requireAll) {
+        if (userId == null || permissionCodes == null || permissionCodes.isEmpty()) {
+            return false;
+        }
+
+        // ⭐ 检查是否为超级管理员
+        if (SuperAdminHolder.isSuperAdmin(userId, superAdminConfig)) {
+            log.debug("[超级管理员] 权限验证通过: userId={}", userId);
+            return true;  // 超级管理员自动拥有所有权限
+        }
+
+        // 普通用户走正常的权限校验流程
+        return permissionService.hasPermissions(userId, permissionCodes, requireAll);
+    }
+}
+```
+
+### 4.5.5 用户服务保护
+
+#### SysUserServiceImpl 用户服务
+
+```java
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class SysUserServiceImpl implements SysUserService {
+
+    private final SysUserMapper sysUserMapper;
+    private final SuperAdminConfig superAdminConfig;
+
+    /**
+     * 删除用户
+     */
+    @Override
+    public boolean removeById(Long userId) {
+        log.info("删除用户: userId={}", userId);
+
+        // ⭐ 检查是否为超级管理员
+        SuperAdminHolder.checkNotSuperAdmin(userId, superAdminConfig);
+
+        return sysUserMapper.deleteById(userId) > 0;
+    }
+
+    /**
+     * 更新用户状态
+     */
+    @Override
+    public boolean updateStatus(Long userId, Integer status) {
+        log.info("更新用户状态: userId={}, status={}", userId, status);
+
+        // ⭐ 禁止禁用超级管理员
+        if (status == 0) {
+            SuperAdminHolder.checkNotSuperAdmin(userId, superAdminConfig);
+        }
+
+        SysUserDO user = new SysUserDO();
+        user.setId(userId);
+        user.setStatus(status);
+        return sysUserMapper.updateById(user) > 0;
+    }
+
+    /**
+     * 为用户分配角色
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean assignRoles(Long userId, List<Long> roleIds) {
+        // ⭐ 禁止为超级管理员分配角色
+        if (SuperAdminHolder.isSuperAdmin(userId, superAdminConfig)) {
+            throw new BusinessException("超级管理员自动拥有所有权限，无需分配角色");
+        }
+
+        // ... 正常的角色分配逻辑
+    }
+}
+```
+
+### 4.5.6 异常处理
+
+#### BusinessException 业务异常
+
+```java
+@Getter
+public class BusinessException extends RuntimeException {
+
+    private Integer code;
+
+    public BusinessException(String message) {
+        super(message);
+        this.code = 400;  // 业务异常使用 400，避免前端认为是服务器错误
+    }
+}
+```
+
+#### GlobalExceptionHandler 全局异常处理
+
+```java
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    /**
+     * 业务异常
+     */
+    @ExceptionHandler(BusinessException.class)
+    public Result<Void> handleBusinessException(BusinessException e) {
+        log.error("业务异常：{}", e.getMessage());
+        return Result.error(e.getCode(), e.getMessage());
+    }
+}
+```
+
+### 4.5.7 前端错误处理
+
+#### UsersView.vue 角色分配
+
+```typescript
+// 提交角色分配
+const handleRoleSubmit = async () => {
+  if (!currentUser.value) return
+
+  try {
+    roleSubmitLoading.value = true
+    await assignUserRoles(currentUser.value.id, selectedRoleIds.value)
+    ElMessage.success('角色分配成功')
+    roleDialogVisible.value = false
+  } catch (error) {
+    // ⭐ 错误消息已在 request.ts 的响应拦截器中显示，这里不需要重复显示
+    console.error('角色分配失败:', error)
+  } finally {
+    roleSubmitLoading.value = false
+  }
+}
+```
+
+#### request.ts 响应拦截器
+
+```typescript
+// 响应拦截器
+request.interceptors.response.use(
+  (response) => {
+    const res = response.data
+
+    // 如果返回的状态码为200，说明接口请求成功
+    if (res.code === 200) {
+      return res.data
+    } else {
+      // ⭐ 显示后端返回的错误消息
+      ElMessage.error(res.message || '请求失败')
+      return Promise.reject(new Error(res.message || '请求失败'))
+    }
+  },
+  (error) => {
+    // ... 其他错误处理
+  }
+)
+```
+
+### 4.5.8 使用场景
+
+#### 场景1：单一超级管理员
+
+```yaml
+super-admin:
+  enabled: true
+  user-ids:
+    - 1  # 只有 admin 用户是超级管理员
+```
+
+**效果：**
+- 用户ID=1 自动拥有所有权限
+- 禁止删除、禁用用户ID=1
+- 禁止为用户ID=1分配角色
+
+#### 场景2：多超级管理员
+
+```yaml
+super-admin:
+  enabled: true
+  user-ids:
+    - 1  # 主管理员
+    - 2  # 系统维护账号
+    - 3  # 应急响应账号
+```
+
+**效果：**
+- 三个用户ID都自动拥有所有权限
+- 都受保护，不能被删除或禁用
+- 适用于需要多人管理紧急情况的场景
+
+#### 场景3：临时关闭保护
+
+```yaml
+super-admin:
+  enabled: false  # 关闭超级管理员保护
+```
+
+**效果：**
+- 所有保护机制失效
+- 超级管理员可以被删除、禁用
+- 不推荐在生产环境使用
+
+### 4.5.9 安全建议
+
+1. **最小化超级管理员数量** - 只配置必要的超级管理员账号
+2. **定期审计** - 定期检查超级管理员配置是否合理
+3. **监控日志** - 监控超级管理员的操作日志
+4. **密码强度** - 超级管理员账号使用强密码
+5. **避免共享** - 避免多人共享同一个超级管理员账号
+
+### 4.5.10 常见问题
+
+#### Q1: 超级管理员配置后，还需要在数据库中配置权限吗？
+
+**A:** 不需要。超级管理员自动拥有所有权限，无需在数据库中配置任何角色或权限。但建议仍然保留基本的角色配置，以防关闭超级管理员保护后无法登录。
+
+#### Q2: 超级管理员可以删除普通用户吗？
+
+**A:** 可以。超级管理员拥有所有权限，包括删除普通用户。
+
+#### Q3: 如何临时禁用超级管理员保护？
+
+**A:** 在 `application.yml` 中设置 `super-admin.enabled: false` 即可。
+
+#### Q4: 超级管理员忘记密码怎么办？
+
+**A:** 超级管理员的密码存储在数据库中，可以通过其他有权限的用户重置密码，或者直接修改数据库。
+
+#### Q5: 生产环境建议配置几个超级管理员？
+
+**A:** 建议配置 1-2 个：
+- 1 个主管理员账号（日常使用）
+- 1 个应急账号（紧急情况使用，平时不启用）
 
 ---
 

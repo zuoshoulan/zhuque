@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import wake.su.zhuque.common.config.SuperAdminConfig;
+import wake.su.zhuque.common.core.exception.BusinessException;
+import wake.su.zhuque.common.security.SuperAdminHolder;
 import wake.su.zhuque.common.security.util.PasswordGenerator;
 import wake.su.zhuque.common.security.util.PasswordUtil;
 import wake.su.zhuque.dao.mapper.SysRoleMapper;
@@ -40,6 +43,7 @@ public class SysUserServiceImpl implements SysUserService {
     private final SysUserMapper sysUserMapper;
     private final SysRoleMapper sysRoleMapper;
     private final SysUserRoleMapper sysUserRoleMapper;
+    private final SuperAdminConfig superAdminConfig;
 
     @Override
     public SysUserDO getById(Long userId) {
@@ -62,6 +66,10 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public boolean removeById(Long userId) {
         log.info("删除用户: userId={}", userId);
+
+        // 检查是否为超级管理员
+        SuperAdminHolder.checkNotSuperAdmin(userId, superAdminConfig);
+
         return sysUserMapper.deleteById(userId) > 0;
     }
 
@@ -206,6 +214,11 @@ public class SysUserServiceImpl implements SysUserService {
     public boolean updateStatus(Long userId, Integer status) {
         log.info("更新用户状态: userId={}, status={}", userId, status);
 
+        // 禁止禁用超级管理员
+        if (status == 0) {
+            SuperAdminHolder.checkNotSuperAdmin(userId, superAdminConfig);
+        }
+
         SysUserDO user = new SysUserDO();
         user.setId(userId);
         user.setStatus(status);
@@ -345,6 +358,11 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean assignRoles(Long userId, List<Long> roleIds) {
+        // 禁止为超级管理员分配角色
+        if (SuperAdminHolder.isSuperAdmin(userId, superAdminConfig)) {
+            throw new BusinessException("超级管理员自动拥有所有权限，无需分配角色");
+        }
+
         // 验证用户是否存在
         SysUserDO user = sysUserMapper.selectById(userId);
         if (user == null) {

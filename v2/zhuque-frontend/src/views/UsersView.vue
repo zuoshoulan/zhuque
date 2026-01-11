@@ -343,8 +343,8 @@ const handleRoleSubmit = async () => {
     ElMessage.success('角色分配成功')
     roleDialogVisible.value = false
   } catch (error) {
+    // 错误消息已在 request.ts 的响应拦截器中显示，这里不需要重复显示
     console.error('角色分配失败:', error)
-    ElMessage.error('角色分配失败')
   } finally {
     roleSubmitLoading.value = false
   }
