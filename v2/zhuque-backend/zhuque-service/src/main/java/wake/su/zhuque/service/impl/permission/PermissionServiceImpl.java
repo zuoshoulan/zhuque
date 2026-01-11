@@ -258,6 +258,19 @@ public class PermissionServiceImpl implements PermissionService {
         }
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateStatus(Long id, Integer status) {
+        SysPermissionDO permission = new SysPermissionDO();
+        permission.setId(id);
+        permission.setStatus(status);
+        permission.setUpdateBy(getCurrentUsername());
+        permission.setUpdateTime(LocalDateTime.now());
+
+        permissionMapper.updateById(permission);
+        log.info("修改权限状态成功：permissionId={}, status={}", id, status);
+    }
+
     /**
      * 构建树形结构
      */

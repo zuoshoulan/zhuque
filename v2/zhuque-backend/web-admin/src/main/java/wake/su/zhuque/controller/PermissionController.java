@@ -128,4 +128,23 @@ public class PermissionController {
         List<PermissionVO> list = permissionService.getPermissionList();
         return Result.success(list);
     }
+
+    /**
+     * 更新权限状态
+     */
+    @Operation(
+        summary = "更新权限状态",
+        description = "启用或禁用权限"
+    )
+    @ApiResponse(responseCode = "200", description = "更新成功")
+    @ApiResponse(responseCode = "404", description = "权限不存在")
+    @PutMapping("/{id}/status")
+    public Result<Void> updateStatus(
+            @Parameter(description = "权限ID", required = true, example = "1")
+            @PathVariable Long id,
+            @Parameter(description = "状态：0-禁用，1-启用", required = true, example = "1")
+            @RequestParam Integer status) {
+        permissionService.updateStatus(id, status);
+        return Result.success();
+    }
 }

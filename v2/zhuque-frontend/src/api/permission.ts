@@ -77,6 +77,13 @@ export const deletePermission = (id: number) => {
 }
 
 /**
+ * 更新权限状态
+ */
+export const updatePermissionStatus = (id: number, status: number) => {
+  return request.put<any, void>(`/api/permissions/${id}/status?status=${status}`)
+}
+
+/**
  * 权限类型常量
  */
 export const PermissionType = {

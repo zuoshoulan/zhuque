@@ -84,4 +84,12 @@ public interface PermissionService {
      * @return 是否拥有权限
      */
     boolean hasPermissions(Long userId, List<String> permissionCodes, boolean requireAll);
+
+    /**
+     * 更新权限状态
+     *
+     * @param id 权限ID
+     * @param status 状态：0-禁用 1-启用
+     */
+    void updateStatus(Long id, Integer status);
 }

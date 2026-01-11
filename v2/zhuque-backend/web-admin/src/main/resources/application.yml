@@ -46,8 +46,8 @@ super-admin:
   # 注意：这些用户ID必须在数据库中存在
   user-ids:
     - 3  # admin用户（默认超级管理员）
-    - 5
-    - 6
+    # - 5
+    # - 6
 
 # Security 配置
 security:

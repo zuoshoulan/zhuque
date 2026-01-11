@@ -187,6 +187,7 @@ import {
   createPermission,
   updatePermission,
   deletePermission,
+  updatePermissionStatus,
   type PermissionInfo,
   type CreatePermissionRequest,
   PermissionTypeMap,
@@ -388,10 +389,7 @@ const handleDelete = async (row: PermissionInfo) => {
 // 修改状态
 const handleStatusChange = async (row: PermissionInfo) => {
   try {
-    await updatePermission(row.id, {
-      ...row,
-      status: row.status
-    })
+    await updatePermissionStatus(row.id, row.status)
     ElMessage.success('状态更新成功')
   } catch (error) {
     // 更新失败，恢复原状态

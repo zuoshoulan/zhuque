@@ -66,4 +66,10 @@ public class PermissionCreateRequest {
      */
     @Schema(description = "排序号，数字越小越靠前", example = "1")
     private Integer sortOrder;
+
+    /**
+     * 状态：0-禁用 1-启用
+     */
+    @Schema(description = "状态：0-禁用，1-启用", example = "1")
+    private Integer status;
 }
