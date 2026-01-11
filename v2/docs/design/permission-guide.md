@@ -633,9 +633,9 @@ public class AdvertiserController {
 
 ---
 
-## 四点五、超级管理员机制
+## 五、超级管理员机制
 
-### 4.5.1 设计理念
+### 11.1 设计理念
 
 超级管理员是系统中的最高权限账号，具有以下特性：
 
@@ -644,7 +644,7 @@ public class AdvertiserController {
 3. **账号保护机制** - 禁止删除、禁用、分配角色等操作
 4. **灵活配置** - 支持配置多个超级管理员，可动态启用/禁用
 
-### 4.5.2 配置方式
+### 11.2 配置方式
 
 #### application.yml 配置
 
@@ -673,7 +673,7 @@ super-admin:
 - 超级管理员仍然使用数据库中的用户名和密码登录
 - 配置文件只是指定哪些用户需要特殊保护
 
-### 4.5.3 核心实现
+### 11.3 核心实现
 
 #### SuperAdminConfig 配置类
 
@@ -762,7 +762,7 @@ public class SuperAdminHolder {
 }
 ```
 
-### 4.5.4 权限校验集成
+### 11.4 权限校验集成
 
 #### PermissionValidatorImpl 权限校验
 
@@ -793,7 +793,7 @@ public class PermissionValidatorImpl implements PermissionValidator {
 }
 ```
 
-### 4.5.5 用户服务保护
+### 11.5 用户服务保护
 
 #### SysUserServiceImpl 用户服务
 
@@ -853,7 +853,7 @@ public class SysUserServiceImpl implements SysUserService {
 }
 ```
 
-### 4.5.6 异常处理
+### 11.6 异常处理
 
 #### BusinessException 业务异常
 
@@ -887,7 +887,7 @@ public class GlobalExceptionHandler {
 }
 ```
 
-### 4.5.7 前端错误处理
+### 11.7 前端错误处理
 
 #### UsersView.vue 角色分配
 
@@ -933,7 +933,7 @@ request.interceptors.response.use(
 )
 ```
 
-### 4.5.8 使用场景
+### 11.8 使用场景
 
 #### 场景1：单一超级管理员
 
@@ -977,7 +977,7 @@ super-admin:
 - 超级管理员可以被删除、禁用
 - 不推荐在生产环境使用
 
-### 4.5.9 安全建议
+### 11.9 安全建议
 
 1. **最小化超级管理员数量** - 只配置必要的超级管理员账号
 2. **定期审计** - 定期检查超级管理员配置是否合理
@@ -985,7 +985,7 @@ super-admin:
 4. **密码强度** - 超级管理员账号使用强密码
 5. **避免共享** - 避免多人共享同一个超级管理员账号
 
-### 4.5.10 常见问题
+### 11.10 常见问题
 
 #### Q1: 超级管理员配置后，还需要在数据库中配置权限吗？
 
@@ -1011,9 +1011,9 @@ super-admin:
 
 ---
 
-## 五、前端实现
+## 六、前端实现
 
-### 5.1 权限判断工具函数
+### 11.1 权限判断工具函数
 
 ```javascript
 // src/utils/permission.js
@@ -1055,7 +1055,7 @@ export function hasAnyPermission(permissionCodes) {
 }
 ```
 
-### 5.2 Vue组件使用示例
+### 11.2 Vue组件使用示例
 
 ```vue
 <template>
@@ -1187,7 +1187,7 @@ const loadData = async () => {
 </script>
 ```
 
-### 5.3 路由守卫配置
+### 11.3 路由守卫配置
 
 ```javascript
 // src/router/index.js
@@ -1243,7 +1243,7 @@ router.beforeEach((to, from, next) => {
 export default router
 ```
 
-### 5.4 Vuex Store配置
+### 11.4 Vuex Store配置
 
 ```javascript
 // src/store/modules/user.js
@@ -1303,9 +1303,9 @@ export default {
 
 ---
 
-## 六、权限配置策略
+## 七、权限配置策略
 
-### 6.1 角色权限矩阵
+### 11.1 角色权限矩阵
 
 | 角色 | 菜单权限 | 按钮权限 | 接口权限 | 说明 |
 |------|---------|---------|---------|------|
@@ -1315,7 +1315,7 @@ export default {
 | **广告主** | 广告主 | 查看 | 查看 | 只能查看自己的数据 |
 | **试用用户** | 广告主 | 全部 | 无 | 可以看到按钮，但API无权限 |
 
-### 6.2 标准权限配置
+### 11.2 标准权限配置
 
 #### 场景1：完整权限（管理员）
 
@@ -1364,7 +1364,7 @@ INSERT INTO sys_role_permission (role_id, permission_id) VALUES
 -- ❌ 调用任何API时返回"API权限不足，请升级账号"
 ```
 
-### 6.3 特殊权限配置
+### 11.3 特殊权限配置
 
 #### 配置1：按钮可见但API无权限（试用场景）
 
@@ -1425,9 +1425,9 @@ INSERT INTO sys_role_permission (role_id, permission_id) VALUES
 
 ---
 
-## 七、实际应用场景
+## 八、实际应用场景
 
-### 7.1 场景：试用账号转正式账号
+### 11.1 场景：试用账号转正式账号
 
 #### 业务需求
 - 试用账号：能看到所有功能，但调用API时提示升级
@@ -1475,7 +1475,7 @@ try {
 }
 ```
 
-### 7.2 场景：达到使用配额上限
+### 11.2 场景：达到使用配额上限
 
 #### 业务需求
 - 用户创建广告主的数量有上限
@@ -1548,7 +1548,7 @@ public Result<String> createAdvertiser(@RequestBody CreateRequest request) {
 }
 ```
 
-### 7.3 场景：审批流程权限
+### 11.3 场景：审批流程权限
 
 #### 业务需求
 - 普通用户：创建广告主（需要审核）
@@ -1632,9 +1632,9 @@ const isAdmin = computed(() => {
 
 ---
 
-## 八、权限继承机制
+## 九、权限继承机制
 
-### 8.1 菜单权限向上继承（推荐实现）
+### 11.1 菜单权限向上继承（推荐实现）
 
 #### 设计理念
 ```
@@ -1698,7 +1698,7 @@ private Set<String> getParentPermissionCodes(String permissionCode) {
 }
 ```
 
-### 8.2 按钮和接口权限不继承
+### 11.2 按钮和接口权限不继承
 
 #### 设计理念
 ```
@@ -1723,7 +1723,7 @@ private Set<String> getParentPermissionCodes(String permissionCode) {
 ❌ 不能调用"编辑"、"删除"接口（无接口权限）
 ```
 
-### 8.3 继承关系总结
+### 11.3 继承关系总结
 
 | 权限类型 | 是否继承 | 继承方向 | 原因 |
 |---------|---------|---------|------|
@@ -1733,9 +1733,9 @@ private Set<String> getParentPermissionCodes(String permissionCode) {
 
 ---
 
-## 九、性能优化
+## 十、性能优化
 
-### 9.1 Redis缓存策略
+### 11.1 Redis缓存策略
 
 #### 缓存设计
 ```java
@@ -1858,7 +1858,7 @@ public List<String> getUserPermissionCodes(Long userId) {
 }
 ```
 
-### 9.2 缓存更新策略
+### 11.2 缓存更新策略
 
 #### 场景1：角色权限变更时清除缓存
 
@@ -1926,7 +1926,7 @@ public void assignRolesToUser(Long userId, List<Long> roleIds) {
 }
 ```
 
-### 9.3 数据库索引优化
+### 11.3 数据库索引优化
 
 ```sql
 -- 权限表索引
@@ -1948,7 +1948,7 @@ CREATE INDEX idx_parent_id_status ON sys_menu(parent_id, status);
 
 ---
 
-## 十、常见问题
+## 十一、常见问题
 
 ### Q1: 前端和后端权限不一致怎么办？
 
