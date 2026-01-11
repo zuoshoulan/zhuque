@@ -129,3 +129,18 @@ export const getUserRoles = (userId: number) => {
 export const assignUserRoles = (userId: number, roleIds: number[]) => {
   return request.post(`/api/user/${userId}/roles`, { roleIds })
 }
+
+/**
+ * 修改密码请求
+ */
+export interface ChangePasswordRequest {
+  oldPassword: string
+  newPassword: string
+}
+
+/**
+ * 修改密码
+ */
+export const changePassword = (userId: number, data: ChangePasswordRequest) => {
+  return request.post(`/api/user/${userId}/change-password`, data)
+}

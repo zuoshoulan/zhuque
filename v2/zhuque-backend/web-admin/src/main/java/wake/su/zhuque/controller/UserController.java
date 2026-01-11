@@ -193,4 +193,30 @@ public class UserController {
         boolean success = sysUserService.assignRoles(userId, roleIds);
         return success ? Result.success() : Result.error("分配角色失败");
     }
+
+    /**
+     * 修改密码
+     *
+     * @param userId  用户ID
+     * @param request 修改密码请求
+     * @return 是否成功
+     */
+    @Operation(
+        summary = "修改密码",
+        description = "用户自己修改密码，需要输入原密码验证"
+    )
+    @PostMapping("/{userId}/change-password")
+    public Result<Void> changePassword(
+            @Parameter(description = "用户ID", required = true, example = "3")
+            @PathVariable Long userId,
+            @Valid @RequestBody wake.su.zhuque.model.dto.ChangePasswordRequest request) {
+        log.info("修改密码: userId={}", userId);
+        try {
+            sysUserService.changePassword(userId, request.getOldPassword(), request.getNewPassword());
+            return Result.success();
+        } catch (Exception e) {
+            log.error("修改密码失败: {}", e.getMessage());
+            return Result.error(e.getMessage());
+        }
+    }
 }

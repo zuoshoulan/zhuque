@@ -403,4 +403,38 @@ public class SysUserServiceImpl implements SysUserService {
         log.info("为用户分配角色成功: userId={}, roleIds={}, operator={}", userId, roleIds, getCurrentUsername());
         return true;
     }
+
+    @Override
+    public void changePassword(Long userId, String oldPassword, String newPassword) {
+        log.info("修改密码: userId={}", userId);
+
+        // 查询用户
+        SysUserDO user = sysUserMapper.selectById(userId);
+        if (user == null) {
+            throw new RuntimeException("用户不存在");
+        }
+
+        // 验证原密码
+        if (!PasswordUtil.matches(oldPassword, user.getPassword())) {
+            throw new RuntimeException("原密码错误");
+        }
+
+        // 加密新密码
+        String hashedPassword = PasswordUtil.encode(newPassword);
+
+        // 更新密码
+        SysUserDO updateUser = new SysUserDO();
+        updateUser.setId(userId);
+        updateUser.setPassword(hashedPassword);
+        updateUser.setForceChangePassword(0); // 清除强制修改密码标记
+        updateUser.setUpdateBy(getCurrentUsername());
+        updateUser.setUpdateTime(LocalDateTime.now());
+
+        boolean success = sysUserMapper.updateById(updateUser) > 0;
+        if (!success) {
+            throw new RuntimeException("密码修改失败");
+        }
+
+        log.info("密码修改成功: userId={}", userId);
+    }
 }

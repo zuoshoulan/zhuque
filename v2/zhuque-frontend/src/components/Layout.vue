@@ -151,7 +151,8 @@ const currentBreadcrumb = computed(() => {
     '/ads': '广告列表',
     '/campaigns': '活动管理',
     '/roles': '角色管理',
-    '/permissions': '权限管理'
+    '/permissions': '权限管理',
+    '/profile': '个人中心'
   }
   return breadcrumbMap[path] || ''
 })
@@ -168,7 +169,7 @@ const handleThemeChange = async (theme: 'light' | 'dark' | 'auto') => {
 
 // 个人中心
 const handleProfile = () => {
-  ElMessage.info('个人中心功能开发中...')
+  router.push('/profile')
 }
 
 // 退出登录

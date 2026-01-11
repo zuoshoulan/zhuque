@@ -122,4 +122,13 @@ public interface SysUserService {
      * @return 是否成功
      */
     boolean assignRoles(Long userId, List<Long> roleIds);
+
+    /**
+     * 修改密码
+     *
+     * @param userId      用户ID
+     * @param oldPassword 原密码
+     * @param newPassword 新密码
+     */
+    void changePassword(Long userId, String oldPassword, String newPassword);
 }

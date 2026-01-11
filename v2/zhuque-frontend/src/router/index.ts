@@ -51,6 +51,12 @@ const router = createRouter({
           name: 'Permissions',
           component: () => import('@/views/PermissionsView.vue'),
           meta: { title: '权限管理 - 朱雀广告平台' }
+        },
+        {
+          path: 'profile',
+          name: 'Profile',
+          component: () => import('@/views/ProfileView.vue'),
+          meta: { title: '个人中心 - 朱雀广告平台' }
         }
       ]
     }
