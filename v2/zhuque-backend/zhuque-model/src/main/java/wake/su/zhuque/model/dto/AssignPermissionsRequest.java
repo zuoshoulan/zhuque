@@ -3,7 +3,6 @@ package wake.su.zhuque.model.dto;
 import lombok.Data;
 
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -17,8 +16,8 @@ public class AssignPermissionsRequest {
 
     /**
      * 角色ID
+     * 从路径变量中获取，不需要客户端传入
      */
-    @NotNull(message = "角色ID不能为空")
     private Long roleId;
 
     /**
