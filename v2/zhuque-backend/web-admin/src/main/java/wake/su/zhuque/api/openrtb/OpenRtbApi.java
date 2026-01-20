@@ -11,13 +11,13 @@ import wake.su.zhuque.api.openrtb.dto.BidRequest;
 import wake.su.zhuque.api.openrtb.dto.BidResponse;
 
 /**
- * OpenRTB 2.5 API 接口
+ * OpenRTB 2.6 API 接口
  *
  * @author OpenRTB
- * @version 2.5
- * @see <a href="http://www.iab.com/openrtb">OpenRTB Specification</a>
+ * @version 2.6
+ * @see <a href="https://iabtechlab.com/standards/openrtb/">OpenRTB Specification</a>
  */
-@Tag(name = "OpenRTB API", description = "OpenRTB 2.5 实时竞价接口")
+@Tag(name = "OpenRTB API", description = "OpenRTB 2.6 实时竞价接口")
 @RestController
 @RequestMapping("/api/openrtb")
 public class OpenRtbApi {
@@ -25,7 +25,7 @@ public class OpenRtbApi {
     @Operation(summary = "竞价请求", description = "接收竞价请求并返回竞价响应")
     @PostMapping("/bid")
     public BidResponse bid(
-            @RequestHeader(value = "x-openrtb-version", defaultValue = "2.5") String openRtbVersion,
+            @RequestHeader(value = "x-openrtb-version", defaultValue = "2.6") String openRtbVersion,
             @RequestHeader(value = "Content-Type", defaultValue = "application/json") String contentType,
             @RequestBody BidRequest bidRequest) {
         // TODO: 实现竞价逻辑

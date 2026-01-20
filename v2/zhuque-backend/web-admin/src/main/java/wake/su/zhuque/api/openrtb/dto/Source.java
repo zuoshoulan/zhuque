@@ -23,6 +23,10 @@ public class Source {
     @Schema(description = "支付ID链字符串")
     private String pchain;
 
+    @JsonProperty("schain")
+    @Schema(description = "供应链对象 (OpenRTB 2.6新增)")
+    private SupplyChain schain;
+
     @JsonProperty("ext")
     @Schema(description = "扩展字段")
     private Object ext;

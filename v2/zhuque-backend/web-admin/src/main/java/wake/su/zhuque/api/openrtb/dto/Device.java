@@ -107,5 +107,37 @@ public class Device {
 
     @JsonProperty("ext")
     @Schema(description = "扩展字段")
-    private Object ext;
+    private DeviceExt ext;
+
+    /**
+     * 设备扩展对象 (OpenRTB 2.6新增)
+     */
+    @Data
+    @Schema(description = "设备扩展对象")
+    public static class DeviceExt {
+
+        @JsonProperty("carrier")
+        @Schema(description = "运营商详细信息 (OpenRTB 2.6新增)")
+        private String carrier;
+
+        @JsonProperty("devicemodel")
+        @Schema(description = "设备型号详情 (OpenRTB 2.6新增)")
+        private String devicemodel;
+
+        @JsonProperty("ispon")
+        @Schema(description = "隐私VPN标志：0=否，1=是 (OpenRTB 2.6新增)")
+        private Integer ispon;
+
+        @JsonProperty("mmdevicetype")
+        @Schema(description = "MMA设备类型 (OpenRTB 2.6新增)")
+        private Integer mmdevicetype;
+
+        @JsonProperty("skhadomain")
+        @Schema(description = "SKAdNetwork归因域名 (OpenRTB 2.6新增)")
+        private String skhadomain;
+
+        @JsonProperty("ext")
+        @Schema(description = "扩展字段")
+        private Object ext;
+    }
 }

@@ -47,5 +47,29 @@ public class User {
 
     @JsonProperty("ext")
     @Schema(description = "扩展字段")
-    private Object ext;
+    private UserExt ext;
+
+    /**
+     * 用户扩展对象 (OpenRTB 2.6新增)
+     */
+    @Data
+    @Schema(description = "用户扩展对象")
+    public static class UserExt {
+
+        @JsonProperty("eids")
+        @Schema(description = "扩展ID列表 (OpenRTB 2.6新增，用于ID Bridging)")
+        private List<ExtendedId> eids;
+
+        @JsonProperty("consent")
+        @Schema(description = "GDPR同意字符串 (OpenRTB 2.6新增)")
+        private String consent;
+
+        @JsonProperty("digid")
+        @Schema(description = "数字ID (OpenRTB 2.6新增)")
+        private String digid;
+
+        @JsonProperty("ext")
+        @Schema(description = "扩展字段")
+        private Object ext;
+    }
 }

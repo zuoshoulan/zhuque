@@ -93,6 +93,38 @@ public class Video {
     @Schema(description = "API框架")
     private List<Integer> api;
 
+    @JsonProperty("playbackend")
+    @Schema(description = "播放方法 (OpenRTB 2.6增强)：1=自动播放有声，2=自动播放静音，3=点击播放，4=鼠标悬停播放")
+    private Integer playbackend;
+
+    @JsonProperty("playableafter")
+    @Schema(description = "可播放的最长秒数 (OpenRTB 2.6新增)")
+    private Integer playableafter;
+
+    @JsonProperty("podid")
+    @Schema(description = "广告组ID (OpenRTB 2.6新增)")
+    private String podid;
+
+    @JsonProperty("podsize")
+    @Schema(description = "广告组大小 (OpenRTB 2.6新增)")
+    private Integer podsize;
+
+    @JsonProperty("podseq")
+    @Schema(description = "广告组序列号 (OpenRTB 2.6新增)")
+    private Integer podseq;
+
+    @JsonProperty("mincpmpersec")
+    @Schema(description = "每秒最低CPM (OpenRTB 2.6新增)")
+    private Float mincpmpersec;
+
+    @JsonProperty("maxseq")
+    @Schema(description = "最大序列号 (OpenRTB 2.6新增)")
+    private Integer maxseq;
+
+    @JsonProperty("render")
+    @Schema(description = "渲染方式 (OpenRTB 2.6新增)")
+    private Integer render;
+
     @JsonProperty("ext")
     @Schema(description = "扩展字段")
     private Object ext;
