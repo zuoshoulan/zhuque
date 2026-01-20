@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wake.su.zhuque.dao.mapper.RtbMaterialMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="wake.su.zhuque.model.entity.RtbMaterialDO">
+        <id column="id" property="id"/>
+        <result column="material_id" property="materialId"/>
+        <result column="creative_id" property="creativeId"/>
+        <result column="advertiser_id" property="advertiserId"/>
+        <result column="name" property="name"/>
+        <result column="format" property="format"/>
+        <result column="width" property="width"/>
+        <result column="height" property="height"/>
+        <result column="ratio" property="ratio"/>
+        <result column="file_id" property="fileId"/>
+        <result column="file_size" property="fileSize"/>
+        <result column="file_type" property="fileType"/>
+        <result column="thumbnail_url" property="thumbnailUrl"/>
+        <result column="dur" property="dur"/>
+        <result column="mimes" property="mimes"/>
+        <result column="protocol" property="protocol"/>
+        <result column="ext" property="ext"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, material_id, creative_id, advertiser_id, name, format,
+        width, height, ratio, file_id, file_size, file_type, thumbnail_url,
+        dur, mimes, protocol, ext, remark,
+        create_time, update_time, create_by, update_by, deleted
+    </sql>
+
+    <!-- 竞价查询: 根据格式和尺寸查询可用素材 -->
+    <select id="selectAvailableBySize" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM rtb_material
+        WHERE format = #{format}
+        AND width = #{width}
+        AND height = #{height}
+        AND deleted = 0
+        LIMIT 1
+    </select>
+
+    <!-- 联表查询: 素材+创意信息 -->
+    <select id="selectWithCreative" resultMap="BaseResultMap">
+        SELECT
+        m.*,
+        c.creative_id,
+        c.landing_page_url,
+        c.display_url,
+        c.advertiser_domain,
+        c.cat,
+        c.attr,
+        c.language
+        FROM rtb_material m
+        INNER JOIN rtb_creative c ON m.creative_id = c.id
+        WHERE m.format = #{format}
+        AND m.width = #{width}
+        AND m.height = #{height}
+        AND m.deleted = 0
+        AND c.deleted = 0
+        AND c.status = 1
+        AND (c.start_time IS NULL OR c.start_time &lt;= NOW())
+        AND (c.end_time IS NULL OR c.end_time &gt;= NOW())
+        LIMIT 1
+    </select>
+
+</mapper>

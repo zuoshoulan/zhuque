@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wake.su.zhuque.dao.mapper.RtbCreativeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="wake.su.zhuque.model.entity.RtbCreativeDO">
+        <id column="id" property="id"/>
+        <result column="creative_id" property="creativeId"/>
+        <result column="advertiser_id" property="advertiserId"/>
+        <result column="name" property="name"/>
+        <result column="description" property="description"/>
+        <result column="format" property="format"/>
+        <result column="landing_page_url" property="landingPageUrl"/>
+        <result column="display_url" property="displayUrl"/>
+        <result column="advertiser_domain" property="advertiserDomain"/>
+        <result column="cat" property="cat"/>
+        <result column="attr" property="attr"/>
+        <result column="language" property="language"/>
+        <result column="status" property="status"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="ext" property="ext"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, creative_id, advertiser_id, name, description, format,
+        landing_page_url, display_url, advertiser_domain, cat, attr, language,
+        status, start_time, end_time, ext, remark,
+        create_time, update_time, create_by, update_by, deleted
+    </sql>
+
+</mapper>

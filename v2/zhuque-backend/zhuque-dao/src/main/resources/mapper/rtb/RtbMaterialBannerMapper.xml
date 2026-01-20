@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wake.su.zhuque.dao.mapper.RtbMaterialBannerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="wake.su.zhuque.model.entity.RtbMaterialBannerDO">
+        <id column="id" property="id"/>
+        <result column="material_id" property="materialId"/>
+        <result column="pos" property="pos"/>
+        <result column="btype" property="btype"/>
+        <result column="wmode" property="wmode"/>
+        <result column="ext" property="ext"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, material_id, pos, btype, wmode, ext
+    </sql>
+
+</mapper>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wake.su.zhuque.dao.mapper.RtbMaterialVideoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="wake.su.zhuque.model.entity.RtbMaterialVideoDO">
+        <id column="id" property="id"/>
+        <result column="material_id" property="materialId"/>
+        <result column="linearity" property="linearity"/>
+        <result column="sequence" property="sequence"/>
+        <result column="min_duration" property="minDuration"/>
+        <result column="max_duration" property="maxDuration"/>
+        <result column="startdelay" property="startdelay"/>
+        <result column="skip" property="skip"/>
+        <result column="skipmin" property="skipmin"/>
+        <result column="skipafter" property="skipafter"/>
+        <result column="placement" property="placement"/>
+        <result column="playbackend" property="playbackend"/>
+        <result column="playableafter" property="playableafter"/>
+        <result column="podid" property="podid"/>
+        <result column="podsize" property="podsize"/>
+        <result column="podseq" property="podseq"/>
+        <result column="mincpmpersec" property="mincpmpersec"/>
+        <result column="maxseq" property="maxseq"/>
+        <result column="render" property="render"/>
+        <result column="api" property="api"/>
+        <result column="ext" property="ext"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, material_id, linearity, sequence, min_duration, max_duration,
+        startdelay, skip, skipmin, skipafter, placement, playbackend,
+        playableafter, podid, podsize, podseq, mincpmpersec, maxseq, render,
+        api, ext
+    </sql>
+
+</mapper>
