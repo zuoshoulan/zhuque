@@ -1,8 +1,12 @@
-# OpenRTB 2.5 API 实现说明
+# OpenRTB 2.6 API 实现说明
 
 ## 概述
 
-本目录包含了基于 OpenRTB 2.5 规范的完整 Java 实现,用于实时竞价(RTB)系统。
+本目录包含了基于 OpenRTB 2.6 规范的完整 Java 实现,用于实时竞价(RTB)系统。
+
+**版本历史**:
+- 2025-01-20: 升级到OpenRTB 2.6
+- 初始版本: 基于OpenRTB 2.5
 
 ## 文件结构
 
@@ -34,7 +38,10 @@ openrtb/
     ├── Regs.java               # 法规对象
     ├── Metric.java              # 度量对象
     ├── DataDto.java             # 数据对象(Data重命名)
-    └── Segment.java             # 细分对象
+    ├── Segment.java             # 细分对象
+    ├── SupplyChain.java         # 供应链对象 (OpenRTB 2.6新增)
+    ├── SupplyChainNode.java    # 供应链节点 (OpenRTB 2.6新增)
+    └── ExtendedId.java          # 扩展ID对象 (OpenRTB 2.6新增)
 ```
 
 ## 核心对象说明
@@ -46,7 +53,7 @@ openrtb/
 - **方法**: POST
 - **Content-Type**: `application/json`
 - **Headers**:
-  - `x-openrtb-version`: OpenRTB版本(默认2.5)
+  - `x-openrtb-version`: OpenRTB版本(默认2.6)
 
 **必需字段**:
 - `id`: 竞价请求的唯一ID
