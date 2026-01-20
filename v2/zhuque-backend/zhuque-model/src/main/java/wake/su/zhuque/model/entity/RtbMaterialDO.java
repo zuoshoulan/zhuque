@@ -103,6 +103,11 @@ public class RtbMaterialDO {
     private String ext;
 
     /**
+     * 状态:0=草稿/1=启用/2=暂停
+     */
+    private Integer status;
+
+    /**
      * 备注
      */
     private String remark;
