@@ -15,7 +15,7 @@ import wake.su.zhuque.model.dto.MaterialCreateRequest;
 import wake.su.zhuque.model.dto.MaterialQueryRequest;
 import wake.su.zhuque.model.dto.MaterialUpdateRequest;
 import wake.su.zhuque.model.entity.*;
-import wake.su.zhuque.model.enums.CreativeFormatEnum;
+import wake.su.zhuque.model.enums.MaterialFormatEnum;
 import wake.su.zhuque.model.vo.MaterialListVO;
 import wake.su.zhuque.model.vo.MaterialVO;
 import wake.su.zhuque.service.RtbMaterialService;
@@ -125,7 +125,7 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
         vo.setCreativeName(creativeName);
         vo.setName(material.getName());
         vo.setFormat(material.getFormat());
-        vo.setFormatName(CreativeFormatEnum.getNameByCode(material.getFormat()));
+        vo.setFormatName(MaterialFormatEnum.getNameByCode(material.getFormat()));
         vo.setWidth(material.getWidth());
         vo.setHeight(material.getHeight());
         vo.setFileSize(material.getFileSize());
@@ -182,9 +182,14 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
             vo.setId(material.getId());
             vo.setMaterialId(material.getMaterialId());
             vo.setCreativeId(material.getCreativeId());
+
+            // 查询创意名称
+            RtbCreativeDO creative = creativeMapper.selectById(material.getCreativeId());
+            vo.setCreativeName(creative != null ? creative.getName() : "");
+
             vo.setName(material.getName());
             vo.setFormat(material.getFormat());
-            vo.setFormatName(CreativeFormatEnum.getNameByCode(material.getFormat()));
+            vo.setFormatName(MaterialFormatEnum.getNameByCode(material.getFormat()));
             vo.setWidth(material.getWidth());
             vo.setHeight(material.getHeight());
             vo.setFileUrl("/api/file/" + material.getFileId());
@@ -204,9 +209,7 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
 
     @Override
     public void updateStatus(Long id, Integer status) {
-        RtbMaterialDO material = new RtbMaterialDO();
-        material.setId(id);
-        material.setStatus(status);
-        materialMapper.updateById(material);
+        // 素材不需要单独的状态管理，状态通过创意来控制
+        // 这个方法暂时保留为空实现
     }
 }

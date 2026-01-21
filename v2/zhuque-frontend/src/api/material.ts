@@ -5,13 +5,18 @@ import request from '@/utils/request'
  */
 export interface MaterialInfo {
   id: number
-  materialName: string
-  materialType: string
+  materialId: string
+  creativeId: number
+  creativeName: string
+  name: string
+  format: number
+  formatName: string
   width: number
   height: number
   fileSize: number
+  fileType: string
   fileUrl: string
-  status: number
+  dur?: number
   createTime: string
   updateTime: string
 }
@@ -21,13 +26,15 @@ export interface MaterialInfo {
  */
 export interface MaterialListItem {
   id: number
-  materialName: string
-  materialType: string
+  materialId: string
+  creativeId: number
+  creativeName: string
+  name: string
+  format: number
+  formatName: string
   width: number
   height: number
-  fileSize: number
   fileUrl: string
-  status: number
   createTime: string
 }
 
@@ -35,32 +42,34 @@ export interface MaterialListItem {
  * 创建素材请求
  */
 export interface MaterialCreateRequest {
-  materialName: string
-  materialType: string
-  fileUrl: string
-  width?: number
-  height?: number
+  creativeId: number
+  name: string
+  format: number
+  width: number
+  height: number
+  fileId: string
+  fileType?: string
+  fileSize?: number
+  dur?: number
 }
 
 /**
  * 更新素材请求
  */
 export interface MaterialUpdateRequest {
-  materialName?: string
-  materialType?: string
-  fileUrl?: string
-  width?: number
-  height?: number
+  name?: string
 }
 
 /**
  * 素材查询参数
  */
 export interface MaterialQuery {
-  page?: number
+  current?: number
   size?: number
-  keyword?: string
-  status?: number
+  creativeId?: number
+  format?: number
+  width?: number
+  height?: number
 }
 
 /**
