@@ -6,9 +6,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import jakarta.servlet.http.HttpServletRequest;
 import wake.su.zhuque.common.core.result.PageInfo;
 import wake.su.zhuque.common.core.result.Result;
+import wake.su.zhuque.common.util.JwtUtil;
 import wake.su.zhuque.dao.mapper.*;
 import wake.su.zhuque.model.dto.*;
 import wake.su.zhuque.model.entity.*;
@@ -27,20 +31,40 @@ public class RtbCreativeServiceImpl implements RtbCreativeService {
 
     private final RtbCreativeMapper creativeMapper;
     private final RtbMaterialMapper materialMapper;
+    private final JwtUtil jwtUtil;
 
     @Override
     @Transactional
     public Long create(CreativeCreateRequest request) {
+        // 获取当前登录用户ID，直接使用 userId 作为 advertiserId
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes == null) {
+            throw new RuntimeException("无法获取请求信息");
+        }
+
+        HttpServletRequest httpRequest = attributes.getRequest();
+        String token = httpRequest.getHeader("Authorization");
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+
+        Long userId = jwtUtil.getUserId(token);
+
         RtbCreativeDO creative = new RtbCreativeDO();
         creative.setCreativeId("C" + IdUtil.getSnowflakeNextId());
-        creative.setAdvertiserId(request.getAdvertiserId());
+        creative.setAdvertiserId(userId);  // 直接使用用户ID作为广告主ID
         creative.setName(request.getName());
         creative.setDescription(request.getDescription());
         creative.setLandingPageUrl(request.getLandingPageUrl());
         creative.setDisplayUrl(request.getDisplayUrl());
         creative.setAdvertiserDomain(request.getAdvertiserDomain());
-        creative.setCat(request.getCat() != null ? String.join(",", request.getCat()) : null);
-        creative.setAttr(request.getAttr() != null ? request.getAttr().stream().map(String::valueOf).collect(Collectors.joining(",")) : null);
+        // JSON字段：空数组转换为null，避免MySQL JSON字段报错
+        creative.setCat(request.getCat() != null && !request.getCat().isEmpty()
+            ? String.join(",", request.getCat())
+            : null);
+        creative.setAttr(request.getAttr() != null && !request.getAttr().isEmpty()
+            ? request.getAttr().stream().map(String::valueOf).collect(Collectors.joining(","))
+            : null);
         creative.setLanguage(request.getLanguage());
         creative.setStatus(0); // 默认草稿
         creative.setStartTime(request.getStartTime());

@@ -1,16 +1,29 @@
 import request from '@/utils/request'
 
 /**
- * 创意信息
+ * 创意详情
  */
-export interface CreativeInfo {
+export interface CreativeDetail {
   id: number
-  creativeName: string
-  creativeType: string
-  materialId: number
+  creativeId: string
+  advertiserId: number
+  name: string
+  description: string
+  landingPageUrl: string
+  displayUrl: string
+  advertiserDomain: string
+  cat: string[]
+  attr: number[]
+  language: string
   status: number
+  statusName: string
+  startTime: string
+  endTime: string
+  materialCount: number
   createTime: string
   updateTime: string
+  createBy: string
+  updateBy: string
 }
 
 /**
@@ -31,18 +44,33 @@ export interface CreativeListItem {
  * 创建创意请求
  */
 export interface CreativeCreateRequest {
-  creativeName: string
-  creativeType: string
-  materialId: number
+  advertiserId?: number  // 超级管理员必填，普通用户由后端自动设置
+  name: string
+  description?: string
+  landingPageUrl: string
+  displayUrl: string
+  advertiserDomain?: string
+  cat?: string[]
+  attr?: number[]
+  language?: string
+  startTime?: string
+  endTime?: string
 }
 
 /**
  * 更新创意请求
  */
 export interface CreativeUpdateRequest {
-  creativeName?: string
-  creativeType?: string
-  materialId?: number
+  name?: string
+  description?: string
+  landingPageUrl?: string
+  displayUrl?: string
+  advertiserDomain?: string
+  cat?: string[]
+  attr?: number[]
+  language?: string
+  startTime?: string
+  endTime?: string
 }
 
 /**
@@ -77,7 +105,7 @@ export const getCreativePage = (params: CreativeQuery) => {
  * 根据ID查询创意
  */
 export const getCreativeById = (id: number) => {
-  return request.get<any, CreativeInfo>(`/api/rtb/creative/${id}`)
+  return request.get<any, CreativeDetail>(`/api/rtb/creative/${id}`)
 }
 
 /**

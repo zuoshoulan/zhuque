@@ -85,34 +85,69 @@
     <el-dialog
       v-model="dialogVisible"
       :title="dialogTitle"
-      width="600px"
+      width="700px"
       :close-on-click-modal="false"
     >
       <el-form
         ref="formRef"
         :model="formData"
         :rules="formRules"
-        label-width="100px"
+        label-width="120px"
         @submit.prevent="handleSubmit"
       >
-        <el-form-item label="创意名称" prop="creativeName">
-          <el-input v-model="formData.creativeName" placeholder="请输入创意名称" />
+        <el-form-item label="创意名称" prop="name">
+          <el-input v-model="formData.name" placeholder="请输入创意名称" />
         </el-form-item>
-        <el-form-item label="创意类型" prop="creativeType">
-          <el-select v-model="formData.creativeType" placeholder="请选择创意类型" style="width: 100%">
-            <el-option label="图片" value="image" />
-            <el-option label="视频" value="video" />
-            <el-option label="HTML" value="html" />
+        <el-form-item label="创意描述" prop="description">
+          <el-input v-model="formData.description" type="textarea" :rows="3" placeholder="请输入创意描述" />
+        </el-form-item>
+        <el-form-item label="落地页URL" prop="landingPageUrl">
+          <el-input v-model="formData.landingPageUrl" placeholder="请输入落地页URL" />
+        </el-form-item>
+        <el-form-item label="展示URL" prop="displayUrl">
+          <el-input v-model="formData.displayUrl" placeholder="请输入展示URL" />
+        </el-form-item>
+        <el-form-item label="广告主域名" prop="advertiserDomain">
+          <el-input v-model="formData.advertiserDomain" placeholder="请输入广告主域名，例如: example.com" />
+        </el-form-item>
+        <el-form-item label="IAB类别" prop="cat">
+          <el-select
+            v-model="formData.cat"
+            multiple
+            placeholder="请选择IAB内容类别"
+            style="width: 100%"
+          >
+            <el-option label="IAB24-1 (Automotive)" value="IAB24-1" />
+            <el-option label="IAB24-6 (Business and Finance)" value="IAB24-6" />
+            <el-option label="IAB1 (Education)" value="IAB1" />
+            <el-option label="IAB9 (Hobbies & Interests)" value="IAB9" />
           </el-select>
         </el-form-item>
-        <el-form-item label="素材ID" prop="materialId">
-          <el-input-number v-model="formData.materialId" :min="1" style="width: 100%" />
+        <el-form-item label="语言" prop="language">
+          <el-select v-model="formData.language" placeholder="请选择语言" style="width: 100%">
+            <el-option label="中文" value="zh-CN" />
+            <el-option label="English" value="en" />
+            <el-option label="Japanese" value="ja" />
+            <el-option label="Korean" value="ko" />
+          </el-select>
         </el-form-item>
-        <el-form-item v-if="!formData.id" label="状态" prop="status">
-          <el-radio-group v-model="formData.status">
-            <el-radio :value="1">启用</el-radio>
-            <el-radio :value="0">禁用</el-radio>
-          </el-radio-group>
+        <el-form-item label="生效时间" prop="startTime">
+          <el-date-picker
+            v-model="formData.startTime"
+            type="datetime"
+            placeholder="选择生效时间"
+            style="width: 100%"
+            value-format="YYYY-MM-DD HH:mm:ss"
+          />
+        </el-form-item>
+        <el-form-item label="失效时间" prop="endTime">
+          <el-date-picker
+            v-model="formData.endTime"
+            type="datetime"
+            placeholder="选择失效时间"
+            style="width: 100%"
+            value-format="YYYY-MM-DD HH:mm:ss"
+          />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -130,6 +165,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Search, Refresh, Edit, Delete } from '@element-plus/icons-vue'
 import {
   getCreativePage,
+  getCreativeById,
   createCreative,
   updateCreative,
   deleteCreative,
@@ -156,12 +192,19 @@ const dialogTitle = ref('')
 const submitLoading = ref(false)
 
 // 表单数据
-const formData = reactive<Partial<CreativeCreateRequest> & { id?: number; status?: number }>({
+const formData = reactive<Partial<CreativeCreateRequest> & { id?: number }>({
   id: undefined,
-  creativeName: '',
-  creativeType: '',
-  materialId: undefined,
-  status: 1
+  advertiserId: undefined,
+  name: '',
+  description: '',
+  landingPageUrl: '',
+  displayUrl: '',
+  advertiserDomain: '',
+  cat: [],
+  attr: [],
+  language: undefined,
+  startTime: undefined,
+  endTime: undefined
 })
 
 // 表单引用
@@ -169,14 +212,14 @@ const formRef = ref<FormInstance>()
 
 // 表单验证规则
 const formRules: FormRules = {
-  creativeName: [
+  name: [
     { required: true, message: '请输入创意名称', trigger: 'blur' }
   ],
-  creativeType: [
-    { required: true, message: '请选择创意类型', trigger: 'change' }
+  landingPageUrl: [
+    { required: true, message: '请输入落地页URL', trigger: 'blur' }
   ],
-  materialId: [
-    { required: true, message: '请输入素材ID', trigger: 'blur' }
+  displayUrl: [
+    { required: true, message: '请输入展示URL', trigger: 'blur' }
   ]
 }
 
@@ -211,26 +254,47 @@ const handleAdd = () => {
   dialogVisible.value = true
   Object.assign(formData, {
     id: undefined,
-    creativeName: '',
-    creativeType: '',
-    materialId: undefined,
-    status: 1
+    advertiserId: undefined,
+    name: '',
+    description: '',
+    landingPageUrl: '',
+    displayUrl: '',
+    advertiserDomain: '',
+    cat: [],
+    attr: [],
+    language: undefined,
+    startTime: undefined,
+    endTime: undefined
   })
   formRef.value?.clearValidate()
 }
 
 // 编辑创意
-const handleEdit = (row: CreativeListItem) => {
-  dialogTitle.value = '编辑创意'
-  dialogVisible.value = true
-  Object.assign(formData, {
-    id: row.id,
-    creativeName: row.name,
-    creativeType: '',
-    materialId: row.materialCount,
-    status: row.status
-  })
-  formRef.value?.clearValidate()
+const handleEdit = async (row: CreativeListItem) => {
+  try {
+    // 获取完整的创意详情
+    const detail = await getCreativeById(row.id)
+    dialogTitle.value = '编辑创意'
+    dialogVisible.value = true
+    Object.assign(formData, {
+      id: detail.id,
+      advertiserId: detail.advertiserId,
+      name: detail.name,
+      description: detail.description,
+      landingPageUrl: detail.landingPageUrl,
+      displayUrl: detail.displayUrl,
+      advertiserDomain: detail.advertiserDomain,
+      cat: detail.cat || [],
+      attr: detail.attr || [],
+      language: detail.language,
+      startTime: detail.startTime,
+      endTime: detail.endTime
+    })
+    formRef.value?.clearValidate()
+  } catch (error) {
+    console.error('获取创意详情失败:', error)
+    ElMessage.error('获取创意详情失败')
+  }
 }
 
 // 提交表单
@@ -242,10 +306,36 @@ const handleSubmit = async () => {
     submitLoading.value = true
 
     if (formData.id) {
-      await updateCreative(formData.id, formData)
+      // 更新创意
+      const updateData: CreativeUpdateRequest = {
+        name: formData.name,
+        description: formData.description,
+        landingPageUrl: formData.landingPageUrl,
+        displayUrl: formData.displayUrl,
+        advertiserDomain: formData.advertiserDomain,
+        cat: formData.cat,
+        attr: formData.attr,
+        language: formData.language,
+        startTime: formData.startTime,
+        endTime: formData.endTime
+      }
+      await updateCreative(formData.id, updateData)
       ElMessage.success('更新成功')
     } else {
-      await createCreative(formData)
+      // 创建创意
+      const createData: CreativeCreateRequest = {
+        name: formData.name!,
+        landingPageUrl: formData.landingPageUrl!,
+        displayUrl: formData.displayUrl!,
+        description: formData.description,
+        advertiserDomain: formData.advertiserDomain,
+        cat: formData.cat,
+        attr: formData.attr,
+        language: formData.language,
+        startTime: formData.startTime,
+        endTime: formData.endTime
+      }
+      await createCreative(createData)
       ElMessage.success('创建成功')
     }
 

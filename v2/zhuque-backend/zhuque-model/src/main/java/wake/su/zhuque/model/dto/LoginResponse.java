@@ -68,5 +68,10 @@ public class LoginResponse {
          * 是否需要强制修改密码
          */
         private Boolean forceChangePassword;
+
+        /**
+         * 是否为超级管理员
+         */
+        private Boolean isSuperAdmin;
     }
 }

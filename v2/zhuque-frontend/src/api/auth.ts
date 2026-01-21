@@ -22,6 +22,7 @@ export interface LoginResponse {
     phone: string
     avatar: string | null
     forceChangePassword: boolean
+    isSuperAdmin: boolean
     themePreference?: 'light' | 'dark' | 'auto'
   }
 }

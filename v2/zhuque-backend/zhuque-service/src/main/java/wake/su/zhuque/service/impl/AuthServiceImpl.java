@@ -3,6 +3,7 @@ package wake.su.zhuque.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import wake.su.zhuque.common.config.SuperAdminConfig;
 import wake.su.zhuque.common.security.util.PasswordUtil;
 import wake.su.zhuque.common.util.JwtUtil;
 import wake.su.zhuque.model.dto.LoginRequest;
@@ -21,6 +22,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final SysUserService sysUserService;
     private final JwtUtil jwtUtil;
+    private final SuperAdminConfig superAdminConfig;
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
@@ -60,6 +62,7 @@ public class AuthServiceImpl implements AuthService {
                 .phone(user.getPhone())
                 .avatar(user.getAvatar())
                 .forceChangePassword(user.getForceChangePassword() == 1)
+                .isSuperAdmin(superAdminConfig.isSuperAdmin(user.getId()))
                 .build();
 
         return LoginResponse.builder()
