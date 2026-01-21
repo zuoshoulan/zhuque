@@ -1,7 +1,7 @@
 package wake.su.zhuque.service.api;
 
+import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.model.dto.AssignPermissionsRequest;
-import wake.su.zhuque.model.dto.PageResult;
 import wake.su.zhuque.model.dto.RoleCreateRequest;
 import wake.su.zhuque.model.query.RolePageQuery;
 import wake.su.zhuque.model.vo.PermissionVO;
@@ -61,7 +61,7 @@ public interface RoleService {
      * @param query 查询参数
      * @return 分页结果
      */
-    PageResult<RoleVO> getRolePage(RolePageQuery query);
+     Result<List<RoleVO>> getRolePage(RolePageQuery query);
 
     /**
      * 修改角色状态

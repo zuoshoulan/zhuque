@@ -11,13 +11,14 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import wake.su.zhuque.common.config.SuperAdminConfig;
 import wake.su.zhuque.common.core.exception.BusinessException;
+import wake.su.zhuque.common.core.result.PageInfo;
+import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.common.security.SuperAdminHolder;
 import wake.su.zhuque.common.security.util.PasswordGenerator;
 import wake.su.zhuque.common.security.util.PasswordUtil;
 import wake.su.zhuque.dao.mapper.SysRoleMapper;
 import wake.su.zhuque.dao.mapper.SysUserMapper;
 import wake.su.zhuque.dao.mapper.SysUserRoleMapper;
-import wake.su.zhuque.model.dto.PageResult;
 import wake.su.zhuque.model.dto.ResetPasswordResponse;
 import wake.su.zhuque.model.dto.UserQueryRequest;
 import wake.su.zhuque.model.dto.UserUpdateRequest;
@@ -101,7 +102,7 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public PageResult<SysUserDO> page(UserQueryRequest request) {
+    public Result<List<SysUserDO>> page(UserQueryRequest request) {
         log.debug("分页查询用户: request={}", request);
 
         // 构建查询条件
@@ -127,7 +128,7 @@ public class SysUserServiceImpl implements SysUserService {
         Page<SysUserDO> page = new Page<>(request.getCurrent(), request.getSize());
         Page<SysUserDO> result = sysUserMapper.selectPage(page, queryWrapper);
 
-        return PageResult.of(result);
+        return Result.success(result.getRecords(), PageInfo.of(request.getCurrent(), request.getSize(), result.getTotal()));
     }
 
     @Override

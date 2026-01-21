@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wake.su.zhuque.dao.mapper.SysPermissionMapper;
@@ -11,7 +13,6 @@ import wake.su.zhuque.dao.mapper.SysRoleMapper;
 import wake.su.zhuque.dao.mapper.SysRolePermissionMapper;
 import wake.su.zhuque.dao.mapper.SysUserRoleMapper;
 import wake.su.zhuque.model.dto.AssignPermissionsRequest;
-import wake.su.zhuque.model.dto.PageResult;
 import wake.su.zhuque.model.dto.RoleCreateRequest;
 import wake.su.zhuque.model.entity.SysPermissionDO;
 import wake.su.zhuque.model.entity.SysRoleDO;
@@ -23,6 +24,8 @@ import wake.su.zhuque.model.vo.RoleVO;
 import wake.su.zhuque.service.api.RoleService;
 import wake.su.zhuque.common.config.SuperAdminConfig;
 import wake.su.zhuque.common.core.exception.BusinessException;
+import wake.su.zhuque.common.core.result.PageInfo;
+import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.common.security.SuperAdminHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -249,7 +252,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public PageResult<RoleVO> getRolePage(RolePageQuery query) {
+    public Result<List<RoleVO>> getRolePage(RolePageQuery query) {
         // 构建查询条件
         LambdaQueryWrapper<SysRoleDO> wrapper = new LambdaQueryWrapper<>();
 
@@ -293,7 +296,7 @@ public class RoleServiceImpl implements RoleService {
             })
             .collect(Collectors.toList());
 
-        return PageResult.of(vos, result.getTotal(), result.getCurrent(), result.getSize());
+        return Result.success(vos, PageInfo.of(result.getCurrent(), result.getSize(), result.getTotal()));
     }
 
     @Override

@@ -1,10 +1,13 @@
 package wake.su.zhuque.service;
 
+import java.util.List;
+
 import org.springframework.web.multipart.MultipartFile;
+
+import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.model.dto.MaterialCreateRequest;
 import wake.su.zhuque.model.dto.MaterialQueryRequest;
 import wake.su.zhuque.model.dto.MaterialUpdateRequest;
-import wake.su.zhuque.model.dto.PageResult;
 import wake.su.zhuque.model.vo.MaterialListVO;
 import wake.su.zhuque.model.vo.MaterialVO;
 
@@ -36,7 +39,7 @@ public interface RtbMaterialService {
     /**
      * 分页查询
      */
-    PageResult<MaterialListVO> list(MaterialQueryRequest request);
+    Result<List<MaterialListVO>> list(MaterialQueryRequest request);
 
     /**
      * 上传文件

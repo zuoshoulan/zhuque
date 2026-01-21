@@ -1,9 +1,11 @@
 package wake.su.zhuque.service;
 
+import java.util.List;
+
+import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.model.dto.CreativeCreateRequest;
 import wake.su.zhuque.model.dto.CreativeQueryRequest;
 import wake.su.zhuque.model.dto.CreativeUpdateRequest;
-import wake.su.zhuque.model.dto.PageResult;
 import wake.su.zhuque.model.vo.CreativeListVO;
 import wake.su.zhuque.model.vo.CreativeVO;
 
@@ -35,7 +37,7 @@ public interface RtbCreativeService {
     /**
      * 分页查询
      */
-    PageResult<CreativeListVO> list(CreativeQueryRequest request);
+    Result<List<CreativeListVO>> list(CreativeQueryRequest request);
 
     /**
      * 更新状态

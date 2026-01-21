@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import wake.su.zhuque.common.core.result.PageInfo;
 import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.model.dto.AssignPermissionsRequest;
-import wake.su.zhuque.model.dto.PageResult;
 import wake.su.zhuque.model.dto.RoleCreateRequest;
 import wake.su.zhuque.model.query.RolePageQuery;
 import wake.su.zhuque.model.vo.PermissionVO;
@@ -81,9 +80,8 @@ public class RoleController {
      */
     @GetMapping("/page")
     public Result<List<RoleVO>> getRolePage(RolePageQuery query) {
-        PageResult<RoleVO> pageResult = roleService.getRolePage(query);
-        PageInfo pageInfo = PageInfo.of(pageResult.getCurrent(), pageResult.getSize(), pageResult.getTotal());
-        return Result.success(pageResult.getRecords(), pageInfo);
+        Result<List<RoleVO>> pageResult = roleService.getRolePage(query);
+        return pageResult;
     }
 
     /**

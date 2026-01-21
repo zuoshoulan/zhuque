@@ -1,6 +1,6 @@
 package wake.su.zhuque.service;
 
-import wake.su.zhuque.model.dto.PageResult;
+import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.model.dto.ResetPasswordResponse;
 import wake.su.zhuque.model.dto.UserQueryRequest;
 import wake.su.zhuque.model.dto.UserUpdateRequest;
@@ -60,7 +60,7 @@ public interface SysUserService {
      * @param request 查询请求
      * @return 分页结果
      */
-    PageResult<SysUserDO> page(UserQueryRequest request);
+    Result<List<SysUserDO>> page(UserQueryRequest request);
 
     /**
      * 创建用户

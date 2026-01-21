@@ -6,6 +6,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import wake.su.zhuque.common.core.result.PageInfo;
+import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.dao.mapper.*;
 import wake.su.zhuque.model.dto.*;
 import wake.su.zhuque.model.entity.*;
@@ -110,7 +113,7 @@ public class RtbCreativeServiceImpl implements RtbCreativeService {
     }
 
     @Override
-    public PageResult<CreativeListVO> list(CreativeQueryRequest request) {
+    public Result<List<CreativeListVO>> list(CreativeQueryRequest request) {
         Page<RtbCreativeDO> page = new Page<>(request.getCurrent(), request.getSize());
 
         LambdaQueryWrapper<RtbCreativeDO> wrapper = new LambdaQueryWrapper<>();
@@ -122,8 +125,8 @@ public class RtbCreativeServiceImpl implements RtbCreativeService {
 
         creativeMapper.selectPage(page, wrapper);
 
-        PageResult<CreativeListVO> result = new PageResult<>();
-        result.setRecords(page.getRecords().stream().map(creative -> {
+        Result<List<CreativeListVO>> result = new Result<>();
+        result.setData(page.getRecords().stream().map(creative -> {
             CreativeListVO vo = new CreativeListVO();
             vo.setId(creative.getId());
             vo.setCreativeId(creative.getCreativeId());
@@ -136,9 +139,7 @@ public class RtbCreativeServiceImpl implements RtbCreativeService {
             vo.setCreateTime(creative.getCreateTime());
             return vo;
         }).collect(Collectors.toList()));
-        result.setTotal(page.getTotal());
-        result.setCurrent(page.getCurrent());
-        result.setSize(page.getSize());
+        result.setPage(PageInfo.of(page.getCurrent(), page.getSize(), page.getTotal()));
 
         return result;
     }

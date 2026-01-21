@@ -8,7 +8,6 @@ import wake.su.zhuque.common.core.result.PageInfo;
 import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.model.dto.CreativeCreateRequest;
 import wake.su.zhuque.model.dto.CreativeQueryRequest;
-import wake.su.zhuque.model.dto.PageResult;
 import wake.su.zhuque.model.dto.CreativeUpdateRequest;
 import wake.su.zhuque.model.vo.CreativeListVO;
 import wake.su.zhuque.model.vo.CreativeVO;
@@ -63,9 +62,8 @@ public class RtbCreativeController {
     @Operation(summary = "创意列表(分页)")
     public Result<java.util.List<CreativeListVO>> list(
             @RequestBody CreativeQueryRequest request) {
-        PageResult<CreativeListVO> pageResult = creativeService.list(request);
-        PageInfo pageInfo = PageInfo.of(pageResult.getCurrent(), pageResult.getSize(), pageResult.getTotal());
-        return Result.success(pageResult.getRecords(), pageInfo);
+        Result<java.util.List<CreativeListVO>> pageResult = creativeService.list(request);
+        return pageResult;
     }
 
     @PutMapping("/{id}/status")

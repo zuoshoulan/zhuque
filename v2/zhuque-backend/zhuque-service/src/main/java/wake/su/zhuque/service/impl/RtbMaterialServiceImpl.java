@@ -7,11 +7,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import wake.su.zhuque.common.core.result.PageInfo;
+import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.dao.mapper.*;
 import wake.su.zhuque.model.dto.MaterialCreateRequest;
 import wake.su.zhuque.model.dto.MaterialQueryRequest;
 import wake.su.zhuque.model.dto.MaterialUpdateRequest;
-import wake.su.zhuque.model.dto.PageResult;
 import wake.su.zhuque.model.entity.*;
 import wake.su.zhuque.model.enums.CreativeFormatEnum;
 import wake.su.zhuque.model.vo.MaterialListVO;
@@ -20,6 +22,7 @@ import wake.su.zhuque.service.RtbMaterialService;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -162,7 +165,7 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
     }
 
     @Override
-    public PageResult<MaterialListVO> list(MaterialQueryRequest request) {
+    public Result<List<MaterialListVO>> list(MaterialQueryRequest request) {
         Page<RtbMaterialDO> page = new Page<>(request.getCurrent(), request.getSize());
 
         LambdaQueryWrapper<RtbMaterialDO> wrapper = new LambdaQueryWrapper<>();
@@ -174,8 +177,8 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
 
         materialMapper.selectPage(page, wrapper);
 
-        PageResult<MaterialListVO> result = new PageResult<>();
-        result.setRecords(page.getRecords().stream().map(material -> {
+        Result<List<MaterialListVO>> result = new Result<>();
+        result.setData(page.getRecords().stream().map(material -> {
             MaterialListVO vo = new MaterialListVO();
             vo.setId(material.getId());
             vo.setMaterialId(material.getMaterialId());
@@ -189,9 +192,7 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
             vo.setCreateTime(material.getCreateTime());
             return vo;
         }).collect(java.util.stream.Collectors.toList()));
-        result.setTotal(page.getTotal());
-        result.setCurrent(page.getCurrent());
-        result.setSize(page.getSize());
+        result.setPage(PageInfo.of(page.getCurrent(), page.getSize(), page.getTotal()));
 
         return result;
     }

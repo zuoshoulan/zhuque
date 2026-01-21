@@ -3,12 +3,14 @@ package wake.su.zhuque.controller.rtb;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.web.bind.annotation.*;
 import wake.su.zhuque.common.core.result.PageInfo;
 import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.model.dto.MaterialCreateRequest;
 import wake.su.zhuque.model.dto.MaterialQueryRequest;
-import wake.su.zhuque.model.dto.PageResult;
 import wake.su.zhuque.model.dto.MaterialUpdateRequest;
 import wake.su.zhuque.model.vo.MaterialListVO;
 import wake.su.zhuque.model.vo.MaterialVO;
@@ -63,9 +65,8 @@ public class RtbMaterialController {
     @Operation(summary = "素材列表(分页)")
     public Result<java.util.List<MaterialListVO>> list(
             @RequestBody MaterialQueryRequest request) {
-        PageResult<MaterialListVO> pageResult = materialService.list(request);
-        PageInfo pageInfo = PageInfo.of(pageResult.getCurrent(), pageResult.getSize(), pageResult.getTotal());
-        return Result.success(pageResult.getRecords(), pageInfo);
+        Result<List<MaterialListVO>> pageResult = materialService.list(request);
+        return pageResult;
     }
 
     @PutMapping("/{id}/status")

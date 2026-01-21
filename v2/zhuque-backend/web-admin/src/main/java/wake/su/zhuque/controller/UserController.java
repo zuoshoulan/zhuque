@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import wake.su.zhuque.common.core.result.PageInfo;
 import wake.su.zhuque.common.core.result.Result;
-import wake.su.zhuque.model.dto.PageResult;
 import wake.su.zhuque.model.dto.ResetPasswordRequest;
 import wake.su.zhuque.model.dto.ResetPasswordResponse;
 import wake.su.zhuque.model.dto.UserQueryRequest;
@@ -60,14 +59,13 @@ public class UserController {
     @Operation(summary = "分页查询用户", description = "支持关键词搜索、状态筛选")
     @GetMapping("/page")
     public Result<List<SysUserDO>> page(UserQueryRequest request) {
-        PageResult<SysUserDO> pageResult = sysUserService.page(request);
+        Result<List<SysUserDO>> pageResult = sysUserService.page(request);
         // 清除密码字段
-        if (pageResult.getRecords() != null) {
-            pageResult.getRecords().forEach(user -> user.setPassword(null));
+        if (pageResult.getData() != null) {
+            pageResult.getData().forEach(user -> user.setPassword(null));
         }
         // 使用新的Result和PageInfo
-        PageInfo pageInfo = PageInfo.of(pageResult.getCurrent(), pageResult.getSize(), pageResult.getTotal());
-        return Result.success(pageResult.getRecords(), pageInfo);
+        return pageResult;
     }
 
     /**
