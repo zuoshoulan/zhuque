@@ -32,6 +32,17 @@ request.interceptors.response.use(
 
     // 如果返回的状态码为200，说明接口请求成功
     if (res.code === 200) {
+      // 如果有分页信息，将data和page合并返回
+      if (res.page) {
+        return {
+          list: res.data,
+          total: res.page.total,
+          current: res.page.current,
+          size: res.page.size,
+          pages: res.page.pages
+        }
+      }
+      // 普通接口直接返回data
       return res.data
     } else {
       // 显示错误信息

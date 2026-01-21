@@ -27,10 +27,11 @@ export interface RoleQuery {
  * 角色分页响应
  */
 export interface RolePageResponse {
-  records: RoleInfo[]
+  list: RoleInfo[]
   total: number
   current: number
   size: number
+  pages: number
 }
 
 /**

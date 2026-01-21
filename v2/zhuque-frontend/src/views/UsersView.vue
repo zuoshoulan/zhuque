@@ -246,7 +246,7 @@ const handleQuery = async () => {
   loading.value = true
   try {
     const data = await getUserPage(queryParams)
-    tableData.value = data.records
+    tableData.value = data.list
     total.value = data.total
   } catch (error) {
     console.error('查询用户列表失败:', error)

@@ -224,7 +224,7 @@ const handleQuery = async () => {
   loading.value = true
   try {
     const data = await getRolePage(queryParams)
-    tableData.value = data.records
+    tableData.value = data.list
     total.value = data.total
   } catch (error) {
     console.error('查询角色列表失败:', error)

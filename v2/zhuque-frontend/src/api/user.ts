@@ -43,10 +43,11 @@ export interface UserQuery {
  * 用户分页响应
  */
 export interface UserPageResponse {
-  records: UserInfo[]
+  list: UserInfo[]
   total: number
   current: number
   size: number
+  pages: number
 }
 
 /**
