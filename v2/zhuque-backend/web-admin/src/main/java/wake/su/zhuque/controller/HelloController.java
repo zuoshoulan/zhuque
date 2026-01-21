@@ -1,6 +1,6 @@
 package wake.su.zhuque.controller;
 
-import wake.su.zhuque.common.core.result.Result;
+import wake.su.zhuque.common.core.result.OldResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,18 +17,18 @@ import java.util.Map;
 public class HelloController {
 
     @GetMapping("/hello")
-    public Result<Map<String, Object>> hello() {
+    public OldResult<Map<String, Object>> hello() {
         Map<String, Object> data = new HashMap<>();
         data.put("message", "Hello, 朱雀广告平台！");
         data.put("time", LocalDateTime.now());
         data.put("version", "2.0.0");
         data.put("action", "say hi");
-        return Result.success(data);
+        return OldResult.success(data);
     }
 
     @GetMapping("/health")
-    public Result<String> health() {
-        return Result.success("系统运行正常", "OK");
+    public OldResult<String> health() {
+        return OldResult.success("系统运行正常", "OK");
     }
 
 }

@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import wake.su.zhuque.common.core.result.Result;
+import wake.su.zhuque.common.core.result.OldResult;
 import wake.su.zhuque.model.dto.CreativeCreateRequest;
 import wake.su.zhuque.model.dto.CreativeQueryRequest;
 import wake.su.zhuque.model.dto.CreativeUpdateRequest;
@@ -28,48 +28,48 @@ public class RtbCreativeController {
 
     @PostMapping
     @Operation(summary = "创建创意")
-    public Result<Long> create(@RequestBody CreativeCreateRequest request) {
+    public OldResult<Long> create(@RequestBody CreativeCreateRequest request) {
         Long id = creativeService.create(request);
-        return Result.success(id);
+        return OldResult.success(id);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "更新创意")
-    public Result<Void> update(
+    public OldResult<Void> update(
             @PathVariable Long id,
             @RequestBody CreativeUpdateRequest request) {
         request.setId(id);
         creativeService.update(request);
-        return Result.success();
+        return OldResult.success();
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "删除创意")
-    public Result<Void> delete(@PathVariable Long id) {
+    public OldResult<Void> delete(@PathVariable Long id) {
         creativeService.delete(id);
-        return Result.success();
+        return OldResult.success();
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "创意详情")
-    public Result<CreativeVO> detail(@PathVariable Long id) {
+    public OldResult<CreativeVO> detail(@PathVariable Long id) {
         CreativeVO vo = creativeService.detail(id);
-        return Result.success(vo);
+        return OldResult.success(vo);
     }
 
     @PostMapping("/list")
     @Operation(summary = "创意列表(分页)")
-    public Result<wake.su.zhuque.model.dto.PageResult<CreativeListVO>> list(
+    public OldResult<wake.su.zhuque.model.dto.PageResult<CreativeListVO>> list(
             @RequestBody CreativeQueryRequest request) {
-        return Result.success(creativeService.list(request));
+        return OldResult.success(creativeService.list(request));
     }
 
     @PutMapping("/{id}/status")
     @Operation(summary = "更新创意状态")
-    public Result<Void> updateStatus(
+    public OldResult<Void> updateStatus(
             @PathVariable Long id,
             @RequestParam Integer status) {
         creativeService.updateStatus(id, status);
-        return Result.success();
+        return OldResult.success();
     }
 }

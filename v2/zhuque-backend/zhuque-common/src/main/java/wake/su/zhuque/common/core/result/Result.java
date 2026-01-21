@@ -1,78 +1,77 @@
 package wake.su.zhuque.common.core.result;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+import java.io.Serializable;
 
 /**
- * 统一响应结果
- *
+ * 统一返回结果
  * @param <T> 数据类型
  */
 @Data
-public class Result<T> {
+@Schema(description = "统一返回结果")
+public class Result<T> implements Serializable {
 
+    @Schema(description = "状态码", example = "200")
     private Integer code;
+
+    @Schema(description = "返回消息", example = "操作成功")
     private String message;
+
+    @Schema(description = "返回数据")
     private T data;
-    private Long timestamp;
-    private String beijingTime;
 
-    private static final DateTimeFormatter BEIJING_TIME_FORMATTER =
-        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS").withZone(ZoneId.of("Asia/Shanghai"));
+    @Schema(description = "分页信息（分页时返回）")
+    private PageInfo page;
 
-    public Result() {
-        this.timestamp = System.currentTimeMillis();
-        this.beijingTime = BEIJING_TIME_FORMATTER.format(java.time.Instant.ofEpochMilli(this.timestamp));
-    }
-
-    public Result(Integer code, String message) {
-        this.code = code;
-        this.message = message;
-        this.timestamp = System.currentTimeMillis();
-        this.beijingTime = BEIJING_TIME_FORMATTER.format(java.time.Instant.ofEpochMilli(this.timestamp));
-    }
-
-    public Result(Integer code, String message, T data) {
-        this.code = code;
-        this.message = message;
-        this.data = data;
-        this.timestamp = System.currentTimeMillis();
-        this.beijingTime = BEIJING_TIME_FORMATTER.format(java.time.Instant.ofEpochMilli(this.timestamp));
-    }
-
-    /**
-     * 成功响应
-     */
     public static <T> Result<T> success() {
-        return new Result<>(200, "操作成功");
+        Result<T> result = new Result<>();
+        result.setCode(200);
+        result.setMessage("操作成功");
+        return result;
     }
 
     public static <T> Result<T> success(T data) {
-        return new Result<>(200, "操作成功", data);
+        Result<T> result = new Result<>();
+        result.setCode(200);
+        result.setMessage("操作成功");
+        result.setData(data);
+        return result;
     }
 
     public static <T> Result<T> success(String message, T data) {
-        return new Result<>(200, message, data);
+        Result<T> result = new Result<>();
+        result.setCode(200);
+        result.setMessage(message);
+        result.setData(data);
+        return result;
     }
 
     /**
-     * 失败响应
+     * 分页数据返回
      */
+    public static <T> Result<T> success(T data, PageInfo pageInfo) {
+        Result<T> result = new Result<>();
+        result.setCode(200);
+        result.setMessage("操作成功");
+        result.setData(data);
+        result.setPage(pageInfo);
+        return result;
+    }
+
     public static <T> Result<T> error(String message) {
-        return new Result<>(500, message);
+        Result<T> result = new Result<>();
+        result.setCode(500);
+        result.setMessage(message);
+        return result;
     }
 
     public static <T> Result<T> error(Integer code, String message) {
-        return new Result<>(code, message);
-    }
-
-    /**
-     * 自定义响应
-     */
-    public static <T> Result<T> build(Integer code, String message, T data) {
-        return new Result<>(code, message, data);
+        Result<T> result = new Result<>();
+        result.setCode(code);
+        result.setMessage(message);
+        return result;
     }
 
 }

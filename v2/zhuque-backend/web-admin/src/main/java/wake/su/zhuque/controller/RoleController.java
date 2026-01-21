@@ -3,7 +3,7 @@ package wake.su.zhuque.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import wake.su.zhuque.common.core.result.Result;
+import wake.su.zhuque.common.core.result.OldResult;
 import wake.su.zhuque.model.dto.AssignPermissionsRequest;
 import wake.su.zhuque.model.dto.PageResult;
 import wake.su.zhuque.model.dto.RoleCreateRequest;
@@ -32,97 +32,97 @@ public class RoleController {
      * 创建角色
      */
     @PostMapping
-    public Result<Long> createRole(@Valid @RequestBody RoleCreateRequest request) {
+    public OldResult<Long> createRole(@Valid @RequestBody RoleCreateRequest request) {
         Long id = roleService.createRole(request);
-        return Result.success(id);
+        return OldResult.success(id);
     }
 
     /**
      * 更新角色
      */
     @PutMapping("/{id}")
-    public Result<Void> updateRole(
+    public OldResult<Void> updateRole(
             @PathVariable Long id,
             @Valid @RequestBody RoleCreateRequest request) {
         roleService.updateRole(id, request);
-        return Result.success();
+        return OldResult.success();
     }
 
     /**
      * 删除角色
      */
     @DeleteMapping("/{id}")
-    public Result<Void> deleteRole(@PathVariable Long id) {
+    public OldResult<Void> deleteRole(@PathVariable Long id) {
         roleService.deleteRole(id);
-        return Result.success();
+        return OldResult.success();
     }
 
     /**
      * 获取角色详情
      */
     @GetMapping("/{id}")
-    public Result<RoleVO> getRole(@PathVariable Long id) {
+    public OldResult<RoleVO> getRole(@PathVariable Long id) {
         RoleVO vo = roleService.getRole(id);
-        return Result.success(vo);
+        return OldResult.success(vo);
     }
 
     /**
      * 获取角色列表
      */
     @GetMapping("/list")
-    public Result<List<RoleVO>> getRoleList() {
+    public OldResult<List<RoleVO>> getRoleList() {
         List<RoleVO> list = roleService.getRoleList();
-        return Result.success(list);
+        return OldResult.success(list);
     }
 
     /**
      * 分页查询角色列表
      */
     @GetMapping("/page")
-    public Result<PageResult<RoleVO>> getRolePage(RolePageQuery query) {
+    public OldResult<PageResult<RoleVO>> getRolePage(RolePageQuery query) {
         PageResult<RoleVO> pageResult = roleService.getRolePage(query);
-        return Result.success(pageResult);
+        return OldResult.success(pageResult);
     }
 
     /**
      * 修改角色状态
      */
     @PutMapping("/{id}/status")
-    public Result<Void> updateRoleStatus(
+    public OldResult<Void> updateRoleStatus(
             @PathVariable Long id,
             @RequestBody Map<String, Integer> request) {
         Integer status = request.get("status");
         roleService.updateRoleStatus(id, status);
-        return Result.success();
+        return OldResult.success();
     }
 
     /**
      * 为角色分配权限
      */
     @PostMapping("/{id}/permissions")
-    public Result<Void> assignPermissions(
+    public OldResult<Void> assignPermissions(
             @PathVariable Long id,
             @Valid @RequestBody AssignPermissionsRequest request) {
         request.setRoleId(id);
         roleService.assignPermissions(request);
-        return Result.success();
+        return OldResult.success();
     }
 
     /**
      * 获取角色的权限ID列表
      */
     @GetMapping("/{id}/permission-ids")
-    public Result<List<Long>> getRolePermissionIds(@PathVariable Long id) {
+    public OldResult<List<Long>> getRolePermissionIds(@PathVariable Long id) {
         List<Long> ids = roleService.getRolePermissionIds(id);
-        return Result.success(ids);
+        return OldResult.success(ids);
     }
 
     /**
      * 获取角色的权限列表
      */
     @GetMapping("/{id}/permissions")
-    public Result<List<PermissionVO>> getRolePermissions(@PathVariable Long id) {
+    public OldResult<List<PermissionVO>> getRolePermissions(@PathVariable Long id) {
         List<PermissionVO> permissions = roleService.getRolePermissions(id);
-        return Result.success(permissions);
+        return OldResult.success(permissions);
     }
 }
