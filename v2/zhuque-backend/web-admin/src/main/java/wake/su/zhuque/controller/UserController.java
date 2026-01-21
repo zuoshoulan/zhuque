@@ -7,7 +7,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import wake.su.zhuque.common.core.result.OldResult;
+import wake.su.zhuque.common.core.result.PageInfo;
+import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.model.dto.PageResult;
 import wake.su.zhuque.model.dto.ResetPasswordRequest;
 import wake.su.zhuque.model.dto.ResetPasswordResponse;
@@ -40,14 +41,14 @@ public class UserController {
      */
     @Operation(summary = "获取用户详情", description = "根据ID查询用户信息")
     @GetMapping("/{userId}")
-    public OldResult<SysUserDO> getUserById(@PathVariable("userId") Long userId) {
+    public Result<SysUserDO> getUserById(@PathVariable("userId") Long userId) {
         SysUserDO user = sysUserService.getById(userId);
         if (user == null) {
-            return OldResult.error("用户不存在");
+            return Result.error("用户不存在");
         }
         // 清除密码字段，不返回给前端
         user.setPassword(null);
-        return OldResult.success(user);
+        return Result.success(user);
     }
 
     /**
@@ -58,13 +59,15 @@ public class UserController {
      */
     @Operation(summary = "分页查询用户", description = "支持关键词搜索、状态筛选")
     @GetMapping("/page")
-    public OldResult<PageResult<SysUserDO>> page(UserQueryRequest request) {
+    public Result<List<SysUserDO>> page(UserQueryRequest request) {
         PageResult<SysUserDO> pageResult = sysUserService.page(request);
         // 清除密码字段
         if (pageResult.getRecords() != null) {
             pageResult.getRecords().forEach(user -> user.setPassword(null));
         }
-        return OldResult.success(pageResult);
+        // 使用新的Result和PageInfo
+        PageInfo pageInfo = PageInfo.of(pageResult.getCurrent(), pageResult.getSize(), pageResult.getTotal());
+        return Result.success(pageResult.getRecords(), pageInfo);
     }
 
     /**
@@ -75,9 +78,9 @@ public class UserController {
      */
     @Operation(summary = "创建用户", description = "创建新用户，密码使用默认规则生成")
     @PostMapping
-    public OldResult<Long> createUser(@RequestBody UserUpdateRequest request) {
+    public Result<Long> createUser(@RequestBody UserUpdateRequest request) {
         Long userId = sysUserService.createUser(request);
-        return OldResult.success(userId);
+        return Result.success(userId);
     }
 
     /**
@@ -89,9 +92,9 @@ public class UserController {
      */
     @Operation(summary = "更新用户", description = "更新用户基本信息")
     @PutMapping("/{userId}")
-    public OldResult<Void> updateUser(@PathVariable("userId") Long userId, @RequestBody UserUpdateRequest request) {
+    public Result<Void> updateUser(@PathVariable("userId") Long userId, @RequestBody UserUpdateRequest request) {
         boolean success = sysUserService.updateUser(userId, request);
-        return success ? OldResult.success() : OldResult.error("更新失败");
+        return success ? Result.success() : Result.error("更新失败");
     }
 
     /**
@@ -102,9 +105,9 @@ public class UserController {
      */
     @Operation(summary = "删除用户", description = "删除指定用户")
     @DeleteMapping("/{userId}")
-    public OldResult<Void> deleteUser(@PathVariable("userId") Long userId) {
+    public Result<Void> deleteUser(@PathVariable("userId") Long userId) {
         boolean success = sysUserService.removeById(userId);
-        return success ? OldResult.success() : OldResult.error("删除失败");
+        return success ? Result.success() : Result.error("删除失败");
     }
 
     /**
@@ -116,9 +119,9 @@ public class UserController {
      */
     @Operation(summary = "更新用户状态", description = "启用或禁用用户")
     @PutMapping("/{userId}/status")
-    public OldResult<Void> updateStatus(@PathVariable("userId") Long userId, @RequestBody UserUpdateRequest request) {
+    public Result<Void> updateStatus(@PathVariable("userId") Long userId, @RequestBody UserUpdateRequest request) {
         boolean success = sysUserService.updateStatus(userId, request.getStatus());
-        return success ? OldResult.success() : OldResult.error("更新失败");
+        return success ? Result.success() : Result.error("更新失败");
     }
 
     /**
@@ -130,12 +133,12 @@ public class UserController {
      */
     @Operation(summary = "更新用户主题偏好", description = "更新用户主题偏好：light-亮色，dark-暗色，auto-自动")
     @PutMapping("/{userId}/theme")
-    public OldResult<Void> updateThemePreference(
+    public Result<Void> updateThemePreference(
             @PathVariable("userId") Long userId,
             @RequestBody java.util.Map<String, String> request) {
         String theme = request.get("theme");
         boolean success = sysUserService.updateThemePreference(userId, theme);
-        return success ? OldResult.success() : OldResult.error("更新失败");
+        return success ? Result.success() : Result.error("更新失败");
     }
 
     /**
@@ -150,17 +153,17 @@ public class UserController {
         description = "重置用户密码，可选择自定义密码或使用默认规则（yyyyMMdd+手机号）。成功后返回明文密码，请妥善保管。"
     )
     @PostMapping("/{userId}/reset-password")
-    public OldResult<ResetPasswordResponse> resetPassword(
+    public Result<ResetPasswordResponse> resetPassword(
             @Parameter(description = "用户ID", required = true, example = "3")
             @PathVariable Long userId,
             @Valid @RequestBody ResetPasswordRequest request) {
         log.info("重置用户密码: userId={}", userId);
         try {
             ResetPasswordResponse response = sysUserService.resetPassword(userId, request.getNewPassword());
-            return OldResult.success(response);
+            return Result.success(response);
         } catch (Exception e) {
             log.error("重置密码失败: {}", e.getMessage());
-            return OldResult.error(e.getMessage());
+            return Result.error(e.getMessage());
         }
     }
 
@@ -172,9 +175,9 @@ public class UserController {
      */
     @Operation(summary = "获取用户的角色列表", description = "获取指定用户拥有的所有角色")
     @GetMapping("/{userId}/roles")
-    public OldResult<List<RoleVO>> getUserRoles(@PathVariable("userId") Long userId) {
+    public Result<List<RoleVO>> getUserRoles(@PathVariable("userId") Long userId) {
         List<RoleVO> roles = sysUserService.getUserRoles(userId);
-        return OldResult.success(roles);
+        return Result.success(roles);
     }
 
     /**
@@ -186,12 +189,12 @@ public class UserController {
      */
     @Operation(summary = "为用户分配角色", description = "为用户分配多个角色，会覆盖用户原有的所有角色")
     @PostMapping("/{userId}/roles")
-    public OldResult<Void> assignRoles(
+    public Result<Void> assignRoles(
             @PathVariable("userId") Long userId,
             @RequestBody Map<String, List<Long>> request) {
         List<Long> roleIds = request.get("roleIds");
         boolean success = sysUserService.assignRoles(userId, roleIds);
-        return success ? OldResult.success() : OldResult.error("分配角色失败");
+        return success ? Result.success() : Result.error("分配角色失败");
     }
 
     /**
@@ -206,17 +209,17 @@ public class UserController {
         description = "用户自己修改密码，需要输入原密码验证"
     )
     @PostMapping("/{userId}/change-password")
-    public OldResult<Void> changePassword(
+    public Result<Void> changePassword(
             @Parameter(description = "用户ID", required = true, example = "3")
             @PathVariable Long userId,
             @Valid @RequestBody wake.su.zhuque.model.dto.ChangePasswordRequest request) {
         log.info("修改密码: userId={}", userId);
         try {
             sysUserService.changePassword(userId, request.getOldPassword(), request.getNewPassword());
-            return OldResult.success();
+            return Result.success();
         } catch (Exception e) {
             log.error("修改密码失败: {}", e.getMessage());
-            return OldResult.error(e.getMessage());
+            return Result.error(e.getMessage());
         }
     }
 }

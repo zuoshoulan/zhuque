@@ -1,7 +1,7 @@
 package wake.su.zhuque.controller;
 
 import org.springframework.web.bind.annotation.*;
-import wake.su.zhuque.common.core.result.OldResult;
+import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.common.security.annotation.RequiresApiPermission;
 import wake.su.zhuque.common.security.annotation.RequiresPermission;
 
@@ -33,9 +33,9 @@ public class AdvertiserController {
      */
     @PostMapping
     @RequiresApiPermission("api:advertiser:create")
-    public OldResult<String> createAdvertiser(@RequestBody String request) {
+    public Result<String> createAdvertiser(@RequestBody String request) {
         // 业务逻辑
-        return OldResult.success("创建广告主成功");
+        return Result.success("创建广告主成功");
     }
 
     /**
@@ -47,9 +47,9 @@ public class AdvertiserController {
      */
     @PutMapping("/{id}")
     @RequiresApiPermission("api:advertiser:update")
-    public OldResult<String> updateAdvertiser(@PathVariable Long id, @RequestBody String request) {
+    public Result<String> updateAdvertiser(@PathVariable Long id, @RequestBody String request) {
         // 业务逻辑
-        return OldResult.success("更新广告主成功");
+        return Result.success("更新广告主成功");
     }
 
     /**
@@ -61,9 +61,9 @@ public class AdvertiserController {
      */
     @DeleteMapping("/{id}")
     @RequiresApiPermission("api:advertiser:delete")
-    public OldResult<String> deleteAdvertiser(@PathVariable Long id) {
+    public Result<String> deleteAdvertiser(@PathVariable Long id) {
         // 业务逻辑
-        return OldResult.success("删除广告主成功");
+        return Result.success("删除广告主成功");
     }
 
     /**
@@ -75,9 +75,9 @@ public class AdvertiserController {
      */
     @PutMapping("/{id}/audit")
     @RequiresPermission("advertiser:audit")
-    public OldResult<String> auditAdvertiser(@PathVariable Long id) {
+    public Result<String> auditAdvertiser(@PathVariable Long id) {
         // 业务逻辑
-        return OldResult.success("审核广告主成功");
+        return Result.success("审核广告主成功");
     }
 
     /**
@@ -89,9 +89,9 @@ public class AdvertiserController {
      */
     @GetMapping("/{id}")
     @RequiresApiPermission("api:advertiser:detail")
-    public OldResult<String> getAdvertiser(@PathVariable Long id) {
+    public Result<String> getAdvertiser(@PathVariable Long id) {
         // 业务逻辑
-        return OldResult.success("获取广告主详情成功");
+        return Result.success("获取广告主详情成功");
     }
 
     /**
@@ -103,9 +103,9 @@ public class AdvertiserController {
      */
     @GetMapping
     @RequiresApiPermission("api:advertiser:list")
-    public OldResult<String> listAdvertisers() {
+    public Result<String> listAdvertisers() {
         // 业务逻辑
-        return OldResult.success("获取广告主列表成功");
+        return Result.success("获取广告主列表成功");
     }
 
     /**
@@ -114,9 +114,9 @@ public class AdvertiserController {
      */
     @PostMapping("/batch")
     @RequiresApiPermission(value = {"api:advertiser:create", "api:advertiser:audit"}, logical = RequiresApiPermission.LogicalType.OR)
-    public OldResult<String> batchOperation() {
+    public Result<String> batchOperation() {
         // 业务逻辑
-        return OldResult.success("批量操作成功");
+        return Result.success("批量操作成功");
     }
 
     /**
@@ -125,8 +125,8 @@ public class AdvertiserController {
      */
     @PostMapping("/special")
     @RequiresApiPermission(value = {"api:advertiser:create", "api:advertiser:audit"}, logical = RequiresApiPermission.LogicalType.AND)
-    public OldResult<String> specialOperation() {
+    public Result<String> specialOperation() {
         // 业务逻辑
-        return OldResult.success("特殊操作成功");
+        return Result.success("特殊操作成功");
     }
 }

@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import wake.su.zhuque.common.core.result.OldResult;
+import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.model.dto.PermissionCreateRequest;
 import wake.su.zhuque.model.vo.PermissionVO;
 import wake.su.zhuque.service.api.PermissionService;
@@ -41,11 +41,11 @@ public class PermissionController {
     @ApiResponse(responseCode = "400", description = "参数错误")
     @ApiResponse(responseCode = "401", description = "未认证")
     @PostMapping
-    public OldResult<Long> createPermission(
+    public Result<Long> createPermission(
             @Parameter(description = "权限创建请求", required = true)
             @Valid @RequestBody PermissionCreateRequest request) {
         Long id = permissionService.createPermission(request);
-        return OldResult.success(id);
+        return Result.success(id);
     }
 
     /**
@@ -59,12 +59,12 @@ public class PermissionController {
     @ApiResponse(responseCode = "400", description = "参数错误")
     @ApiResponse(responseCode = "404", description = "权限不存在")
     @PutMapping("/{id}")
-    public OldResult<Void> updatePermission(
+    public Result<Void> updatePermission(
             @Parameter(description = "权限ID", required = true, example = "1")
             @PathVariable Long id,
             @Valid @RequestBody PermissionCreateRequest request) {
         permissionService.updatePermission(id, request);
-        return OldResult.success();
+        return Result.success();
     }
 
     /**
@@ -77,11 +77,11 @@ public class PermissionController {
     @ApiResponse(responseCode = "200", description = "删除成功")
     @ApiResponse(responseCode = "400", description = "存在子权限，无法删除")
     @DeleteMapping("/{id}")
-    public OldResult<Void> deletePermission(
+    public Result<Void> deletePermission(
             @Parameter(description = "权限ID", required = true, example = "1")
             @PathVariable Long id) {
         permissionService.deletePermission(id);
-        return OldResult.success();
+        return Result.success();
     }
 
     /**
@@ -94,11 +94,11 @@ public class PermissionController {
     @ApiResponse(responseCode = "200", description = "查询成功")
     @ApiResponse(responseCode = "404", description = "权限不存在")
     @GetMapping("/{id}")
-    public OldResult<PermissionVO> getPermission(
+    public Result<PermissionVO> getPermission(
             @Parameter(description = "权限ID", required = true, example = "1")
             @PathVariable Long id) {
         PermissionVO vo = permissionService.getPermission(id);
-        return OldResult.success(vo);
+        return Result.success(vo);
     }
 
     /**
@@ -110,9 +110,9 @@ public class PermissionController {
     )
     @ApiResponse(responseCode = "200", description = "查询成功")
     @GetMapping("/tree")
-    public OldResult<List<PermissionVO>> getPermissionTree() {
+    public Result<List<PermissionVO>> getPermissionTree() {
         List<PermissionVO> tree = permissionService.getPermissionTree();
-        return OldResult.success(tree);
+        return Result.success(tree);
     }
 
     /**
@@ -124,9 +124,9 @@ public class PermissionController {
     )
     @ApiResponse(responseCode = "200", description = "查询成功")
     @GetMapping("/list")
-    public OldResult<List<PermissionVO>> getPermissionList() {
+    public Result<List<PermissionVO>> getPermissionList() {
         List<PermissionVO> list = permissionService.getPermissionList();
-        return OldResult.success(list);
+        return Result.success(list);
     }
 
     /**
@@ -139,12 +139,12 @@ public class PermissionController {
     @ApiResponse(responseCode = "200", description = "更新成功")
     @ApiResponse(responseCode = "404", description = "权限不存在")
     @PutMapping("/{id}/status")
-    public OldResult<Void> updateStatus(
+    public Result<Void> updateStatus(
             @Parameter(description = "权限ID", required = true, example = "1")
             @PathVariable Long id,
             @Parameter(description = "状态：0-禁用，1-启用", required = true, example = "1")
             @RequestParam Integer status) {
         permissionService.updateStatus(id, status);
-        return OldResult.success();
+        return Result.success();
     }
 }

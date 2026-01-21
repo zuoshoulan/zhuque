@@ -2,7 +2,7 @@ package wake.su.zhuque.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import wake.su.zhuque.common.core.result.OldResult;
+import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.model.vo.MenuVO;
 import wake.su.zhuque.service.api.MenuService;
 
@@ -25,28 +25,28 @@ public class MenuController {
      * 获取当前用户的菜单树
      */
     @GetMapping("/user/tree")
-    public OldResult<List<MenuVO>> getUserMenuTree() {
+    public Result<List<MenuVO>> getUserMenuTree() {
         // TODO: 从当前登录用户获取userId
         Long userId = 1L; // 临时硬编码
         List<MenuVO> tree = menuService.getUserMenuTree(userId);
-        return OldResult.success(tree);
+        return Result.success(tree);
     }
 
     /**
      * 获取所有菜单树
      */
     @GetMapping("/tree")
-    public OldResult<List<MenuVO>> getAllMenuTree() {
+    public Result<List<MenuVO>> getAllMenuTree() {
         List<MenuVO> tree = menuService.getAllMenuTree();
-        return OldResult.success(tree);
+        return Result.success(tree);
     }
 
     /**
      * 获取所有菜单列表（平铺）
      */
     @GetMapping("/list")
-    public OldResult<List<MenuVO>> getAllMenuList() {
+    public Result<List<MenuVO>> getAllMenuList() {
         List<MenuVO> list = menuService.getAllMenuList();
-        return OldResult.success(list);
+        return Result.success(list);
     }
 }
