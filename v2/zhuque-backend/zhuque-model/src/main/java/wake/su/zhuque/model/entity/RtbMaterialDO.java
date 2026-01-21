@@ -63,19 +63,9 @@ public class RtbMaterialDO {
     private Integer ratio;
 
     /**
-     * OSS文件ID
+     * 关联文件ID,rtb_file.file_id
      */
     private String fileId;
-
-    /**
-     * 文件大小(字节)
-     */
-    private Long fileSize;
-
-    /**
-     * 文件MIME类型
-     */
-    private String fileType;
 
     /**
      * 缩略图URL(视频/音频用)

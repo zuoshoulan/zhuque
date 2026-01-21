@@ -35,6 +35,7 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
     private final RtbMaterialAudioMapper audioMapper;
     private final RtbMaterialNativeMapper nativeMapper;
     private final RtbCreativeMapper creativeMapper;
+    private final RtbFileService fileService;
 
     @Override
     @Transactional
@@ -203,8 +204,8 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
 
     @Override
     public String upload(MultipartFile file) {
-        // TODO: 实现文件上传到OSS
-        return "oss_" + System.currentTimeMillis();
+        // 委托给文件服务处理
+        return fileService.upload(file);
     }
 
     @Override
