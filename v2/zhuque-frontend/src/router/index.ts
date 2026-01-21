@@ -53,6 +53,18 @@ const router = createRouter({
           meta: { title: '权限管理 - 朱雀广告平台' }
         },
         {
+          path: 'creatives',
+          name: 'Creatives',
+          component: () => import('@/views/CreativesView.vue'),
+          meta: { title: '创意管理 - 朱雀广告平台' }
+        },
+        {
+          path: 'materials',
+          name: 'Materials',
+          component: () => import('@/views/MaterialsView.vue'),
+          meta: { title: '素材管理 - 朱雀广告平台' }
+        },
+        {
           path: 'profile',
           name: 'Profile',
           component: () => import('@/views/ProfileView.vue'),

@@ -177,8 +177,7 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
 
         materialMapper.selectPage(page, wrapper);
 
-        Result<List<MaterialListVO>> result = new Result<>();
-        result.setData(page.getRecords().stream().map(material -> {
+        List<MaterialListVO> list = page.getRecords().stream().map(material -> {
             MaterialListVO vo = new MaterialListVO();
             vo.setId(material.getId());
             vo.setMaterialId(material.getMaterialId());
@@ -191,10 +190,10 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
             vo.setFileUrl("/api/file/" + material.getFileId());
             vo.setCreateTime(material.getCreateTime());
             return vo;
-        }).collect(java.util.stream.Collectors.toList()));
-        result.setPage(PageInfo.of(page.getCurrent(), page.getSize(), page.getTotal()));
+        }).collect(java.util.stream.Collectors.toList());
 
-        return result;
+        PageInfo pageInfo = PageInfo.of(page.getCurrent(), page.getSize(), page.getTotal());
+        return Result.success(list, pageInfo);
     }
 
     @Override

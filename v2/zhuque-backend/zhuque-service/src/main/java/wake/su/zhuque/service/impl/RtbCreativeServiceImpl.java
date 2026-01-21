@@ -12,7 +12,6 @@ import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.dao.mapper.*;
 import wake.su.zhuque.model.dto.*;
 import wake.su.zhuque.model.entity.*;
-import wake.su.zhuque.model.enums.CreativeFormatEnum;
 import wake.su.zhuque.model.enums.CreativeStatusEnum;
 import wake.su.zhuque.model.vo.CreativeListVO;
 import wake.su.zhuque.model.vo.CreativeVO;
@@ -37,7 +36,6 @@ public class RtbCreativeServiceImpl implements RtbCreativeService {
         creative.setAdvertiserId(request.getAdvertiserId());
         creative.setName(request.getName());
         creative.setDescription(request.getDescription());
-        creative.setFormat(request.getFormat());
         creative.setLandingPageUrl(request.getLandingPageUrl());
         creative.setDisplayUrl(request.getDisplayUrl());
         creative.setAdvertiserDomain(request.getAdvertiserDomain());
@@ -89,8 +87,6 @@ public class RtbCreativeServiceImpl implements RtbCreativeService {
         vo.setAdvertiserId(creative.getAdvertiserId());
         vo.setName(creative.getName());
         vo.setDescription(creative.getDescription());
-        vo.setFormat(creative.getFormat());
-        vo.setFormatName(CreativeFormatEnum.getNameByCode(creative.getFormat()));
         vo.setLandingPageUrl(creative.getLandingPageUrl());
         vo.setDisplayUrl(creative.getDisplayUrl());
         vo.setAdvertiserDomain(creative.getAdvertiserDomain());
@@ -119,29 +115,31 @@ public class RtbCreativeServiceImpl implements RtbCreativeService {
         LambdaQueryWrapper<RtbCreativeDO> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(request.getAdvertiserId() != null, RtbCreativeDO::getAdvertiserId, request.getAdvertiserId())
                .like(request.getName() != null, RtbCreativeDO::getName, request.getName())
-               .eq(request.getFormat() != null, RtbCreativeDO::getFormat, request.getFormat())
                .eq(request.getStatus() != null, RtbCreativeDO::getStatus, request.getStatus())
                .orderByDesc(RtbCreativeDO::getCreateTime);
 
         creativeMapper.selectPage(page, wrapper);
 
-        Result<List<CreativeListVO>> result = new Result<>();
-        result.setData(page.getRecords().stream().map(creative -> {
+        List<CreativeListVO> list = page.getRecords().stream().map(creative -> {
             CreativeListVO vo = new CreativeListVO();
             vo.setId(creative.getId());
             vo.setCreativeId(creative.getCreativeId());
             vo.setAdvertiserId(creative.getAdvertiserId());
             vo.setName(creative.getName());
-            vo.setFormat(creative.getFormat());
-            vo.setFormatName(CreativeFormatEnum.getNameByCode(creative.getFormat()));
             vo.setStatus(creative.getStatus());
             vo.setStatusName(CreativeStatusEnum.getNameByCode(creative.getStatus()));
+
+            // 查询素材数量
+            Long materialCount = materialMapper.selectCount(new LambdaQueryWrapper<RtbMaterialDO>()
+                .eq(RtbMaterialDO::getCreativeId, creative.getId()));
+            vo.setMaterialCount(materialCount.intValue());
+
             vo.setCreateTime(creative.getCreateTime());
             return vo;
-        }).collect(Collectors.toList()));
-        result.setPage(PageInfo.of(page.getCurrent(), page.getSize(), page.getTotal()));
+        }).collect(Collectors.toList());
 
-        return result;
+        PageInfo pageInfo = PageInfo.of(page.getCurrent(), page.getSize(), page.getTotal());
+        return Result.success(list, pageInfo);
     }
 
     @Override

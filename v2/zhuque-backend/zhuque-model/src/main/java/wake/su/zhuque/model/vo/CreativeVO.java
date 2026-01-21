@@ -27,12 +27,6 @@ public class CreativeVO {
     @Schema(description = "创意描述")
     private String description;
 
-    @Schema(description = "格式")
-    private Integer format;
-
-    @Schema(description = "格式名称")
-    private String formatName;
-
     @Schema(description = "落地页URL")
     private String landingPageUrl;
 

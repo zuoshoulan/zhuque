@@ -35,6 +35,8 @@
             </template>
             <el-menu-item index="/ads">广告列表</el-menu-item>
             <el-menu-item index="/campaigns">活动管理</el-menu-item>
+            <el-menu-item index="/creatives">创意管理</el-menu-item>
+            <el-menu-item index="/materials">素材管理</el-menu-item>
           </el-sub-menu>
 
           <el-sub-menu index="system">
@@ -150,6 +152,8 @@ const currentBreadcrumb = computed(() => {
     '/users': '用户列表',
     '/ads': '广告列表',
     '/campaigns': '活动管理',
+    '/creatives': '创意管理',
+    '/materials': '素材管理',
     '/roles': '角色管理',
     '/permissions': '权限管理',
     '/profile': '个人中心'

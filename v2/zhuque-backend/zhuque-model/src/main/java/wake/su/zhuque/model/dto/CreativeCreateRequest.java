@@ -13,7 +13,6 @@ public class CreativeCreateRequest {
     private Long advertiserId;
     private String name;
     private String description;
-    private Integer format;
     private String landingPageUrl;
     private String displayUrl;
     private String advertiserDomain;

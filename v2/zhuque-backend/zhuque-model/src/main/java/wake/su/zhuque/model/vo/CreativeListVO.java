@@ -23,12 +23,6 @@ public class CreativeListVO {
     @Schema(description = "创意名称")
     private String name;
 
-    @Schema(description = "格式")
-    private Integer format;
-
-    @Schema(description = "格式名称")
-    private String formatName;
-
     @Schema(description = "状态")
     private Integer status;
 

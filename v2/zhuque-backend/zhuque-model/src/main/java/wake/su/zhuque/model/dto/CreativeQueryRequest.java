@@ -9,7 +9,6 @@ import lombok.Data;
 public class CreativeQueryRequest {
     private Long advertiserId;
     private String name;
-    private Integer format;
     private Integer status;
     private Integer current = 1;
     private Integer size = 10;

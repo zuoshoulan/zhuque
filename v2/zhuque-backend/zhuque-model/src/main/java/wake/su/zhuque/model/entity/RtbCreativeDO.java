@@ -43,11 +43,6 @@ public class RtbCreativeDO {
     private String description;
 
     /**
-     * 格式:1=Banner/2=Video/3=Audio/4=Native
-     */
-    private Integer format;
-
-    /**
      * 落地页URL
      */
     private String landingPageUrl;
