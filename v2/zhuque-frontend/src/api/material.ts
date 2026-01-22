@@ -104,7 +104,7 @@ export interface MaterialCreateRequest {
   name: string
   width: number
   height: number
-  fileId: string
+  fileId: number
   mimes?: string[]
   dur?: number
 
@@ -124,7 +124,7 @@ export interface MaterialUpdateRequest {
   name?: string
   width?: number
   height?: number
-  fileId?: string
+  fileId?: number
   mimes?: string[]
   dur?: number
 

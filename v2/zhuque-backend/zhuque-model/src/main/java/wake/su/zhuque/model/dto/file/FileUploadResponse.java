@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FileUploadResponse {
     /**
-     * 文件ID
+     * 文件ID（rtb_file.id）
      */
-    private String fileId;
+    private Long fileId;
 
     /**
      * 原始文件名

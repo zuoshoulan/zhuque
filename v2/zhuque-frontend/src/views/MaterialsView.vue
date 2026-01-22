@@ -294,7 +294,7 @@ const formData = reactive<Partial<MaterialCreateRequest> & { id?: number }>({
   format: 1,
   width: undefined,
   height: undefined,
-  fileId: '',
+  fileId: 0,
   mimes: undefined,
   dur: undefined,
   bannerExt: {} as BannerExt,
@@ -380,17 +380,17 @@ const handleFileChange = async (file: UploadFile) => {
     ElMessage.info('文件上传中...')
 
     // 调用文件上传接口
-    const result = await uploadFile(file.raw as File)
+    const fileData = await uploadFile(file.raw as File)
 
-    if (result.code === 200 && result.data) {
-      const fileData: FileUploadResponse = result.data
+    // 响应拦截器已经返回了 data，fileData 直接就是 FileUploadResponse
+    if (fileData && fileData.fileId) {
       formData.fileId = fileData.fileId
 
       // 如果是图片，自动填充宽度和高度
       if (fileData.width && fileData.height) {
         formData.width = fileData.width
         formData.height = fileData.height
-        ElMessage.success(`文件上传成功，自动识别尺寸: ${fileData.width}×${fileData.height}`)
+        ElMessage.success(`文件上传成功，自动识别尺寸: ${fileData.width}x${fileData.height}`)
       } else {
         ElMessage.success('文件上传成功')
       }
@@ -416,7 +416,7 @@ const handleAdd = () => {
     format: 1,
     width: undefined,
     height: undefined,
-    fileId: '',
+    fileId: 0,
     mimes: undefined,
     dur: undefined,
     bannerExt: {} as BannerExt,
@@ -440,7 +440,7 @@ const handleEdit = (row: MaterialListItem) => {
     format: row.format,
     width: row.width,
     height: row.height,
-    fileId: row.fileUrl ? row.fileUrl.split('/').pop() : '',
+    fileId: row.fileUrl ? Number(row.fileUrl.split('/').pop()) : 0,
     mimes: undefined,
     dur: undefined,
     bannerExt: {} as BannerExt,

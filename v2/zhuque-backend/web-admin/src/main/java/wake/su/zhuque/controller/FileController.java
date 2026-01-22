@@ -34,21 +34,21 @@ public class FileController {
     @PostMapping("/upload")
     @Operation(summary = "上传文件", description = "上传文件并返回文件信息（含尺寸），支持MD5去重")
     public Result<FileUploadResponse> upload(@RequestParam("file") MultipartFile file) {
-        String fileId = fileService.upload(file);
+        String fileUuid = fileService.upload(file);
 
         // 查询完整的文件信息
         RtbFileDO fileRecord = fileMapper.selectOne(
             new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<RtbFileDO>()
-                .eq(RtbFileDO::getFileId, fileId)
+                .eq(RtbFileDO::getFileUuid, fileUuid)
         );
 
         if (fileRecord == null) {
             return Result.error("文件上传失败");
         }
 
-        // 构建响应
+        // 构建响应 - 返回 id（管理后台用）而不是 fileUuid
         FileUploadResponse response = FileUploadResponse.builder()
-            .fileId(fileRecord.getFileId())
+            .fileId(fileRecord.getId())  // 返回 id
             .fileName(fileRecord.getFileName())
             .fileSize(fileRecord.getFileSize())
             .fileType(fileRecord.getFileType())
@@ -59,13 +59,13 @@ public class FileController {
         return Result.success(response);
     }
 
-    @GetMapping("/{fileId}")
-    @Operation(summary = "根据文件ID下载文件")
-    public ResponseEntity<byte[]> getFile(@PathVariable String fileId) {
-        // 根据fileId查询文件
+    @GetMapping("/{fileUuid}")
+    @Operation(summary = "根据文件UUID下载文件（对外，RTB竞价用）")
+    public ResponseEntity<byte[]> getFile(@PathVariable String fileUuid) {
+        // 根据fileUuid查询文件
         RtbFileDO fileRecord = fileMapper.selectOne(
             new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<RtbFileDO>()
-                .eq(RtbFileDO::getFileId, fileId)
+                .eq(RtbFileDO::getFileUuid, fileUuid)
         );
 
         if (fileRecord == null || fileRecord.getFileData() == null) {
@@ -93,13 +93,44 @@ public class FileController {
         );
     }
 
-    @GetMapping("/{fileId}/info")
-    @Operation(summary = "根据文件ID获取文件信息（不含文件内容）")
-    public ResponseEntity<RtbFileDO> getFileInfo(@PathVariable String fileId) {
-        // 根据fileId查询文件信息
+    @GetMapping("/by-id/{id}")
+    @Operation(summary = "根据文件ID下载文件（对内，管理后台用）")
+    public ResponseEntity<byte[]> getFileById(@PathVariable Long id) {
+        // 根据id查询文件
+        RtbFileDO fileRecord = fileMapper.selectById(id);
+
+        if (fileRecord == null || fileRecord.getFileData() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // 构建响应，添加缓存头
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(fileRecord.getFileType()));
+        headers.setContentDispositionFormData("inline", fileRecord.getFileName()); // inline 支持浏览器预览
+        headers.setContentLength(fileRecord.getFileData().length);
+
+        // 添加缓存控制
+        // 公共缓存：1小时（适合静态素材）
+        headers.setCacheControl("public, max-age=3600");
+        // ETag：使用 MD5 作为 ETag，支持客户端缓存验证
+        headers.setETag("\"" + fileRecord.getFileMd5() + "\"");
+        // Last-Modified：使用文件创建时间
+        headers.setLastModified(fileRecord.getCreateTime().atZone(java.time.ZoneId.systemDefault()).toInstant());
+
+        return new ResponseEntity<>(
+            fileRecord.getFileData(),
+            headers,
+            HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/{fileUuid}/info")
+    @Operation(summary = "根据文件UUID获取文件信息（不含文件内容）")
+    public ResponseEntity<RtbFileDO> getFileInfo(@PathVariable String fileUuid) {
+        // 根据fileUuid查询文件信息
         RtbFileDO fileRecord = fileMapper.selectOne(
             new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<RtbFileDO>()
-                .eq(RtbFileDO::getFileId, fileId)
+                .eq(RtbFileDO::getFileUuid, fileUuid)
         );
 
         if (fileRecord == null) {

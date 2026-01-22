@@ -45,10 +45,7 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
         // 从文件记录中获取文件信息
         RtbFileDO fileRecord = null;
         if (request.getFileId() != null) {
-            fileRecord = fileMapper.selectOne(
-                new LambdaQueryWrapper<RtbFileDO>()
-                    .eq(RtbFileDO::getFileId, request.getFileId())
-            );
+            fileRecord = fileMapper.selectById(request.getFileId());
             if (fileRecord == null) {
                 throw new RuntimeException("文件不存在: " + request.getFileId());
             }
@@ -62,7 +59,7 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
         material.setFormat(request.getFormat() != null ? request.getFormat() : 1);
         material.setWidth(request.getWidth());
         material.setHeight(request.getHeight());
-        material.setFileId(request.getFileId());
+        material.setFileId(request.getFileId()); // 直接使用 fileId
         material.setFileType(fileRecord != null ? fileRecord.getFileType() : null);
         material.setFileSize(fileRecord != null ? fileRecord.getFileSize() : null);
         material.setMimes(request.getMimes() != null ? String.join(",", request.getMimes()) : null);
@@ -157,10 +154,7 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
         // 从文件记录中获取文件信息（如果更新了文件）
         RtbFileDO fileRecord = null;
         if (request.getFileId() != null) {
-            fileRecord = fileMapper.selectOne(
-                new LambdaQueryWrapper<RtbFileDO>()
-                    .eq(RtbFileDO::getFileId, request.getFileId())
-            );
+            fileRecord = fileMapper.selectById(request.getFileId());
             if (fileRecord == null) {
                 throw new RuntimeException("文件不存在: " + request.getFileId());
             }
@@ -177,7 +171,7 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
             material.setHeight(request.getHeight());
         }
         if (request.getFileId() != null && fileRecord != null) {
-            material.setFileId(request.getFileId());
+            material.setFileId(request.getFileId()); // 直接使用 fileId
             material.setFileType(fileRecord.getFileType());
             material.setFileSize(fileRecord.getFileSize());
         }
@@ -298,7 +292,12 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
         vo.setHeight(material.getHeight());
         vo.setFileSize(material.getFileSize());
         vo.setFileType(material.getFileType());
-        vo.setFileUrl("/api/file/" + material.getFileId());
+
+        // 管理后台使用 id
+        if (material.getFileId() != null) {
+            vo.setFileUrl("/api/file/by-id/" + material.getFileId());
+        }
+
         vo.setDur(material.getDur());
         vo.setCreateTime(material.getCreateTime());
         vo.setUpdateTime(material.getUpdateTime());

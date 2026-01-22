@@ -41,18 +41,18 @@ public class RtbFileServiceImpl implements RtbFileService {
             );
 
             if (existingFile != null) {
-                // 文件已存在，直接返回已有的fileId
-                log.info("文件已存在，复用文件: fileId={}, fileName={}",
-                    existingFile.getFileId(), file.getOriginalFilename());
+                // 文件已存在，直接返回已有的fileUuid
+                log.info("文件已存在，复用文件: fileUuid={}, fileName={}",
+                    existingFile.getFileUuid(), file.getOriginalFilename());
 
-                return existingFile.getFileId();
+                return existingFile.getFileUuid();
             }
 
             // 文件不存在，创建新记录
-            String fileId = "FILE_" + IdUtil.getSnowflakeNextId();
+            String fileUuid = "FILE_" + IdUtil.getSnowflakeNextId();
 
             RtbFileDO fileRecord = new RtbFileDO();
-            fileRecord.setFileId(fileId);
+            fileRecord.setFileUuid(fileUuid);
             fileRecord.setFileName(file.getOriginalFilename());
             fileRecord.setFileData(fileData);
             fileRecord.setFileSize((long) fileData.length);
@@ -83,10 +83,10 @@ public class RtbFileServiceImpl implements RtbFileService {
 
             fileMapper.insert(fileRecord);
 
-            log.info("文件上传成功: fileId={}, fileName={}, size={}",
-                fileId, file.getOriginalFilename(), fileData.length);
+            log.info("文件上传成功: fileUuid={}, fileName={}, size={}",
+                fileUuid, file.getOriginalFilename(), fileData.length);
 
-            return fileId;
+            return fileUuid;
 
         } catch (Exception e) {
             log.error("文件上传失败: {}", e.getMessage(), e);

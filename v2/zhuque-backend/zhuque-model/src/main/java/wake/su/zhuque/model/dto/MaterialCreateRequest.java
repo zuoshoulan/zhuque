@@ -41,9 +41,9 @@ public class MaterialCreateRequest {
     private Integer height;
 
     /**
-     * 文件ID（需先通过文件上传接口获取）
+     * 文件ID（rtb_file.id）
      */
-    private String fileId;
+    private Long fileId;
 
     /**
      * 支持的MIME类型列表

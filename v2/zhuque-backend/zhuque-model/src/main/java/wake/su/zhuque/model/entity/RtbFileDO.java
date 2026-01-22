@@ -23,9 +23,10 @@ public class RtbFileDO {
     private Long id;
 
     /**
-     * 文件唯一ID
+     * 文件唯一UUID
      */
-    private String fileId;
+    @TableField("file_uuid")
+    private String fileUuid;
 
     /**
      * 原始文件名

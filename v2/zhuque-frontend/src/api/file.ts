@@ -4,7 +4,7 @@ import request from '@/utils/request'
  * 文件上传响应
  */
 export interface FileUploadResponse {
-  fileId: string
+  fileId: number
   fileName: string
   fileSize: number
   fileType: string
@@ -17,10 +17,10 @@ export interface FileUploadResponse {
  * @param file 文件对象
  * @returns 文件信息（含尺寸）
  */
-export const uploadFile = (file: File) => {
+export const uploadFile = (file: File): Promise<FileUploadResponse> => {
   const formData = new FormData()
   formData.append('file', file)
-  return request.post<any, { code: number; data: FileUploadResponse }>('/api/file/upload', formData, {
+  return request.post<any, FileUploadResponse>('/api/file/upload', formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }

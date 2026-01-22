@@ -40,7 +40,7 @@ public class MaterialUpdateRequest {
     /**
      * 文件ID（如需更换文件）
      */
-    private String fileId;
+    private Long fileId;
 
     /**
      * 支持的MIME类型列表
