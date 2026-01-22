@@ -71,6 +71,16 @@ public class RtbFileServiceImpl implements RtbFileService {
                 }
             }
 
+            // 如果是视频，解析尺寸
+            if (ImageUtils.isVideo(file.getContentType())) {
+                ImageUtils.ImageDimension dimension = ImageUtils.getVideoDimension(fileData);
+                if (dimension != null) {
+                    fileRecord.setWidth(dimension.getWidth());
+                    fileRecord.setHeight(dimension.getHeight());
+                    log.info("解析视频尺寸: {}x{}", dimension.getWidth(), dimension.getHeight());
+                }
+            }
+
             fileMapper.insert(fileRecord);
 
             log.info("文件上传成功: fileId={}, fileName={}, size={}",
