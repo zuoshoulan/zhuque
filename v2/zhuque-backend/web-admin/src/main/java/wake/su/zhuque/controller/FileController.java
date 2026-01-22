@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.dao.mapper.RtbFileMapper;
+import wake.su.zhuque.model.dto.file.FileUploadResponse;
 import wake.su.zhuque.model.entity.RtbFileDO;
 import wake.su.zhuque.service.RtbFileService;
 
@@ -31,10 +32,31 @@ public class FileController {
     private final RtbFileService fileService;
 
     @PostMapping("/upload")
-    @Operation(summary = "上传文件", description = "上传文件并返回文件ID，支持MD5去重")
-    public Result<String> upload(@RequestParam("file") MultipartFile file) {
+    @Operation(summary = "上传文件", description = "上传文件并返回文件信息（含尺寸），支持MD5去重")
+    public Result<FileUploadResponse> upload(@RequestParam("file") MultipartFile file) {
         String fileId = fileService.upload(file);
-        return Result.success(fileId);
+
+        // 查询完整的文件信息
+        RtbFileDO fileRecord = fileMapper.selectOne(
+            new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<RtbFileDO>()
+                .eq(RtbFileDO::getFileId, fileId)
+        );
+
+        if (fileRecord == null) {
+            return Result.error("文件上传失败");
+        }
+
+        // 构建响应
+        FileUploadResponse response = FileUploadResponse.builder()
+            .fileId(fileRecord.getFileId())
+            .fileName(fileRecord.getFileName())
+            .fileSize(fileRecord.getFileSize())
+            .fileType(fileRecord.getFileType())
+            .width(fileRecord.getWidth())
+            .height(fileRecord.getHeight())
+            .build();
+
+        return Result.success(response);
     }
 
     @GetMapping("/{fileId}")

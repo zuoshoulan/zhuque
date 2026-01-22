@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import wake.su.zhuque.common.util.ImageUtils;
 import wake.su.zhuque.dao.mapper.RtbFileMapper;
 import wake.su.zhuque.model.entity.RtbFileDO;
 import wake.su.zhuque.service.RtbFileService;
@@ -59,6 +60,16 @@ public class RtbFileServiceImpl implements RtbFileService {
             fileRecord.setFileType(file.getContentType());
             fileRecord.setCreateTime(LocalDateTime.now());
             fileRecord.setUpdateTime(LocalDateTime.now());
+
+            // 如果是图片，解析尺寸
+            if (ImageUtils.isImage(file.getContentType())) {
+                ImageUtils.ImageDimension dimension = ImageUtils.getImageDimension(fileData);
+                if (dimension != null) {
+                    fileRecord.setWidth(dimension.getWidth());
+                    fileRecord.setHeight(dimension.getHeight());
+                    log.info("解析图片尺寸: {}x{}", dimension.getWidth(), dimension.getHeight());
+                }
+            }
 
             fileMapper.insert(fileRecord);
 

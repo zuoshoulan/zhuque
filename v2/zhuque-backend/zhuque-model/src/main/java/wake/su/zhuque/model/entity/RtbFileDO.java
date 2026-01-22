@@ -53,6 +53,16 @@ public class RtbFileDO {
     private String fileType;
 
     /**
+     * 宽度(像素) - 图片/视频有效
+     */
+    private Integer width;
+
+    /**
+     * 高度(像素) - 图片/视频有效
+     */
+    private Integer height;
+
+    /**
      * 创建时间
      */
     private LocalDateTime createTime;

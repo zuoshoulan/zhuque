@@ -83,16 +83,17 @@
     <el-dialog
       v-model="dialogVisible"
       :title="dialogTitle"
-      width="600px"
+      width="700px"
       :close-on-click-modal="false"
     >
       <el-form
         ref="formRef"
         :model="formData"
         :rules="formRules"
-        label-width="100px"
+        label-width="120px"
         @submit.prevent="handleSubmit"
       >
+        <!-- 基础字段 -->
         <el-form-item label="素材名称" prop="name">
           <el-input v-model="formData.name" placeholder="请输入素材名称" />
         </el-form-item>
@@ -114,26 +115,106 @@
             <el-option label="Native" :value="4" />
           </el-select>
         </el-form-item>
-        <el-form-item label="宽度" prop="width">
+        <el-form-item label="宽度(像素)" prop="width">
           <el-input-number v-model="formData.width" :min="0" style="width: 100%" />
         </el-form-item>
-        <el-form-item label="高度" prop="height">
+        <el-form-item label="高度(像素)" prop="height">
           <el-input-number v-model="formData.height" :min="0" style="width: 100%" />
         </el-form-item>
-        <el-form-item label="文件" prop="fileId">
+        <el-form-item label="文件" prop="fileId" required>
           <el-upload
             class="upload-demo"
             action="#"
             :auto-upload="false"
             :on-change="handleFileChange"
             :limit="1"
+            :file-list="fileList"
           >
-            <el-button type="primary">选择文件</el-button>
+            <el-button type="primary" :loading="uploading">选择文件</el-button>
             <template #tip>
               <div class="el-upload__tip">支持图片、视频、音频文件</div>
             </template>
           </el-upload>
         </el-form-item>
+
+        <!-- Banner扩展字段 -->
+        <template v-if="formData.format === 1">
+          <el-divider content-position="left">Banner扩展属性</el-divider>
+          <el-form-item label="广告位置">
+            <el-radio-group v-model="formData.bannerExt!.pos">
+              <el-radio :value="1">首屏</el-radio>
+              <el-radio :value="2">次屏</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="横幅类型">
+            <el-checkbox-group v-model="bannerBtypeChecked">
+              <el-checkbox :label="2">静态图片</el-checkbox>
+              <el-checkbox :label="7">含视频的Banner</el-checkbox>
+            </el-checkbox-group>
+          </el-form-item>
+          <el-form-item label="窗口模式">
+            <el-radio-group v-model="formData.bannerExt!.wmode">
+              <el-radio :value="1">正常</el-radio>
+              <el-radio :value="2">全屏</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </template>
+
+        <!-- Video扩展字段 -->
+        <template v-if="formData.format === 2">
+          <el-divider content-position="left">Video扩展属性</el-divider>
+          <el-form-item label="播放方式">
+            <el-radio-group v-model="formData.videoExt!.linearity">
+              <el-radio :value="1">线性播放</el-radio>
+              <el-radio :value="2">非线性播放</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="开始延迟">
+            <el-select v-model="formData.videoExt!.startdelay" placeholder="请选择">
+              <el-option label="前贴片" :value="0" />
+              <el-option label="中贴片" :value="-1" />
+              <el-option label="后贴片5秒" :value="5" />
+              <el-option label="后贴片10秒" :value="10" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="跳过按钮">
+            <el-switch
+              v-model="videoSkipEnabled"
+              active-text="可跳过"
+              inactive-text="不可跳过"
+            />
+          </el-form-item>
+          <el-form-item v-if="videoSkipEnabled" label="跳过等待时间">
+            <el-input-number v-model="formData.videoExt!.skipmin" :min="0" placeholder="最少播放秒数" />
+            <span style="margin: 0 10px">秒后可跳过</span>
+          </el-form-item>
+        </template>
+
+        <!-- Audio扩展字段 -->
+        <template v-if="formData.format === 3">
+          <el-divider content-position="left">Audio扩展属性</el-divider>
+          <el-form-item label="音频时长">
+            <el-input-number v-model="formData.audioExt!.minDuration" :min="0" placeholder="最小时长(秒)" />
+            <span style="margin: 0 10px">-</span>
+            <el-input-number v-model="formData.audioExt!.maxDuration" :min="0" placeholder="最大时长(秒)" />
+          </el-form-item>
+        </template>
+
+        <!-- Native扩展字段 -->
+        <template v-if="formData.format === 4">
+          <el-divider content-position="left">Native扩展属性</el-divider>
+          <el-form-item label="请求JSON">
+            <el-input
+              v-model="formData.nativeExt!.requestJson"
+              type="textarea"
+              :rows="4"
+              placeholder="请输入原生广告请求JSON"
+            />
+          </el-form-item>
+          <el-form-item label="API版本">
+            <el-input v-model="formData.nativeExt!.ver" placeholder="请输入API版本" />
+          </el-form-item>
+        </template>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -144,8 +225,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import type { FormInstance, FormRules } from 'element-plus'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
+import type { FormInstance, FormRules, UploadUserFile, UploadFile } from 'element-plus'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Search, Refresh, Edit, Delete } from '@element-plus/icons-vue'
 import {
@@ -154,8 +235,17 @@ import {
   updateMaterial,
   deleteMaterial
 } from '@/api/material'
+import { uploadFile, type FileUploadResponse } from '@/api/file'
 import { getCreativePage } from '@/api/creative'
-import type { MaterialListItem, MaterialCreateRequest } from '@/api/material'
+import type {
+  MaterialListItem,
+  MaterialCreateRequest,
+  MaterialUpdateRequest,
+  BannerExt,
+  VideoExt,
+  AudioExt,
+  NativeExt
+} from '@/api/material'
 import type { CreativeListItem } from '@/api/creative'
 
 // 查询参数
@@ -178,6 +268,24 @@ const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const submitLoading = ref(false)
 
+// 文件列表
+const fileList = ref<UploadUserFile[]>([])
+const uploading = ref(false)
+
+// Video跳过按钮开关
+const videoSkipEnabled = ref(false)
+
+// Banner btype 计算属性
+const bannerBtypeChecked = computed({
+  get: () => formData.bannerExt?.btype || [],
+  set: (val: number[]) => {
+    if (!formData.bannerExt) {
+      formData.bannerExt = {} as BannerExt
+    }
+    formData.bannerExt.btype = val
+  }
+})
+
 // 表单数据
 const formData = reactive<Partial<MaterialCreateRequest> & { id?: number }>({
   id: undefined,
@@ -186,7 +294,22 @@ const formData = reactive<Partial<MaterialCreateRequest> & { id?: number }>({
   format: 1,
   width: undefined,
   height: undefined,
-  fileId: ''
+  fileId: '',
+  mimes: undefined,
+  dur: undefined,
+  bannerExt: {} as BannerExt,
+  videoExt: {} as VideoExt,
+  audioExt: {} as AudioExt,
+  nativeExt: {} as NativeExt
+})
+
+// 监听format变化，重置扩展字段
+watch(() => formData.format, () => {
+  formData.bannerExt = {} as BannerExt
+  formData.videoExt = {} as VideoExt
+  formData.audioExt = {} as AudioExt
+  formData.nativeExt = {} as NativeExt
+  videoSkipEnabled.value = false
 })
 
 // 表单引用
@@ -249,11 +372,37 @@ const loadCreativeOptions = async () => {
 }
 
 // 文件选择变化
-const handleFileChange = (_file: any) => {
-  // TODO: 实际项目中需要上传文件到服务器
-  // 这里暂时用文件名作为fileId
-  formData.fileId = 'file_' + Date.now()
-  ElMessage.success('文件已选择')
+const handleFileChange = async (file: UploadFile) => {
+  fileList.value = [file]
+
+  try {
+    uploading.value = true
+    ElMessage.info('文件上传中...')
+
+    // 调用文件上传接口
+    const result = await uploadFile(file.raw as File)
+
+    if (result.code === 200 && result.data) {
+      const fileData: FileUploadResponse = result.data
+      formData.fileId = fileData.fileId
+
+      // 如果是图片，自动填充宽度和高度
+      if (fileData.width && fileData.height) {
+        formData.width = fileData.width
+        formData.height = fileData.height
+        ElMessage.success(`文件上传成功，自动识别尺寸: ${fileData.width}×${fileData.height}`)
+      } else {
+        ElMessage.success('文件上传成功')
+      }
+    } else {
+      ElMessage.error('文件上传失败')
+    }
+  } catch (error: any) {
+    console.error('文件上传失败:', error)
+    ElMessage.error(error.message || '文件上传失败')
+  } finally {
+    uploading.value = false
+  }
 }
 
 // 添加素材
@@ -267,8 +416,16 @@ const handleAdd = () => {
     format: 1,
     width: undefined,
     height: undefined,
-    fileId: ''
+    fileId: '',
+    mimes: undefined,
+    dur: undefined,
+    bannerExt: {} as BannerExt,
+    videoExt: {} as VideoExt,
+    audioExt: {} as AudioExt,
+    nativeExt: {} as NativeExt
   })
+  fileList.value = []
+  videoSkipEnabled.value = false
   formRef.value?.clearValidate()
 }
 
@@ -283,8 +440,16 @@ const handleEdit = (row: MaterialListItem) => {
     format: row.format,
     width: row.width,
     height: row.height,
-    fileId: row.fileUrl
+    fileId: row.fileUrl ? row.fileUrl.split('/').pop() : '',
+    mimes: undefined,
+    dur: undefined,
+    bannerExt: {} as BannerExt,
+    videoExt: {} as VideoExt,
+    audioExt: {} as AudioExt,
+    nativeExt: {} as NativeExt
   })
+  fileList.value = []
+  videoSkipEnabled.value = false
   formRef.value?.clearValidate()
 }
 
@@ -296,19 +461,43 @@ const handleSubmit = async () => {
     await formRef.value.validate()
     submitLoading.value = true
 
+    // 构建创建/更新数据
+    const submitData: MaterialCreateRequest | MaterialUpdateRequest = {
+      creativeId: formData.creativeId!,
+      name: formData.name!,
+      format: formData.format!,
+      width: formData.width!,
+      height: formData.height!,
+      fileId: formData.fileId!,
+      mimes: formData.mimes,
+      dur: formData.dur
+    }
+
+    // 根据format添加对应的扩展字段
+    if (formData.format === 1 && formData.bannerExt) {
+      submitData.bannerExt = { ...formData.bannerExt }
+    } else if (formData.format === 2 && formData.videoExt) {
+      submitData.videoExt = { ...formData.videoExt }
+      if (!videoSkipEnabled.value) {
+        submitData.videoExt.skip = 0
+      }
+    } else if (formData.format === 3 && formData.audioExt) {
+      submitData.audioExt = { ...formData.audioExt }
+    } else if (formData.format === 4 && formData.nativeExt) {
+      submitData.nativeExt = { ...formData.nativeExt }
+    }
+
     if (formData.id) {
-      await updateMaterial(formData.id, { name: formData.name })
+      // 更新
+      const updateData: MaterialUpdateRequest = {
+        id: formData.id,
+        ...submitData
+      }
+      await updateMaterial(formData.id, updateData)
       ElMessage.success('更新成功')
     } else {
-      const createData: MaterialCreateRequest = {
-        creativeId: formData.creativeId!,
-        name: formData.name!,
-        format: formData.format!,
-        width: formData.width!,
-        height: formData.height!,
-        fileId: formData.fileId!
-      }
-      await createMaterial(createData)
+      // 创建
+      await createMaterial(submitData as MaterialCreateRequest)
       ElMessage.success('创建成功')
     }
 
@@ -362,5 +551,9 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.upload-demo {
+  width: 100%;
 }
 </style>
