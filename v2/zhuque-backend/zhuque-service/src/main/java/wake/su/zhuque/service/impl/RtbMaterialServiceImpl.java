@@ -348,7 +348,9 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
             if (banner != null) {
                 Map<String, Object> ext = new HashMap<>();
                 ext.put("pos", banner.getPos());
-                ext.put("btype", parseIntegerList(banner.getBtype()));
+                // btype 是单选，返回第一个值（如果有的话）
+                List<Integer> btypeList = parseIntegerList(banner.getBtype());
+                ext.put("btype", btypeList.isEmpty() ? null : btypeList.get(0));
                 ext.put("wmode", banner.getWmode());
                 ext.put("ext", banner.getExt());
                 vo.setBannerExt(ext);

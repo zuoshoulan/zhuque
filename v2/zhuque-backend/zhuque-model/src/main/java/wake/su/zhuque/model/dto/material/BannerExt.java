@@ -2,8 +2,6 @@ package wake.su.zhuque.model.dto.material;
 
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * Banner素材扩展属性
  * 对应OpenRTB的Bid.Banner对象
@@ -16,9 +14,9 @@ public class BannerExt {
     private Integer pos;
 
     /**
-     * 横幅类型列表
+     * 横幅类型（单选）
      */
-    private List<Integer> btype;
+    private Integer btype;
 
     /**
      * 窗口模式:1=正常/2=全屏

@@ -132,7 +132,10 @@
           >
             <el-button type="primary" :loading="uploading">选择文件</el-button>
             <template #tip>
-              <div class="el-upload__tip">支持图片、视频、音频文件</div>
+              <div class="el-upload__tip">
+                <span v-if="formData.format === 1">{{ getBannerTypeTip() }}</span>
+                <span v-else>支持图片、视频、音频文件</span>
+              </div>
             </template>
           </el-upload>
 
@@ -169,10 +172,10 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="横幅类型">
-            <el-checkbox-group v-model="bannerBtypeChecked">
-              <el-checkbox :label="2">静态图片</el-checkbox>
-              <el-checkbox :label="7">含视频的Banner</el-checkbox>
-            </el-checkbox-group>
+            <el-radio-group v-model="formData.bannerExt!.btype">
+              <el-radio :value="2">静态图片</el-radio>
+              <el-radio :value="7">含视频的Banner</el-radio>
+            </el-radio-group>
           </el-form-item>
           <el-form-item label="窗口模式">
             <el-radio-group v-model="formData.bannerExt!.wmode">
@@ -247,7 +250,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed, watch } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import type { FormInstance, FormRules, UploadUserFile, UploadFile } from 'element-plus'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Search, Refresh, Edit, Delete } from '@element-plus/icons-vue'
@@ -297,17 +300,6 @@ const uploading = ref(false)
 
 // Video跳过按钮开关
 const videoSkipEnabled = ref(false)
-
-// Banner btype 计算属性
-const bannerBtypeChecked = computed({
-  get: () => formData.bannerExt?.btype || [],
-  set: (val: number[]) => {
-    if (!formData.bannerExt) {
-      formData.bannerExt = {} as BannerExt
-    }
-    formData.bannerExt.btype = val
-  }
-})
 
 // 表单数据
 const formData = reactive<Partial<MaterialCreateRequest> & { id?: number }>({
@@ -482,13 +474,9 @@ const handleEdit = async (row: MaterialListItem) => {
     if (detail.format === 1 && detail.bannerExt) {
       formData.bannerExt = {
         pos: detail.bannerExt.pos as number,
-        btype: detail.bannerExt.btype as number[] || [],
+        btype: detail.bannerExt.btype as number || 2,
         wmode: detail.bannerExt.wmode as number,
         ext: detail.bannerExt.ext as string
-      }
-      // 设置banner btype
-      if (formData.bannerExt.btype) {
-        bannerBtypeChecked.value = [...formData.bannerExt.btype]
       }
     } else if (detail.format === 2 && detail.videoExt) {
       formData.videoExt = {
@@ -621,6 +609,19 @@ const getFilePreviewUrl = () => {
     return `/api/file/by-id/${formData.fileId}`
   }
   return ''
+}
+
+// 获取Banner类型提示
+const getBannerTypeTip = () => {
+  const btype = formData.bannerExt?.btype
+  switch (btype) {
+    case 2:
+      return '建议上传：JPG、PNG、GIF 等图片文件'
+    case 7:
+      return '建议上传：MP4、HTML5 视频文件或含视频的Banner'
+    default:
+      return '请先选择横幅类型'
+  }
 }
 
 // 页面加载时查询数据

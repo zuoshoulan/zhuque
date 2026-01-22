@@ -5,7 +5,7 @@ import request from '@/utils/request'
  */
 export interface BannerExt {
   pos?: number        // 广告位置:1=首屏/2=次屏
-  btype?: number[]    // 横幅类型列表
+  btype?: number      // 横幅类型（单选）
   wmode?: number      // 窗口模式:1=正常/2=全屏
   ext?: string        // 扩展字段，JSON格式
 }
