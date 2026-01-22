@@ -1,5 +1,12 @@
+-- Set character set to handle UTF-8 comments correctly
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+SET character_set_client = utf8mb4;
+SET character_set_connection = utf8mb4;
+SET character_set_results = utf8mb4;
+
 -- 创建独立的文件表
-USE zhuque_rtb;
+USE zhuque_v2;
 
 CREATE TABLE `rtb_file` (
   `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -9,6 +16,8 @@ CREATE TABLE `rtb_file` (
   `file_size` BIGINT NOT NULL COMMENT '文件大小(字节)',
   `file_md5` VARCHAR(32) NOT NULL COMMENT '文件MD5值',
   `file_type` VARCHAR(64) COMMENT '文件MIME类型',
+  `width` INT COMMENT '宽度(像素) - 图片/视频有效',
+  `height` INT COMMENT '高度(像素) - 图片/视频有效',
   `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
