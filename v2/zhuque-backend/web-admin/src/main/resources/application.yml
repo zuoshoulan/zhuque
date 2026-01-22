@@ -68,6 +68,7 @@ security:
       - /api/auth/login
       - /api/auth/logout
       - /api/test/**
+      - /api/file/**  # 文件访问允许匿名（管理后台和竞价都用）
       - /actuator/**
       - /swagger-ui/**
       - /swagger-ui.html
