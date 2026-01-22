@@ -8,23 +8,34 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import wake.su.zhuque.common.core.result.Result;
 import wake.su.zhuque.dao.mapper.RtbFileMapper;
 import wake.su.zhuque.model.entity.RtbFileDO;
+import wake.su.zhuque.service.RtbFileService;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * 文件下载Controller
- * 用于获取存储在数据库中的文件
+ * 文件管理Controller
+ * 用于文件的存储在数据库中的上传和下载
  * 支持 HTTP 缓存，适合竞价场景
  */
-@Tag(name = "文件管理", description = "文件下载接口")
+@Tag(name = "文件管理", description = "文件上传下载接口")
 @RestController
 @RequestMapping("/api/file")
 @RequiredArgsConstructor
 public class FileController {
 
     private final RtbFileMapper fileMapper;
+    private final RtbFileService fileService;
+
+    @PostMapping("/upload")
+    @Operation(summary = "上传文件", description = "上传文件并返回文件ID，支持MD5去重")
+    public Result<String> upload(@RequestParam("file") MultipartFile file) {
+        String fileId = fileService.upload(file);
+        return Result.success(fileId);
+    }
 
     @GetMapping("/{fileId}")
     @Operation(summary = "根据文件ID下载文件")
