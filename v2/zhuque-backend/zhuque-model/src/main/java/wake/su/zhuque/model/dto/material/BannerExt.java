@@ -6,6 +6,7 @@ import java.util.List;
 
 /**
  * Banner素材扩展属性
+ * 对应OpenRTB的Bid.Banner对象
  */
 @Data
 public class BannerExt {
@@ -15,7 +16,17 @@ public class BannerExt {
     private Integer pos;
 
     /**
-     * 浏览器类型列表
+     * 横幅类型列表
      */
     private List<Integer> btype;
+
+    /**
+     * 窗口模式:1=正常/2=全屏
+     */
+    private Integer wmode;
+
+    /**
+     * 扩展字段，JSON格式
+     */
+    private String ext;
 }

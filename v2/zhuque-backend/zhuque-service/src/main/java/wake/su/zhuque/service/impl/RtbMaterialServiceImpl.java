@@ -81,6 +81,8 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
                 banner.setPos(request.getBannerExt().getPos());
                 banner.setBtype(request.getBannerExt().getBtype() != null
                     ? request.getBannerExt().getBtype().toString() : null);
+                banner.setWmode(request.getBannerExt().getWmode());
+                banner.setExt(request.getBannerExt().getExt());
                 bannerMapper.insert(banner);
             }
         } else if (format == 2) {
@@ -90,8 +92,26 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
                 video.setMaterialId(material.getId());
                 video.setLinearity(request.getVideoExt().getLinearity() != null
                     ? request.getVideoExt().getLinearity() : 1);
+                video.setSequence(request.getVideoExt().getSequence());
+                video.setMinDuration(request.getVideoExt().getMinDuration());
+                video.setMaxDuration(request.getVideoExt().getMaxDuration());
                 video.setStartdelay(request.getVideoExt().getStartdelay());
+                video.setSkip(request.getVideoExt().getSkip());
+                video.setSkipmin(request.getVideoExt().getSkipmin());
+                video.setSkipafter(request.getVideoExt().getSkipafter());
+                video.setPlacement(request.getVideoExt().getPlacement());
                 video.setPlaybackend(request.getVideoExt().getPlaybackend());
+                video.setPlayableafter(request.getVideoExt().getPlayableafter());
+                video.setPodid(request.getVideoExt().getPodid());
+                video.setPodsize(request.getVideoExt().getPodsize());
+                video.setPodseq(request.getVideoExt().getPodseq());
+                video.setMincpmpersec(request.getVideoExt().getMincpmpersec());
+                video.setMaxseq(request.getVideoExt().getMaxseq());
+                video.setRender(request.getVideoExt().getRender());
+                video.setApi(request.getVideoExt().getApi() != null
+                    ? request.getVideoExt().getApi().stream()
+                        .map(String::valueOf).collect(java.util.stream.Collectors.joining(",")) : null);
+                video.setExt(request.getVideoExt().getExt());
                 videoMapper.insert(video);
             }
         } else if (format == 3) {
@@ -100,6 +120,13 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
                 RtbMaterialAudioDO audio = new RtbMaterialAudioDO();
                 audio.setMaterialId(material.getId());
                 audio.setSequence(request.getAudioExt().getSequence());
+                audio.setMinDuration(request.getAudioExt().getMinDuration());
+                audio.setMaxDuration(request.getAudioExt().getMaxDuration());
+                audio.setStartdelay(request.getAudioExt().getStartdelay());
+                audio.setApi(request.getAudioExt().getApi() != null
+                    ? request.getAudioExt().getApi().stream()
+                        .map(String::valueOf).collect(java.util.stream.Collectors.joining(",")) : null);
+                audio.setExt(request.getAudioExt().getExt());
                 audioMapper.insert(audio);
             }
         } else if (format == 4) {
@@ -108,6 +135,8 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
                 RtbMaterialNativeDO nat = new RtbMaterialNativeDO();
                 nat.setMaterialId(material.getId());
                 nat.setRequestJson(request.getNativeExt().getRequestJson());
+                nat.setVer(request.getNativeExt().getVer());
+                nat.setExt(request.getNativeExt().getExt());
                 nativeMapper.insert(nat);
             }
         }
@@ -173,6 +202,8 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
                 banner.setPos(request.getBannerExt().getPos());
                 banner.setBtype(request.getBannerExt().getBtype() != null
                     ? request.getBannerExt().getBtype().toString() : null);
+                banner.setWmode(request.getBannerExt().getWmode());
+                banner.setExt(request.getBannerExt().getExt());
                 bannerMapper.insert(banner);
             }
         } else if (format == 2) {
@@ -184,8 +215,26 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
                 video.setMaterialId(material.getId());
                 video.setLinearity(request.getVideoExt().getLinearity() != null
                     ? request.getVideoExt().getLinearity() : 1);
+                video.setSequence(request.getVideoExt().getSequence());
+                video.setMinDuration(request.getVideoExt().getMinDuration());
+                video.setMaxDuration(request.getVideoExt().getMaxDuration());
                 video.setStartdelay(request.getVideoExt().getStartdelay());
+                video.setSkip(request.getVideoExt().getSkip());
+                video.setSkipmin(request.getVideoExt().getSkipmin());
+                video.setSkipafter(request.getVideoExt().getSkipafter());
+                video.setPlacement(request.getVideoExt().getPlacement());
                 video.setPlaybackend(request.getVideoExt().getPlaybackend());
+                video.setPlayableafter(request.getVideoExt().getPlayableafter());
+                video.setPodid(request.getVideoExt().getPodid());
+                video.setPodsize(request.getVideoExt().getPodsize());
+                video.setPodseq(request.getVideoExt().getPodseq());
+                video.setMincpmpersec(request.getVideoExt().getMincpmpersec());
+                video.setMaxseq(request.getVideoExt().getMaxseq());
+                video.setRender(request.getVideoExt().getRender());
+                video.setApi(request.getVideoExt().getApi() != null
+                    ? request.getVideoExt().getApi().stream()
+                        .map(String::valueOf).collect(java.util.stream.Collectors.joining(",")) : null);
+                video.setExt(request.getVideoExt().getExt());
                 videoMapper.insert(video);
             }
         } else if (format == 3) {
@@ -196,6 +245,13 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
                 RtbMaterialAudioDO audio = new RtbMaterialAudioDO();
                 audio.setMaterialId(material.getId());
                 audio.setSequence(request.getAudioExt().getSequence());
+                audio.setMinDuration(request.getAudioExt().getMinDuration());
+                audio.setMaxDuration(request.getAudioExt().getMaxDuration());
+                audio.setStartdelay(request.getAudioExt().getStartdelay());
+                audio.setApi(request.getAudioExt().getApi() != null
+                    ? request.getAudioExt().getApi().stream()
+                        .map(String::valueOf).collect(java.util.stream.Collectors.joining(",")) : null);
+                audio.setExt(request.getAudioExt().getExt());
                 audioMapper.insert(audio);
             }
         } else if (format == 4) {
@@ -206,6 +262,8 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
                 RtbMaterialNativeDO nat = new RtbMaterialNativeDO();
                 nat.setMaterialId(material.getId());
                 nat.setRequestJson(request.getNativeExt().getRequestJson());
+                nat.setVer(request.getNativeExt().getVer());
+                nat.setExt(request.getNativeExt().getExt());
                 nativeMapper.insert(nat);
             }
         }
