@@ -18,6 +18,7 @@ import wake.su.zhuque.model.entity.*;
 import wake.su.zhuque.model.enums.MaterialFormatEnum;
 import wake.su.zhuque.model.vo.MaterialListVO;
 import wake.su.zhuque.model.vo.MaterialVO;
+import wake.su.zhuque.service.RtbFileService;
 import wake.su.zhuque.service.RtbMaterialService;
 
 import java.time.LocalDateTime;

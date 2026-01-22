@@ -51,8 +51,7 @@ public class FileController {
         // ETag：使用 MD5 作为 ETag，支持客户端缓存验证
         headers.setETag("\"" + fileRecord.getFileMd5() + "\"");
         // Last-Modified：使用文件创建时间
-        headers.setLastModified(java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME
-            .format(fileRecord.getCreateTime()));
+        headers.setLastModified(fileRecord.getCreateTime().atZone(java.time.ZoneId.systemDefault()).toInstant());
 
         return new ResponseEntity<>(
             fileRecord.getFileData(),

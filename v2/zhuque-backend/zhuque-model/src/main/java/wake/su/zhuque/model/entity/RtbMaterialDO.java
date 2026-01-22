@@ -68,6 +68,16 @@ public class RtbMaterialDO {
     private String fileId;
 
     /**
+     * 文件类型
+     */
+    private String fileType;
+
+    /**
+     * 文件大小(字节)
+     */
+    private Long fileSize;
+
+    /**
      * 缩略图URL(视频/音频用)
      */
     private String thumbnailUrl;
