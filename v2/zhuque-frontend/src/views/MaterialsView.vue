@@ -66,6 +66,7 @@
               style="width: 50px; height: 50px"
               :src="row.fileUrl"
               :preview-src-list="[row.fileUrl]"
+              :preview-teleported="true"
               fit="cover"
             />
             <el-tag v-else type="info">视频/音频</el-tag>
@@ -167,6 +168,7 @@
               <el-image
                 :src="getFilePreviewUrl()"
                 :preview-src-list="[getFilePreviewUrl()]"
+                :preview-teleported="true"
                 fit="contain"
                 style="max-width: 200px; max-height: 200px"
               />
