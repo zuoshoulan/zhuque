@@ -11,6 +11,22 @@
       <!-- 搜索栏 -->
       <div class="search-bar">
         <el-select
+          v-model="queryParams.creativeId"
+          placeholder="选择创意"
+          clearable
+          filterable
+          style="width: 200px"
+          @change="handleQuery"
+        >
+          <el-option label="全部创意" :value="undefined" />
+          <el-option
+            v-for="creative in creativeOptions"
+            :key="creative.id"
+            :label="creative.name"
+            :value="creative.id"
+          />
+        </el-select>
+        <el-select
           v-model="queryParams.format"
           placeholder="素材格式"
           clearable
@@ -108,12 +124,18 @@
           </el-select>
         </el-form-item>
         <el-form-item label="素材格式" prop="format">
-          <el-select v-model="formData.format" placeholder="请选择素材格式" style="width: 100%">
+          <el-select
+            v-model="formData.format"
+            placeholder="请选择素材格式"
+            style="width: 100%"
+            :disabled="!!formData.id"
+          >
             <el-option label="Banner" :value="1" />
             <el-option label="Video" :value="2" />
             <el-option label="Audio" :value="3" />
             <el-option label="Native" :value="4" />
           </el-select>
+          <div v-if="formData.id" class="el-form-item__tip">创建后不可修改</div>
         </el-form-item>
         <el-form-item label="宽度(像素)" prop="width">
           <el-input-number v-model="formData.width" :min="0" style="width: 100%" />
@@ -278,7 +300,8 @@ import type { CreativeListItem } from '@/api/creative'
 const queryParams = reactive({
   current: 1,
   size: 10,
-  format: undefined as number | undefined
+  format: undefined as number | undefined,
+  creativeId: undefined as number | undefined
 })
 
 // 表格数据
@@ -372,6 +395,7 @@ const handleQuery = async () => {
 // 重置查询
 const handleReset = () => {
   queryParams.format = undefined
+  queryParams.creativeId = undefined
   queryParams.current = 1
   handleQuery()
 }
