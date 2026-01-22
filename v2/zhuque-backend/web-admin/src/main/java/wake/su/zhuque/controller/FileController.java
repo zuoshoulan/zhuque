@@ -34,21 +34,18 @@ public class FileController {
     @PostMapping("/upload")
     @Operation(summary = "上传文件", description = "上传文件并返回文件信息（含尺寸），支持MD5去重")
     public Result<FileUploadResponse> upload(@RequestParam("file") MultipartFile file) {
-        String fileUuid = fileService.upload(file);
+        Long fileId = fileService.upload(file);
 
-        // 查询完整的文件信息
-        RtbFileDO fileRecord = fileMapper.selectOne(
-            new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<RtbFileDO>()
-                .eq(RtbFileDO::getFileUuid, fileUuid)
-        );
+        // 根据id查询完整的文件信息
+        RtbFileDO fileRecord = fileMapper.selectById(fileId);
 
         if (fileRecord == null) {
             return Result.error("文件上传失败");
         }
 
-        // 构建响应 - 返回 id（管理后台用）而不是 fileUuid
+        // 构建响应 - 返回 id（管理后台用）
         FileUploadResponse response = FileUploadResponse.builder()
-            .fileId(fileRecord.getId())  // 返回 id
+            .fileId(fileRecord.getId())
             .fileName(fileRecord.getFileName())
             .fileSize(fileRecord.getFileSize())
             .fileType(fileRecord.getFileType())

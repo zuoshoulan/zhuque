@@ -44,7 +44,7 @@ public interface RtbMaterialService {
     /**
      * 上传文件
      */
-    String upload(MultipartFile file);
+    Long upload(MultipartFile file);
 
     /**
      * 更新素材状态

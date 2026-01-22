@@ -9,13 +9,13 @@ public interface RtbFileService {
 
     /**
      * 上传文件
-     * 如果文件已存在（相同MD5），则增加引用计数并返回已有的fileId
-     * 如果文件不存在，则创建新记录并返回新的fileId
+     * 如果文件已存在（相同MD5），则返回已有的id
+     * 如果文件不存在，则创建新记录并返回新的id
      *
      * @param file 上传的文件
-     * @return 文件ID
+     * @return 文件ID（rtb_file.id）
      */
-    String upload(MultipartFile file);
+    Long upload(MultipartFile file);
 
     /**
      * 增加文件引用计数

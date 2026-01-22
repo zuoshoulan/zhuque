@@ -72,7 +72,13 @@ export interface MaterialInfo {
   fileSize: number
   fileType: string
   fileUrl: string
+  thumbnailUrl?: string
+  mimes?: string[]
   dur?: number
+  bannerExt?: BannerExt
+  videoExt?: VideoExt
+  audioExt?: AudioExt
+  nativeExt?: NativeExt
   createTime: string
   updateTime: string
 }

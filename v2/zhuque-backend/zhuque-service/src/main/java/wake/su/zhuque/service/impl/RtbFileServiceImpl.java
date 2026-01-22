@@ -26,7 +26,7 @@ public class RtbFileServiceImpl implements RtbFileService {
 
     @Override
     @Transactional
-    public String upload(MultipartFile file) {
+    public Long upload(MultipartFile file) {
         try {
             // 读取文件内容
             byte[] fileData = file.getBytes();
@@ -41,11 +41,11 @@ public class RtbFileServiceImpl implements RtbFileService {
             );
 
             if (existingFile != null) {
-                // 文件已存在，直接返回已有的fileUuid
-                log.info("文件已存在，复用文件: fileUuid={}, fileName={}",
-                    existingFile.getFileUuid(), file.getOriginalFilename());
+                // 文件已存在，直接返回已有的id
+                log.info("文件已存在，复用文件: id={}, fileUuid={}, fileName={}",
+                    existingFile.getId(), existingFile.getFileUuid(), file.getOriginalFilename());
 
-                return existingFile.getFileUuid();
+                return existingFile.getId();
             }
 
             // 文件不存在，创建新记录
@@ -83,10 +83,10 @@ public class RtbFileServiceImpl implements RtbFileService {
 
             fileMapper.insert(fileRecord);
 
-            log.info("文件上传成功: fileUuid={}, fileName={}, size={}",
-                fileUuid, file.getOriginalFilename(), fileData.length);
+            log.info("文件上传成功: id={}, fileUuid={}, fileName={}, size={}",
+                fileRecord.getId(), fileUuid, file.getOriginalFilename(), fileData.length);
 
-            return fileUuid;
+            return fileRecord.getId();
 
         } catch (Exception e) {
             log.error("文件上传失败: {}", e.getMessage(), e);

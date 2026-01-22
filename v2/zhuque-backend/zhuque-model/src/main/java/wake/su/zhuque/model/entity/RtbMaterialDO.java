@@ -63,9 +63,9 @@ public class RtbMaterialDO {
     private Integer ratio;
 
     /**
-     * 关联文件ID,rtb_file.file_id
+     * 关联文件ID,rtb_file.id
      */
-    private String fileId;
+    private Long fileId;
 
     /**
      * 文件类型

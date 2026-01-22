@@ -135,6 +135,28 @@
               <div class="el-upload__tip">支持图片、视频、音频文件</div>
             </template>
           </el-upload>
+
+          <!-- 文件预览 -->
+          <div v-if="formData.fileId && formData.fileId > 0" class="file-preview">
+            <div v-if="formData.format === 1" class="image-preview">
+              <el-image
+                :src="getFilePreviewUrl()"
+                :preview-src-list="[getFilePreviewUrl()]"
+                fit="contain"
+                style="max-width: 200px; max-height: 200px"
+              />
+            </div>
+            <div v-else-if="formData.format === 2" class="video-preview">
+              <video
+                :src="getFilePreviewUrl()"
+                controls
+                style="max-width: 200px; max-height: 200px"
+              />
+            </div>
+            <div v-else class="file-info">
+              <el-tag type="info">{{ formData.format === 3 ? '音频文件' : 'Native广告' }}</el-tag>
+            </div>
+          </div>
         </el-form-item>
 
         <!-- Banner扩展字段 -->
@@ -231,6 +253,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Search, Refresh, Edit, Delete } from '@element-plus/icons-vue'
 import {
   getMaterialPage,
+  getMaterialById,
   createMaterial,
   updateMaterial,
   deleteMaterial
@@ -430,27 +453,90 @@ const handleAdd = () => {
 }
 
 // 编辑素材
-const handleEdit = (row: MaterialListItem) => {
-  dialogTitle.value = '编辑素材'
-  dialogVisible.value = true
-  Object.assign(formData, {
-    id: row.id,
-    name: row.name,
-    creativeId: row.creativeId,
-    format: row.format,
-    width: row.width,
-    height: row.height,
-    fileId: row.fileUrl ? Number(row.fileUrl.split('/').pop()) : 0,
-    mimes: undefined,
-    dur: undefined,
-    bannerExt: {} as BannerExt,
-    videoExt: {} as VideoExt,
-    audioExt: {} as AudioExt,
-    nativeExt: {} as NativeExt
-  })
-  fileList.value = []
-  videoSkipEnabled.value = false
-  formRef.value?.clearValidate()
+const handleEdit = async (row: MaterialListItem) => {
+  try {
+    // 调用详情接口获取完整数据
+    const detail = await getMaterialById(row.id)
+
+    dialogTitle.value = '编辑素材'
+    dialogVisible.value = true
+
+    // 基础字段
+    Object.assign(formData, {
+      id: detail.id,
+      name: detail.name,
+      creativeId: detail.creativeId,
+      format: detail.format,
+      width: detail.width,
+      height: detail.height,
+      fileId: detail.fileUrl ? Number(detail.fileUrl.split('/').pop()) : 0,
+      mimes: detail.mimes,
+      dur: detail.dur,
+      bannerExt: {} as BannerExt,
+      videoExt: {} as VideoExt,
+      audioExt: {} as AudioExt,
+      nativeExt: {} as NativeExt
+    })
+
+    // 扩展字段
+    if (detail.format === 1 && detail.bannerExt) {
+      formData.bannerExt = {
+        pos: detail.bannerExt.pos as number,
+        btype: detail.bannerExt.btype as number[] || [],
+        wmode: detail.bannerExt.wmode as number,
+        ext: detail.bannerExt.ext as string
+      }
+      // 设置banner btype
+      if (formData.bannerExt.btype) {
+        bannerBtypeChecked.value = [...formData.bannerExt.btype]
+      }
+    } else if (detail.format === 2 && detail.videoExt) {
+      formData.videoExt = {
+        linearity: detail.videoExt.linearity as number,
+        sequence: detail.videoExt.sequence as number,
+        minDuration: detail.videoExt.minDuration as number,
+        maxDuration: detail.videoExt.maxDuration as number,
+        startdelay: detail.videoExt.startdelay as number,
+        skip: detail.videoExt.skip as number,
+        skipmin: detail.videoExt.skipmin as number,
+        skipafter: detail.videoExt.skipafter as number,
+        placement: detail.videoExt.placement as number,
+        playbackend: detail.videoExt.playbackend as number,
+        playableafter: detail.videoExt.playableafter as number,
+        podid: detail.videoExt.podid as string,
+        podsize: detail.videoExt.podsize as number,
+        podseq: detail.videoExt.podseq as number,
+        mincpmpersec: detail.videoExt.mincpmpersec as number,
+        maxseq: detail.videoExt.maxseq as number,
+        render: detail.videoExt.render as number,
+        api: detail.videoExt.api as number[] || [],
+        ext: detail.videoExt.ext as string
+      }
+      // 设置skip开关
+      videoSkipEnabled.value = detail.videoExt.skip === 1
+    } else if (detail.format === 3 && detail.audioExt) {
+      formData.audioExt = {
+        sequence: detail.audioExt.sequence as number,
+        minDuration: detail.audioExt.minDuration as number,
+        maxDuration: detail.audioExt.maxDuration as number,
+        startdelay: detail.audioExt.startdelay as number,
+        api: detail.audioExt.api as number[] || [],
+        ext: detail.audioExt.ext as string
+      }
+    } else if (detail.format === 4 && detail.nativeExt) {
+      formData.nativeExt = {
+        requestJson: detail.nativeExt.requestJson as string,
+        ver: detail.nativeExt.ver as string,
+        ext: detail.nativeExt.ext as string
+      }
+    }
+
+    fileList.value = []
+    formRef.value?.clearValidate()
+  } catch (error) {
+    console.error('获取素材详情失败:', error)
+    ElMessage.error('获取素材详情失败')
+  }
 }
 
 // 提交表单
@@ -529,6 +615,14 @@ const handleDelete = async (row: MaterialListItem) => {
   }
 }
 
+// 获取文件预览URL
+const getFilePreviewUrl = () => {
+  if (formData.fileId && formData.fileId > 0) {
+    return `/api/file/by-id/${formData.fileId}`
+  }
+  return ''
+}
+
 // 页面加载时查询数据
 onMounted(() => {
   handleQuery()
@@ -555,5 +649,31 @@ onMounted(() => {
 
 .upload-demo {
   width: 100%;
+}
+
+.file-preview {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ebeef5;
+  border-radius: 4px;
+  background-color: #fafafa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50px;
+}
+
+.image-preview,
+.video-preview {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.file-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
 </style>
