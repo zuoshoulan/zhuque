@@ -37,10 +37,23 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
     private final RtbMaterialNativeMapper nativeMapper;
     private final RtbCreativeMapper creativeMapper;
     private final RtbFileService fileService;
+    private final RtbFileMapper fileMapper;
 
     @Override
     @Transactional
     public Long create(MaterialCreateRequest request) {
+        // 从文件记录中获取文件信息
+        RtbFileDO fileRecord = null;
+        if (request.getFileId() != null) {
+            fileRecord = fileMapper.selectOne(
+                new LambdaQueryWrapper<RtbFileDO>()
+                    .eq(RtbFileDO::getFileId, request.getFileId())
+            );
+            if (fileRecord == null) {
+                throw new RuntimeException("文件不存在: " + request.getFileId());
+            }
+        }
+
         // 1. 创建主表
         RtbMaterialDO material = new RtbMaterialDO();
         material.setMaterialId("M" + IdUtil.getSnowflakeNextId());
@@ -50,7 +63,8 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
         material.setWidth(request.getWidth());
         material.setHeight(request.getHeight());
         material.setFileId(request.getFileId());
-        material.setFileType(request.getFileType());
+        material.setFileType(fileRecord != null ? fileRecord.getFileType() : null);
+        material.setFileSize(fileRecord != null ? fileRecord.getFileSize() : null);
         material.setMimes(request.getMimes() != null ? String.join(",", request.getMimes()) : null);
         material.setDur(request.getDur());
         material.setCreateTime(LocalDateTime.now());
@@ -61,31 +75,41 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
         Integer format = request.getFormat() != null ? request.getFormat() : 1;
         if (format == 1) {
             // Banner
-            RtbMaterialBannerDO banner = new RtbMaterialBannerDO();
-            banner.setMaterialId(material.getId());
-            banner.setPos(request.getPos());
-            banner.setBtype(request.getBtype() != null ? request.getBtype().toString() : null);
-            bannerMapper.insert(banner);
+            if (request.getBannerExt() != null) {
+                RtbMaterialBannerDO banner = new RtbMaterialBannerDO();
+                banner.setMaterialId(material.getId());
+                banner.setPos(request.getBannerExt().getPos());
+                banner.setBtype(request.getBannerExt().getBtype() != null
+                    ? request.getBannerExt().getBtype().toString() : null);
+                bannerMapper.insert(banner);
+            }
         } else if (format == 2) {
             // Video
-            RtbMaterialVideoDO video = new RtbMaterialVideoDO();
-            video.setMaterialId(material.getId());
-            video.setLinearity(request.getLinearity() != null ? request.getLinearity() : 1);
-            video.setStartdelay(request.getStartdelay());
-            video.setPlaybackend(request.getPlaybackend());
-            videoMapper.insert(video);
+            if (request.getVideoExt() != null) {
+                RtbMaterialVideoDO video = new RtbMaterialVideoDO();
+                video.setMaterialId(material.getId());
+                video.setLinearity(request.getVideoExt().getLinearity() != null
+                    ? request.getVideoExt().getLinearity() : 1);
+                video.setStartdelay(request.getVideoExt().getStartdelay());
+                video.setPlaybackend(request.getVideoExt().getPlaybackend());
+                videoMapper.insert(video);
+            }
         } else if (format == 3) {
             // Audio
-            RtbMaterialAudioDO audio = new RtbMaterialAudioDO();
-            audio.setMaterialId(material.getId());
-            audio.setSequence(request.getAudioSequence());
-            audioMapper.insert(audio);
+            if (request.getAudioExt() != null) {
+                RtbMaterialAudioDO audio = new RtbMaterialAudioDO();
+                audio.setMaterialId(material.getId());
+                audio.setSequence(request.getAudioExt().getSequence());
+                audioMapper.insert(audio);
+            }
         } else if (format == 4) {
             // Native
-            RtbMaterialNativeDO nat = new RtbMaterialNativeDO();
-            nat.setMaterialId(material.getId());
-            nat.setRequestJson(request.getNativeRequestJson());
-            nativeMapper.insert(nat);
+            if (request.getNativeExt() != null) {
+                RtbMaterialNativeDO nat = new RtbMaterialNativeDO();
+                nat.setMaterialId(material.getId());
+                nat.setRequestJson(request.getNativeExt().getRequestJson());
+                nativeMapper.insert(nat);
+            }
         }
 
         return material.getId();
@@ -98,9 +122,93 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
         if (material == null) {
             throw new RuntimeException("素材不存在");
         }
-        material.setName(request.getName());
+
+        // 注意：素材类型（format）不可变，扩展表的更新基于创建时的format
+
+        // 从文件记录中获取文件信息（如果更新了文件）
+        RtbFileDO fileRecord = null;
+        if (request.getFileId() != null) {
+            fileRecord = fileMapper.selectOne(
+                new LambdaQueryWrapper<RtbFileDO>()
+                    .eq(RtbFileDO::getFileId, request.getFileId())
+            );
+            if (fileRecord == null) {
+                throw new RuntimeException("文件不存在: " + request.getFileId());
+            }
+        }
+
+        // 更新主表
+        if (request.getName() != null) {
+            material.setName(request.getName());
+        }
+        if (request.getWidth() != null) {
+            material.setWidth(request.getWidth());
+        }
+        if (request.getHeight() != null) {
+            material.setHeight(request.getHeight());
+        }
+        if (request.getFileId() != null && fileRecord != null) {
+            material.setFileId(request.getFileId());
+            material.setFileType(fileRecord.getFileType());
+            material.setFileSize(fileRecord.getFileSize());
+        }
+        if (request.getMimes() != null) {
+            material.setMimes(String.join(",", request.getMimes()));
+        }
+        if (request.getDur() != null) {
+            material.setDur(request.getDur());
+        }
         material.setUpdateTime(LocalDateTime.now());
         materialMapper.updateById(material);
+
+        // 更新扩展表（删除旧的，创建新的）
+        Integer format = material.getFormat();
+        if (format == 1) {
+            // Banner
+            if (request.getBannerExt() != null) {
+                bannerMapper.delete(new LambdaQueryWrapper<RtbMaterialBannerDO>()
+                    .eq(RtbMaterialBannerDO::getMaterialId, material.getId()));
+                RtbMaterialBannerDO banner = new RtbMaterialBannerDO();
+                banner.setMaterialId(material.getId());
+                banner.setPos(request.getBannerExt().getPos());
+                banner.setBtype(request.getBannerExt().getBtype() != null
+                    ? request.getBannerExt().getBtype().toString() : null);
+                bannerMapper.insert(banner);
+            }
+        } else if (format == 2) {
+            // Video
+            if (request.getVideoExt() != null) {
+                videoMapper.delete(new LambdaQueryWrapper<RtbMaterialVideoDO>()
+                    .eq(RtbMaterialVideoDO::getMaterialId, material.getId()));
+                RtbMaterialVideoDO video = new RtbMaterialVideoDO();
+                video.setMaterialId(material.getId());
+                video.setLinearity(request.getVideoExt().getLinearity() != null
+                    ? request.getVideoExt().getLinearity() : 1);
+                video.setStartdelay(request.getVideoExt().getStartdelay());
+                video.setPlaybackend(request.getVideoExt().getPlaybackend());
+                videoMapper.insert(video);
+            }
+        } else if (format == 3) {
+            // Audio
+            if (request.getAudioExt() != null) {
+                audioMapper.delete(new LambdaQueryWrapper<RtbMaterialAudioDO>()
+                    .eq(RtbMaterialAudioDO::getMaterialId, material.getId()));
+                RtbMaterialAudioDO audio = new RtbMaterialAudioDO();
+                audio.setMaterialId(material.getId());
+                audio.setSequence(request.getAudioExt().getSequence());
+                audioMapper.insert(audio);
+            }
+        } else if (format == 4) {
+            // Native
+            if (request.getNativeExt() != null) {
+                nativeMapper.delete(new LambdaQueryWrapper<RtbMaterialNativeDO>()
+                    .eq(RtbMaterialNativeDO::getMaterialId, material.getId()));
+                RtbMaterialNativeDO nat = new RtbMaterialNativeDO();
+                nat.setMaterialId(material.getId());
+                nat.setRequestJson(request.getNativeExt().getRequestJson());
+                nativeMapper.insert(nat);
+            }
+        }
     }
 
     @Override
