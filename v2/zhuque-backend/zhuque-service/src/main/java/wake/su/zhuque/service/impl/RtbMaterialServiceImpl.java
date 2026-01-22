@@ -1,8 +1,11 @@
 package wake.su.zhuque.service.impl;
 
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +25,7 @@ import wake.su.zhuque.service.RtbFileService;
 import wake.su.zhuque.service.RtbMaterialService;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +42,31 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
     private final RtbCreativeMapper creativeMapper;
     private final RtbFileService fileService;
     private final RtbFileMapper fileMapper;
+    private final ObjectMapper objectMapper;
+
+    /**
+     * 将 JSON 数组字符串转换为 Integer 列表
+     */
+    private List<Integer> parseIntegerList(String jsonStr) {
+        if (StrUtil.isBlank(jsonStr)) {
+            return new ArrayList<>();
+        }
+        try {
+            // 尝试解析 JSON 数组
+            return objectMapper.readValue(jsonStr, new TypeReference<List<Integer>>() {});
+        } catch (Exception e) {
+            // 如果解析失败，尝试按逗号分隔
+            String[] parts = jsonStr.split(",");
+            List<Integer> result = new ArrayList<>();
+            for (String part : parts) {
+                try {
+                    result.add(Integer.parseInt(part.trim()));
+                } catch (NumberFormatException ignored) {
+                }
+            }
+            return result;
+        }
+    }
 
     @Override
     @Transactional
@@ -319,7 +348,7 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
             if (banner != null) {
                 Map<String, Object> ext = new HashMap<>();
                 ext.put("pos", banner.getPos());
-                ext.put("btype", banner.getBtype());
+                ext.put("btype", parseIntegerList(banner.getBtype()));
                 ext.put("wmode", banner.getWmode());
                 ext.put("ext", banner.getExt());
                 vo.setBannerExt(ext);
@@ -349,7 +378,7 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
                 ext.put("mincpmpersec", video.getMincpmpersec());
                 ext.put("maxseq", video.getMaxseq());
                 ext.put("render", video.getRender());
-                ext.put("api", video.getApi());
+                ext.put("api", parseIntegerList(video.getApi()));
                 ext.put("ext", video.getExt());
                 vo.setVideoExt(ext);
             }
@@ -365,7 +394,7 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
                 ext.put("minDuration", audio.getMinDuration());
                 ext.put("maxDuration", audio.getMaxDuration());
                 ext.put("startdelay", audio.getStartdelay());
-                ext.put("api", audio.getApi());
+                ext.put("api", parseIntegerList(audio.getApi()));
                 ext.put("ext", audio.getExt());
                 vo.setAudioExt(ext);
             }
