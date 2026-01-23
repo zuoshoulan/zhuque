@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import wake.su.zhuque.common.util.SecurityUtil;
 
 import wake.su.zhuque.common.core.result.PageInfo;
 import wake.su.zhuque.common.core.result.Result;
@@ -422,8 +423,17 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
     public Result<List<MaterialListVO>> list(MaterialQueryRequest request) {
         Page<RtbMaterialDO> page = new Page<>(request.getCurrent(), request.getSize());
 
+        // 获取当前登录用户的ID（即advertiserId）
+        Long currentUserId = SecurityUtil.getCurrentUserId();
+        if (currentUserId == null) {
+            return Result.error("未登录或登录已过期");
+        }
+
         LambdaQueryWrapper<RtbMaterialDO> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(request.getCreativeId() != null, RtbMaterialDO::getCreativeId, request.getCreativeId())
+        // 强制过滤：只能查看当前登录用户的素材（userId即advertiserId）
+        wrapper.eq(RtbMaterialDO::getAdvertiserId, currentUserId)
+               .eq(request.getCreativeId() != null, RtbMaterialDO::getCreativeId, request.getCreativeId())
+               .eq(request.getAdvertiserId() != null, RtbMaterialDO::getAdvertiserId, request.getAdvertiserId())
                .eq(request.getFormat() != null, RtbMaterialDO::getFormat, request.getFormat())
                .eq(request.getWidth() != null, RtbMaterialDO::getWidth, request.getWidth())
                .eq(request.getHeight() != null, RtbMaterialDO::getHeight, request.getHeight())

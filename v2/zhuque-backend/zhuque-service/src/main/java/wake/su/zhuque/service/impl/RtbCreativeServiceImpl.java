@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import wake.su.zhuque.common.util.SecurityUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import wake.su.zhuque.common.core.result.PageInfo;
@@ -136,8 +137,16 @@ public class RtbCreativeServiceImpl implements RtbCreativeService {
     public Result<List<CreativeListVO>> list(CreativeQueryRequest request) {
         Page<RtbCreativeDO> page = new Page<>(request.getCurrent(), request.getSize());
 
+        // 获取当前登录用户的ID（即advertiserId）
+        Long currentUserId = SecurityUtil.getCurrentUserId();
+        if (currentUserId == null) {
+            return Result.error("未登录或登录已过期");
+        }
+
         LambdaQueryWrapper<RtbCreativeDO> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(request.getAdvertiserId() != null, RtbCreativeDO::getAdvertiserId, request.getAdvertiserId())
+        // 强制过滤：只能查看当前登录用户的创意（userId即advertiserId）
+        wrapper.eq(RtbCreativeDO::getAdvertiserId, currentUserId)
+               .eq(request.getAdvertiserId() != null, RtbCreativeDO::getAdvertiserId, request.getAdvertiserId())
                .like(request.getName() != null, RtbCreativeDO::getName, request.getName())
                .eq(request.getStatus() != null, RtbCreativeDO::getStatus, request.getStatus())
                .orderByDesc(RtbCreativeDO::getCreateTime);
