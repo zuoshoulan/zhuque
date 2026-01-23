@@ -38,7 +38,7 @@ const router = createRouter({
           path: 'campaigns',
           name: 'Campaigns',
           component: () => import('@/views/CampaignsView.vue'),
-          meta: { title: '活动管理 - 朱雀广告平台' }
+          meta: { title: '投放管理 - 朱雀广告平台' }
         },
         {
           path: 'roles',

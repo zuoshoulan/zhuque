@@ -34,7 +34,7 @@
               <span>广告管理</span>
             </template>
             <el-menu-item index="/ads">广告列表</el-menu-item>
-            <el-menu-item index="/campaigns">活动管理</el-menu-item>
+            <el-menu-item index="/campaigns">投放管理</el-menu-item>
             <el-menu-item index="/creatives">创意管理</el-menu-item>
             <el-menu-item index="/materials">素材管理</el-menu-item>
           </el-sub-menu>
@@ -151,7 +151,7 @@ const currentBreadcrumb = computed(() => {
   const breadcrumbMap: Record<string, string> = {
     '/users': '用户列表',
     '/ads': '广告列表',
-    '/campaigns': '活动管理',
+    '/campaigns': '投放管理',
     '/creatives': '创意管理',
     '/materials': '素材管理',
     '/roles': '角色管理',

@@ -3,7 +3,7 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>活动管理</span>
+          <span>投放管理</span>
           <el-button type="primary">创建活动</el-button>
         </div>
       </template>
@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-// 活动管理页面
+// 投放管理页面
 </script>
 
 <style scoped>
