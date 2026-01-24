@@ -3,7 +3,7 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>素材管理</span>
+          <span>素材库</span>
           <el-button type="primary" :icon="Plus" @click="handleAdd">添加素材</el-button>
         </div>
       </template>

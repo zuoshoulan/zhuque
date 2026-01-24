@@ -20,24 +20,31 @@
             <span>首页</span>
           </el-menu-item>
 
+          <el-sub-menu index="campaign">
+            <template #title>
+              <el-icon><Promotion /></el-icon>
+              <span>投放管理</span>
+            </template>
+            <el-menu-item index="/campaigns">投放活动</el-menu-item>
+            <el-menu-item index="/ad-groups">广告组</el-menu-item>
+            <el-menu-item index="/ads">广告</el-menu-item>
+          </el-sub-menu>
+
+          <el-sub-menu index="creative">
+            <template #title>
+              <el-icon><Picture /></el-icon>
+              <span>创意中心</span>
+            </template>
+            <el-menu-item index="/creatives">创意管理</el-menu-item>
+            <el-menu-item index="/materials">素材库</el-menu-item>
+          </el-sub-menu>
+
           <el-sub-menu index="user">
             <template #title>
               <el-icon><User /></el-icon>
               <span>用户管理</span>
             </template>
             <el-menu-item index="/users">用户列表</el-menu-item>
-          </el-sub-menu>
-
-          <el-sub-menu index="ad">
-            <template #title>
-              <el-icon><Promotion /></el-icon>
-              <span>广告管理</span>
-            </template>
-            <el-menu-item index="/ads">广告列表</el-menu-item>
-            <el-menu-item index="/campaigns">投放活动</el-menu-item>
-            <el-menu-item index="/ad-groups">广告组</el-menu-item>
-            <el-menu-item index="/creatives">创意管理</el-menu-item>
-            <el-menu-item index="/materials">素材管理</el-menu-item>
           </el-sub-menu>
 
           <el-sub-menu index="system">
@@ -134,7 +141,7 @@
 import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Sunny, Moon, Clock, Check, ArrowDown, User, SwitchButton, HomeFilled, Promotion, Setting } from '@element-plus/icons-vue'
+import { Sunny, Moon, Clock, Check, ArrowDown, User, SwitchButton, HomeFilled, Promotion, Picture, Setting } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { useTheme } from '@/composables/useTheme'
 
@@ -151,11 +158,11 @@ const currentBreadcrumb = computed(() => {
   const path = route.path
   const breadcrumbMap: Record<string, string> = {
     '/users': '用户列表',
-    '/ads': '广告列表',
     '/campaigns': '投放活动',
     '/ad-groups': '广告组',
+    '/ads': '广告',
     '/creatives': '创意管理',
-    '/materials': '素材管理',
+    '/materials': '素材库',
     '/roles': '角色管理',
     '/permissions': '权限管理',
     '/profile': '个人中心'

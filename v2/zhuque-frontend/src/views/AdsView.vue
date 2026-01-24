@@ -3,7 +3,7 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>广告管理</span>
+          <span>广告</span>
           <el-button type="primary" :icon="Plus" @click="handleAdd">创建广告</el-button>
         </div>
       </template>
