@@ -97,6 +97,9 @@ public class AdGroupVO {
     @Schema(description = "设备定向（JSON）")
     private String targetingDevice;
 
+    @Schema(description = "操作系统（JSON）")
+    private String targetingOs;
+
     @Schema(description = "人群包（JSON）")
     private String targetingUserSegments;
 

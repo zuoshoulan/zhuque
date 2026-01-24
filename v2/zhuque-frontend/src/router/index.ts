@@ -41,6 +41,12 @@ const router = createRouter({
           meta: { title: '投放管理 - 朱雀广告平台' }
         },
         {
+          path: 'ad-groups',
+          name: 'AdGroups',
+          component: () => import('@/views/AdGroupsView.vue'),
+          meta: { title: '广告组管理 - 朱雀广告平台' }
+        },
+        {
           path: 'roles',
           name: 'Roles',
           component: () => import('@/views/RolesView.vue'),

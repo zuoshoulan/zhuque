@@ -516,6 +516,7 @@ public class RtbAdGroupServiceImpl implements RtbAdGroupService {
         vo.setTargetingGeo(adGroup.getTargetingGeo());
         vo.setTargetingGeoCount(parseJsonArraySize(adGroup.getTargetingGeo()));
         vo.setTargetingDevice(adGroup.getTargetingDevice());
+        vo.setTargetingOs(adGroup.getTargetingOs());
         vo.setTargetingUserSegments(adGroup.getTargetingUserSegments());
         vo.setTargetingUserSegmentsCount(parseJsonArraySize(adGroup.getTargetingUserSegments()));
 
