@@ -59,31 +59,35 @@
       </el-form-item>
 
       <el-form-item label="目标值">
-        <el-input-number
+        <el-input
           v-model="formData.campaignGoalValue"
-          :min="0"
-          :max="999999999"
+          type="number"
           placeholder="请输入目标值"
+          style="width: 200px"
         />
+        <span v-if="formData.campaignGoalValue && formData.campaignGoalValue >= 10000" class="form-tip">
+          {{ formatGoalValueSuffix(formData.campaignGoalValue) }}
+        </span>
       </el-form-item>
 
       <el-divider content-position="left">预算设置</el-divider>
 
       <el-form-item label="总预算（元）" prop="lifetimeBudget">
-        <el-input-number
+        <el-input
           v-model="formData.lifetimeBudget"
-          :min="100"
-          :max="999999999"
-          :precision="2"
-          :step="100"
+          type="number"
+          placeholder="请输入总预算"
           style="width: 200px"
         />
-        <span class="form-tip">最低 100 元</span>
+        <span v-if="formData.lifetimeBudget && formData.lifetimeBudget >= 10000" class="form-tip">
+          {{ formatGoalValueSuffix(formData.lifetimeBudget) }}
+        </span>
+        <span v-else class="form-tip">最低 100 元</span>
       </el-form-item>
 
       <el-divider content-position="left">时间设置</el-divider>
 
-      <el-form-item label="投放时间" prop="timeRange">
+      <el-form-item label="投放时间">
         <el-date-picker
           v-model="timeRange"
           type="datetimerange"
@@ -93,6 +97,7 @@
           format="YYYY-MM-DD HH:mm"
           value-format="YYYY-MM-DDTHH:mm:ss"
           :disabled-date="disabledDate"
+          style="width: 450px"
         />
       </el-form-item>
 
@@ -177,27 +182,24 @@ const formRules: FormRules = {
   lifetimeBudget: [
     { required: true, message: '请输入总预算', trigger: 'blur' },
     { type: 'number', min: 100, message: '预算不能少于 100 元', trigger: 'blur' }
-  ],
-  timeRange: [
-    { required: true, message: '请选择投放时间', trigger: 'change' },
-    {
-      validator: (_rule: any, value: any, callback: any) => {
-        if (timeRange.value?.length === 2) {
-          const start = new Date(timeRange.value[0])
-          const end = new Date(timeRange.value[1])
-          const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
-          if (days > 90) {
-            callback(new Error('活动时长不能超过 90 天'))
-          } else {
-            callback()
-          }
-        } else {
-          callback()
-        }
-      },
-      trigger: 'change'
-    }
   ]
+}
+
+// 格式化目标值后缀（显示单位）
+const formatGoalValueSuffix = (value: number | undefined): string => {
+  if (value === undefined || value === null) return ''
+  const wan = Math.floor(value / 10000)
+  const remainder = value % 10000
+  if (value < 100000000) {
+    return remainder > 0 ? `${wan}万${remainder}` : `${wan}万`
+  }
+  const yi = Math.floor(value / 100000000)
+  const yiRemainder = value % 100000000
+  if (value < 100000000000) {
+    return yiRemainder > 0 ? `${yi}亿${yiRemainder}` : `${yi}亿`
+  }
+  const千亿 = Math.floor(value / 100000000000)
+  return `${千亿}千亿`
 }
 
 // 禁用今天之前的日期
