@@ -113,7 +113,7 @@
         <el-table-column label="状态" width="100" align="center">
           <template #default="{ row }">
             <el-tag :type="row.displayStatusType as any">
-              {{ row.displayStatusName }}
+              {{ row.statusName }}
             </el-tag>
           </template>
         </el-table-column>
