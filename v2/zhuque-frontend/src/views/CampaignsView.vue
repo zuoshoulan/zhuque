@@ -88,7 +88,16 @@
             <el-button size="small" :icon="Edit" @click="handleEdit(row)"
               :disabled="row.displayStatusName === '已完成'">编辑</el-button>
             <el-button
-              v-if="row.status === 0 || row.status === 2"
+              v-if="row.status === 0"
+              size="small"
+              type="primary"
+              :icon="VideoPlay"
+              @click="handlePublish(row)"
+            >
+              发布
+            </el-button>
+            <el-button
+              v-if="row.status === 2"
               size="small"
               type="success"
               :icon="VideoPlay"
@@ -209,6 +218,22 @@ const handleView = (row: CampaignListItem) => {
 const handleEdit = (row: CampaignListItem) => {
   editingId.value = row.id
   dialogVisible.value = true
+}
+
+// 发布
+const handlePublish = async (row: CampaignListItem) => {
+  try {
+    await ElMessageBox.confirm(`确认发布活动「${row.name}」吗？发布后将开始投放。`, '发布确认', {
+      type: 'warning'
+    })
+    await startCampaign(row.id)
+    ElMessage.success('发布成功')
+    handleQuery()
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('发布失败:', error)
+    }
+  }
 }
 
 // 启动

@@ -195,7 +195,7 @@ const formatGoalValueSuffix = (value: number | undefined): string => {
   }
   const yi = Math.floor(value / 100000000)
   const yiRemainder = value % 100000000
-  if (value < 100000000000) {
+  if (value < 1000000000000) {
     return yiRemainder > 0 ? `${yi}亿${yiRemainder}` : `${yi}亿`
   }
   const千亿 = Math.floor(value / 100000000000)
