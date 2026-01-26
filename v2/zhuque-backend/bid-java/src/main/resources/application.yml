@@ -3,7 +3,11 @@ server:
 
 spring:
   application:
-    name: java-bid
+    name: bid-java
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
 
   # 数据源配置
   datasource:
