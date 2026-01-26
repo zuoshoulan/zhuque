@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 /**
- * OpenAPI / Swagger 配置
+ * OpenAPI / Swagger 配置 (bid-java)
  *
  * @author zhuque
  */
@@ -20,11 +20,11 @@ import java.util.List;
 public class BidOpenApiConfig {
 
     @Bean
-    public OpenAPI customOpenAPI() {
+    public OpenAPI bidOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
                         .title("朱雀竞价服务 API")
-                        .description("OpenRTB 2.6 实时竞价接口 (bid-java)")
+                        .description("OpenRTB 2.6 实时竞价接口")
                         .version("1.0.0")
                         .contact(new Contact()
                                 .name("zhuque")

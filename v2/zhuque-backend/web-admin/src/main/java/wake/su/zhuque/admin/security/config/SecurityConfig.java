@@ -1,4 +1,4 @@
-package wake.su.zhuque.common.security.config;
+package wake.su.zhuque.admin.security.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -8,7 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-import wake.su.zhuque.common.security.filter.JwtAuthenticationFilter;
+import wake.su.zhuque.admin.security.filter.JwtAuthenticationFilter;
 
 import java.util.List;
 

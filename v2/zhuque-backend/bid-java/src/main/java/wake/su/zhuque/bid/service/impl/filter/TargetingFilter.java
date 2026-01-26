@@ -1,7 +1,7 @@
 package wake.su.zhuque.bid.service.impl.filter;
 
-import lombok.RequiredArgsConstructor;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import wake.su.zhuque.bid.context.BidContext;
@@ -19,10 +19,11 @@ import wake.su.zhuque.model.entity.RtbAdGroupDO;
 
 @Component
 @Order(2)
-@RequiredArgsConstructor
 public class TargetingFilter implements BidFilter {
 
-    private final TargetingMatcher targetingMatcher;
+    @Autowired
+    @Qualifier("targetingMatcherImpl")
+    private TargetingMatcher targetingMatcher;
 
     @Override
     public boolean test(BidContext context, RtbAdGroupDO adGroup) {

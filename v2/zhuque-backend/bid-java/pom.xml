@@ -16,16 +16,16 @@
     <description>RTB竞价服务 Java 实现，后续将迁移至 bid-rust</description>
 
     <dependencies>
+        <!-- 公共模块 -->
+        <dependency>
+            <groupId>wake.su</groupId>
+            <artifactId>zhuque-common</artifactId>
+        </dependency>
+
         <!-- 模型模块 -->
         <dependency>
             <groupId>wake.su</groupId>
             <artifactId>zhuque-model</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>wake.su</groupId>
-                    <artifactId>zhuque-common</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- 数据访问模块 -->
@@ -57,12 +57,6 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.3.0</version>
-        </dependency>
-
-        <!-- MyBatis-Plus -->
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
         </dependency>
 
         <!-- Redis -->

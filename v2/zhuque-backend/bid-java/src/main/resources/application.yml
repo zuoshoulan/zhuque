@@ -8,35 +8,33 @@ spring:
   # 数据源配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/zhuque?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
-    username: root
-    password: root
-    type: com.alibaba.druid.pool.DruidDataSource
-    druid:
-      initial-size: 5
-      min-idle: 5
-      max-active: 20
-      max-wait: 60000
-      test-while-idle: true
-      test-on-borrow: false
-      test-on-return: false
-      validation-query: SELECT 1
-      time-between-eviction-runs-millis: 60000
-      min-evictable-idle-time-millis: 300000
+    url: jdbc:mysql://124.221.166.184:3306/zhuque_v2?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: wake
+    password: wake12345
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      connection-timeout: 30000
+      max-lifetime: 600000
+      idle-timeout: 180000
+      connection-test-query: SELECT 1
+      keepalive-time: 30000
+      validation-timeout: 5000
 
   # Redis 配置
   data:
     redis:
-      host: localhost
+      host: 124.221.166.184
       port: 6379
-      password:
-      database: 0
+      password: zwk_azul
+      database: 1
+      timeout: 5000ms
       lettuce:
         pool:
           max-active: 20
+          max-wait: -1ms
           max-idle: 10
           min-idle: 5
-          max-wait: 1000ms
 
   # Jackson 配置
   jackson:

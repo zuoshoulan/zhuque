@@ -1,4 +1,4 @@
-package wake.su.zhuque.common.security.aspect;
+package wake.su.zhuque.admin.security.aspect;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

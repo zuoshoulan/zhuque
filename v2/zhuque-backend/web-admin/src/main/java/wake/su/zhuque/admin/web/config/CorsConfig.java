@@ -1,4 +1,4 @@
-package wake.su.zhuque.common.web.config;
+package wake.su.zhuque.admin.web.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package wake.su.zhuque.common.web.config;
+package wake.su.zhuque.admin.web.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.ExternalDocumentation;
