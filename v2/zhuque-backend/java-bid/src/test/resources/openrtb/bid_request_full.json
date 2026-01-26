@@ -1,0 +1,221 @@
+{
+  "id": "test-request-002",
+  "imp": [
+    {
+      "id": "imp-001",
+      "banner": {
+        "w": 300,
+        "h": 250,
+        "pos": 1,
+        "mimes": ["image/jpeg", "image/png"],
+        "topframe": 0,
+        "expdir": 0,
+        "api": [3, 5]
+      },
+      "bidfloor": 1.0,
+      "bidfloorcur": "USD",
+      "secure": 1,
+      "ext": {
+        "slot": "banner_slot_001"
+      }
+    },
+    {
+      "id": "imp-002",
+      "banner": {
+        "w": 320,
+        "h": 50,
+        "pos": 0
+      },
+      "bidfloor": 0.3,
+      "ext": {
+        "slot": "banner_slot_002"
+      }
+    }
+  ],
+  "device": {
+    "ua": "Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.74 Mobile Safari/537.36",
+    "ip": "210.73.204.1",
+    "ipv6": "2001:db8::1",
+    "geo": {
+      "country": "CN",
+      "region": "Shanghai",
+      "regionfips": "CN-31",
+      "city": "Shanghai",
+      "zip": "200000",
+      "lat": 31.2304,
+      "lon": 121.4737,
+      "type": 2,
+      "utcoffset": 480
+    },
+    "dnt": 0,
+    "lmt": 0,
+    "ipsha256": "abc123def456",
+    "devicetype": 1,
+    "os": "Android",
+    "osv": "12",
+    "hwversion": "Pixel 6",
+    "make": "Google",
+    "model": "Pixel 6",
+    "carrier": "China Mobile",
+    "connectiontype": 2,
+    "bandwidth": 1000,
+    "language": "zh",
+    "screenw": 1080,
+    "screenh": 2400,
+    "screendpi": 440,
+    "js": 1,
+    "geofetch": 1,
+    "storedlocation": 1
+  },
+  "user": {
+    "id": "user-test-002",
+    "buyeruid": "buyer-uid-123",
+    "yob": 1990,
+    "gender": "M",
+    "keywords": "tech,games",
+    "customdata": "premium_user",
+    "geo": {
+      "country": "CN",
+      "region": "Beijing"
+    },
+    "data": [
+      {
+        "id": "data-provider-001",
+        "name": "Data Provider",
+        "segment": [
+          {
+            "id": "segment-001",
+            "name": "Premium Users"
+          },
+          {
+            "id": "segment-002",
+            "name": "Tech Enthusiasts"
+          }
+        ]
+      }
+    ],
+    "ext": {
+      "consent": "1",
+      "coppa": 0
+    }
+  },
+  "site": {
+    "id": "site-002",
+    "name": "测试站点",
+    "domain": "testsite.com",
+    "cat": ["IAB1", "IAB2"],
+    "sectioncat": ["IAB1-1"],
+    "pagecat": ["IAB1-2"],
+    "page": "https://testsite.com/page",
+    "ref": "https://google.com",
+    "keywords": "technology,gaming,news",
+    "search": "gaming news",
+    "privacypolicy": 1,
+    "publisher": {
+      "id": "pub-001",
+      "name": "Test Publisher",
+      "domain": "testpublisher.com",
+      "cat": ["IAB1"]
+    },
+    "content": {
+      "id": "content-001",
+      "episode": 1,
+      "title": "Test Article",
+      "series": "Test Series",
+      "season": "1",
+      "artist": "Test Artist",
+      "genre": "Technology",
+      "album": "Test Album",
+      "isrc": "TEST12345678",
+      "productionqc": 1,
+      "context": 1,
+      "livestream": 0,
+      "sourcecontent": 1,
+      "len": 300,
+      "language": "zh",
+      "embeddable": 1,
+      "data": []
+    },
+    "ext": {
+      "mobile": 1
+    }
+  },
+  "app": {
+    "id": "app-001",
+    "name": "Test App",
+    "bundle": "com.test.app",
+    "domain": "testapp.com",
+    "storeurl": "https://play.google.com/store/apps/details?id=com.test.app",
+    "cat": ["IAB1"],
+    "sectioncat": ["IAB1-1"],
+    "pagecat": ["IAB1-2"],
+    "ver": "1.0.0",
+    "privacypolicy": 1,
+    "paid": 0,
+    "publisher": {
+      "id": "pub-002",
+      "name": "Test App Publisher",
+      "domain": "testapppub.com"
+    },
+    "ext": {}
+  },
+  "at": 2,
+  "tmax": 100,
+  "wlang": ["zh-CN", "en-US"],
+  "bcat": ["IAB25", "IAB26", "IAB7-42"],
+  "badv": ["company1.com", "company2.com"],
+  "bapp": ["blocked.app.1", "blocked.app.2"],
+  "bcatype": ["IAB25-1", "IAB26-2"],
+  "imp": [
+    {
+      "id": "imp-003",
+      "video": {
+        "mimes": ["video/mp4", "video/x-flv"],
+        "minbitrate": 300,
+        "maxbitrate": 1500,
+        "w": 640,
+        "h": 360,
+        "duration": 30,
+        "placement": 1,
+        "linearity": 1,
+        "skip": 1,
+        "skipmin": 5,
+        "skipafter": 10,
+        "sequence": 1,
+        "battr": [1, 3],
+        "maxextended": 30,
+        "minbitrate": 300,
+        "playbackend": 1,
+        "delivery": [2, 3],
+        "pos": 1,
+        "companionad": [],
+        "api": [2, 5],
+        "companiontype": [1, 2],
+        "ext": {}
+      },
+      "bidfloor": 2.0
+    }
+  ],
+  "regs": {
+    "coppa": 0,
+    "ext": {
+      "gdpr": 0,
+      "us_privacy": "1---"
+    }
+  },
+  "restrictions": {
+    "ext": {}
+  },
+  "source": {
+    "id": "source-001",
+    "tid": "transaction-id-123",
+    "pchain": "public-key-123",
+    "ext": {
+      "schain": "verification-info"
+    }
+  },
+  "ext": {
+    "debug": 1
+  },
+  "test": 1
+}

@@ -1,0 +1,31 @@
+{
+  "id": "test-request-003",
+  "imp": [
+    {
+      "id": "imp-003",
+      "video": {
+        "mimes": ["video/mp4"],
+        "minbitrate": 300,
+        "maxbitrate": 1500,
+        "w": 640,
+        "h": 360,
+        "duration": 30,
+        "placement": 1
+      },
+      "bidfloor": 2.0
+    }
+  ],
+  "device": {
+    "ua": "Mozilla/5.0 (Windows NT 10.0)",
+    "ip": "192.168.1.200",
+    "geo": {
+      "country": "CN",
+      "region": "Guangdong"
+    },
+    "devicetype": 2,
+    "os": "Windows"
+  },
+  "user": {
+    "id": "user-test-003"
+  }
+}

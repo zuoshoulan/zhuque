@@ -1,0 +1,32 @@
+{
+  "id": "test-request-001",
+  "imp": [
+    {
+      "id": "imp-001",
+      "banner": {
+        "w": 300,
+        "h": 250,
+        "pos": 0
+      },
+      "bidfloor": 0.5
+    }
+  ],
+  "device": {
+    "ua": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)",
+    "ip": "192.168.1.100",
+    "geo": {
+      "country": "CN",
+      "region": "Beijing"
+    },
+    "devicetype": 1,
+    "os": "iOS"
+  },
+  "user": {
+    "id": "user-test-001"
+  },
+  "site": {
+    "id": "site-001",
+    "domain": "example.com",
+    "page": "https://example.com/page1"
+  }
+}

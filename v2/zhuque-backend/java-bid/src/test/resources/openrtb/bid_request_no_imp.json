@@ -1,0 +1,11 @@
+{
+  "id": "test-request-invalid-001",
+  "imp": [],
+  "device": {
+    "ua": "Mozilla/5.0",
+    "ip": "192.168.1.1"
+  },
+  "user": {
+    "id": "user-test-invalid"
+  }
+}
