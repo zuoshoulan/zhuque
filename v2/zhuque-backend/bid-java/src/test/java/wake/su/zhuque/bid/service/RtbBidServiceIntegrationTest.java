@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * 运行前确保 Redis 可用，或者跳过此测试
  */
 @SpringBootTest(classes = {
-        wake.su.zhuque.bid.JavaBidApplication.class
+        wake.su.zhuque.bid.BidJavaApplication.class
 })
 @ActiveProfiles("test")
 public class RtbBidServiceIntegrationTest {

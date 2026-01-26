@@ -39,7 +39,7 @@
         <module>web-admin</module>
 
         <!-- 竞价服务模块 -->
-        <module>java-bid</module>
+        <module>bid-java</module>
     </modules>
 
     <properties>

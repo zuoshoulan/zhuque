@@ -11,21 +11,21 @@
         <version>2.0.0</version>
     </parent>
 
-    <artifactId>java-bid</artifactId>
-    <name>竞价服务模块</name>
-    <description>RTB竞价服务，支持后续迁移至Rust</description>
+    <artifactId>bid-java</artifactId>
+    <name>竞价服务模块 (Java)</name>
+    <description>RTB竞价服务 Java 实现，后续将迁移至 bid-rust</description>
 
     <dependencies>
-        <!-- 公共模块 -->
-        <dependency>
-            <groupId>wake.su</groupId>
-            <artifactId>zhuque-common</artifactId>
-        </dependency>
-
         <!-- 模型模块 -->
         <dependency>
             <groupId>wake.su</groupId>
             <artifactId>zhuque-model</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>wake.su</groupId>
+                    <artifactId>zhuque-common</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- 数据访问模块 -->
@@ -50,6 +50,19 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- SpringDoc OpenAPI (Swagger) -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+
+        <!-- MyBatis-Plus -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
         </dependency>
 
         <!-- Redis -->
@@ -125,7 +138,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>wake.su.zhuque.bid.JavaBidApplication</mainClass>
+                    <mainClass>wake.su.zhuque.bid.BidJavaApplication</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

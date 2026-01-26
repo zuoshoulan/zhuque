@@ -76,3 +76,15 @@ management:
   endpoint:
     health:
       show-details: always
+
+# SpringDoc / Swagger 配置
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  show-actuator: true

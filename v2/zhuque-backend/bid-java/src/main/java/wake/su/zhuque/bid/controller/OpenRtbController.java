@@ -1,5 +1,11 @@
 package wake.su.zhuque.bid.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +21,7 @@ import wake.su.zhuque.bid.service.RtbBidService;
  * @author zhuque
  * @version 1.0
  */
+@Tag(name = "OpenRTB", description = "OpenRTB 2.6 竞价接口")
 @RestController
 @RequestMapping("/openrtb")
 @RequiredArgsConstructor
@@ -30,7 +37,15 @@ public class OpenRtbController {
      * @param request OpenRTB BidRequest
      * @return BidResponse 有竞价, 204 No Content 无竞价
      */
-    @PostMapping("/bid")
+    @Operation(summary = "竞价请求", description = "接收 OpenRTB 2.6 竞价请求，返回竞价响应")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "有竞价，返回 BidResponse",
+                content = @Content(schema = @Schema(implementation = BidResponse.class))),
+        @ApiResponse(responseCode = "204", description = "无竞价，不返回内容"),
+        @ApiResponse(responseCode = "400", description = "请求无效"),
+        @ApiResponse(responseCode = "500", description = "服务器错误")
+    })
+    @PostMapping(value = "/bid", produces = "application/json")
     public ResponseEntity<BidResponse> bid(@RequestBody BidRequest request) {
         long startTime = System.currentTimeMillis();
         String requestId = request != null ? request.getId() : "unknown";
@@ -66,6 +81,7 @@ public class OpenRtbController {
     /**
      * 健康检查
      */
+    @Operation(summary = "健康检查", description = "检查服务是否健康运行")
     @GetMapping("/health")
     public ResponseEntity<String> health() {
         return ResponseEntity.ok("OK");
@@ -74,6 +90,7 @@ public class OpenRtbController {
     /**
      * 就绪检查
      */
+    @Operation(summary = "就绪检查", description = "检查服务是否就绪接收流量")
     @GetMapping("/ready")
     public ResponseEntity<String> ready() {
         return ResponseEntity.ok("Ready");
