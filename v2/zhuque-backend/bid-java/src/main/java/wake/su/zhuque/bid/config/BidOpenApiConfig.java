@@ -38,13 +38,13 @@ public class BidOpenApiConfig {
     }
 
     /**
-     * 分组配置 - OpenRTB 竞价接口
+     * 分组配置 - 只显示竞价接口
      */
     @Bean
     public GroupedOpenApi openrtbApi() {
         return GroupedOpenApi.builder()
                 .group("OpenRTB")
-                .pathsToMatch("/openrtb/**")
+                .pathsToMatch("/openrtb/bid")
                 .build();
     }
 }
