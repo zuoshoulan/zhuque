@@ -1,8 +1,7 @@
 # RTB 竞价接口设计文档
 
-> **版本**: v1.0
-> **日期**: 2025-01-24
-> **状态**: 设计阶段
+> **模块**: java-bid (独立竞价服务模块)
+> **状态**: 已实现
 
 ---
 
@@ -446,52 +445,98 @@ String buildNativeAdm(RtbMaterialDO material, Map<String, String> assets, String
 
 ## 10. 文件结构
 
+### 10.1 模块结构
+
 ```
-web-admin/src/main/java/wake/su/zhuque/
+java-bid/                                 # 竞价服务模块 (独立模块)
+├── src/main/java/wake/su/zhuque/bid/
+│   ├── JavaBidApplication.java           # 启动类
+│   │
+│   ├── controller/                       # 控制器层
+│   │   └── OpenRtbController.java        # 竞价接口入口 (/openrtb/bid)
+│   │
+│   ├── service/                          # 服务接口层
+│   │   ├── RtbBidService.java            # 竞价核心服务 (接口)
+│   │   ├── BidPriceService.java          # 出价计算服务 (接口)
+│   │   ├── TargetingMatcher.java         # 定向匹配服务 (接口)
+│   │   ├── FrequencyCapService.java      # 频次控制服务 (接口)
+│   │   ├── BudgetControlService.java     # 预算控制服务 (接口)
+│   │   ├── CreativeAssemblyService.java  # 创意组装服务 (接口)
+│   │   ├── filter/
+│   │   │   └── BidFilter.java            # 过滤器接口
+│   │   ├── matcher/
+│   │   │   ├── GeoMatcher.java           # 地域匹配接口
+│   │   │   ├── DeviceMatcher.java        # 设备匹配接口
+│   │   │   ├── ScheduleMatcher.java      # 时段匹配接口
+│   │   │   └── TargetingMatcher.java     # 定向匹配组合接口
+│   │   ├── pricing/
+│   │   │   ├── BidPriceService.java      # 出价服务接口
+│   │   │   └── BidPriceStrategy.java     # 出价策略接口
+│   │   ├── budget/
+│   │   │   └── BudgetControlService.java # 预算控制接口
+│   │   ├── frequency/
+│   │   │   └── FrequencyCapService.java  # 频次控制接口
+│   │   └── creative/
+│   │       └── CreativeAssemblyService.java # 创意组装接口
+│   │
+│   ├── service/impl/                     # 服务实现层
+│   │   ├── RtbBidServiceImpl.java        # 竞价核心服务实现
+│   │   ├── filter/
+│   │   │   ├── StatusFilter.java         # 状态过滤器 (Order=1)
+│   │   │   ├── TargetingFilter.java      # 定向过滤器 (Order=2)
+│   │   │   ├── BudgetFilter.java         # 预算过滤器 (Order=3)
+│   │   │   └── FrequencyFilter.java      # 频次过滤器 (Order=4)
+│   │   ├── matcher/
+│   │   │   ├── GeoMatcherImpl.java       # 地域匹配实现
+│   │   │   ├── DeviceMatcherImpl.java    # 设备匹配实现
+│   │   │   ├── ScheduleMatcherImpl.java  # 时段匹配实现
+│   │   │   └── TargetingMatcherImpl.java # 定向匹配组合实现
+│   │   ├── pricing/
+│   │   │   ├── BidPriceServiceImpl.java  # 出价服务实现
+│   │   │   ├── FixedCpmStrategy.java     # 固定CPM策略 (Type=1)
+│   │   │   └── SmartBidStrategy.java     # 智能出价策略 (Type=2)
+│   │   ├── budget/
+│   │   │   └── BudgetControlServiceImpl.java # 预算控制实现 (CAS SQL)
+│   │   ├── frequency/
+│   │   │   └── FrequencyCapServiceImpl.java # 频次控制实现 (Redis Lua)
+│   │   └── creative/
+│   │       └── CreativeAssemblyServiceImpl.java # 创意组装实现
+│   │
+│   ├── context/                          # 上下文对象
+│   │   ├── BidContext.java               # 竞价上下文 (携带请求信息)
+│   │   └── BidCandidate.java             # 竞价候选 (广告组+广告+分数)
+│   │
+│   ├── dto/openrtb/                      # OpenRTB DTO
+│   │   ├── BidRequest.java               # 竞价请求
+│   │   ├── BidResponse.java              # 竞价响应
+│   │   ├── SeatBid.java                  # 座位竞价
+│   │   ├── Bid.java                      # 竞价对象
+│   │   ├── Imp.java                      # 展示机会
+│   │   ├── Device.java                   # 设备信息
+│   │   ├── Geo.java                      # 地理信息
+│   │   ├── User.java                     # 用户信息
+│   │   ├── Site.java                     # 站点信息
+│   │   ├── App.java                      # 应用信息
+│   │   └── Ext.java                      # 扩展字段
+│   │
+│   └── config/                           # 配置类
+│       └── RedisConfig.java              # Redis配置
 │
-├── controller/rtb/
-│   └── RtbBidController.java              # 竞价接口入口
-│
-├── service/
-│   ├── RtbBidService.java                 # 竞价核心服务 (接口)
-│   ├── BidPriceService.java               # 出价计算服务 (接口)
-│   ├── TargetingMatchService.java        # 定向匹配服务 (接口)
-│   ├── FrequencyCapService.java          # 频次控制服务 (接口)
-│   ├── BudgetControlService.java         # 预算控制服务 (接口)
-│   └── CreativeAssemblyService.java      # 创意组装服务 (接口)
-│
-├── service/impl/
-│   ├── RtbBidServiceImpl.java             # 竞价核心服务实现
-│   ├── BidPriceServiceImpl.java           # 出价计算服务实现
-│   ├── TargetingMatchServiceImpl.java    # 定向匹配服务实现
-│   ├── FrequencyCapServiceImpl.java      # 频次控制服务实现
-│   ├── BudgetControlServiceImpl.java     # 预算控制服务实现
-│   └── CreativeAssemblyServiceImpl.java  # 创意组装服务实现
-│
-├── strategy/                             # 出价策略
-│   ├── BidPriceStrategy.java             # 策略接口
-│   ├── FixedCpmStrategy.java             # 固定CPM实现
-│   ├── SmartBidStrategy.java             # 智能出价实现
-│   ├── TargetCpaStrategy.java            # 目标CPA实现
-│   └── MaxWinStrategy.java               # 最高赢价实现
-│
-├── matcher/                              # 定向匹配器
-│   ├── GeoMatcher.java                   # 地域匹配
-│   ├── DeviceMatcher.java                # 设备匹配
-│   ├── ScheduleMatcher.java              # 时段匹配
-│   └── UserSegmentMatcher.java           # 人群包匹配
-│
-├── filter/                               # 过滤器
-│   ├── BudgetFilter.java                # 预算过滤
-│   ├── FrequencyFilter.java              # 频次过滤
-│   ├── BrandSafetyFilter.java            # 品牌安全过滤
-│   └── TimeRangeFilter.java             # 时间范围过滤
-│
-└── dto/openrtb/                          # OpenRTB DTO (已存在)
-    ├── BidRequest.java
-    ├── BidResponse.java
-    └── ...
+└── src/main/resources/
+    ├── application.yml                   # 应用配置
+    └── scripts/
+        └── frequency_check_and_incr.lua  # 频次控制 Lua 脚本
 ```
+
+### 10.2 设计模式
+
+| 模式 | 应用场景 |
+|------|---------|
+| **责任链模式** | BidFilter 过滤器链 (Status → Targeting → Budget → Frequency) |
+| **策略模式** | BidPriceStrategy 出价策略 (FixedCPM / SmartBid) |
+| **工厂模式** | BidPriceService 根据 bid_strategy 选择策略 |
+| **上下文模式** | BidContext 携带请求信息传递各层 |
+| **原子操作** | CAS SQL (预算) / Redis Lua (频次) |
 
 ---
 
@@ -507,83 +552,61 @@ public interface RtbBidService {
      * @return BidResponse 有竞价，null 无竞价
      */
     BidResponse processBid(BidRequest request);
-
-    /**
-     * 处理单个展示机会的竞价
-     */
-    SeatBid processImp(BidRequest request, Imp imp);
 }
 ```
 
-### 11.2 TargetingMatchService
+### 11.2 BidFilter (责任链模式)
 
 ```java
-public interface TargetingMatchService {
+public interface BidFilter {
     /**
-     * 判断广告组是否匹配请求条件
+     * 测试广告组是否通过此过滤器
+     * @param context 竞价上下文
+     * @param adGroup 广告组
+     * @return true=通过, false=过滤
      */
-    boolean matches(BidRequest request, Imp imp, RtbAdGroupDO adGroup);
+    boolean test(BidContext context, RtbAdGroupDO adGroup);
 
     /**
-     * 地域匹配
+     * 获取过滤器执行顺序
      */
-    boolean matchGeo(BidRequest.Geo requestGeo, String targetingGeo);
-
-    /**
-     * 设备匹配
-     */
-    boolean matchDevice(Device requestDevice, String targetingDevice, String targetingOs);
-
-    /**
-     * 时段匹配
-     */
-    boolean matchSchedule(RtbAdGroupDO adGroup);
+    int order();
 }
 ```
 
-### 11.3 FrequencyCapService
+**过滤器执行顺序:**
+
+| 过滤器 | Order | 说明 |
+|--------|-------|------|
+| StatusFilter | 1 | 基本状态检查 |
+| TargetingFilter | 2 | 地域/设备/时段定向 |
+| BudgetFilter | 3 | 预算预检查 (只查不扣) |
+| FrequencyFilter | 4 | 频次预检查 (只查不累加) |
+
+### 11.3 TargetingMatcher
 
 ```java
-public interface FrequencyCapService {
+public interface TargetingMatcher {
     /**
-     * 检查是否超出频次限制
-     * @return true=可以展示, false=超出限制
+     * 综合定向匹配
      */
-    boolean checkFrequencyCap(String userId, Long adGroupId, Imp imp, Integer cap, Integer period);
+    boolean matches(BidContext context, RtbAdGroupDO adGroup);
+}
 
-    /**
-     * 记录一次展示
-     */
-    void recordImpression(String userId, Long adGroupId, Integer period);
+public interface GeoMatcher {
+    boolean matches(BidContext context, RtbAdGroupDO adGroup);
+}
 
-    /**
-     * 生成频次Key
-     */
-    String buildFreqCapKey(Long adGroupId, String userId, Integer period);
+public interface DeviceMatcher {
+    boolean matches(BidContext context, RtbAdGroupDO adGroup);
+}
+
+public interface ScheduleMatcher {
+    boolean matches(BidContext context, RtbAdGroupDO adGroup);
 }
 ```
 
-### 11.4 CreativeAssemblyService
-
-```java
-public interface CreativeAssemblyService {
-    /**
-     * 构造 ADM (创意素材)
-     * @param ad 广告
-     * @param creative 创意
-     * @param imp 展示机会
-     * @param bid 竞价对象
-     * @return ADM 字符串
-     */
-    String buildAdm(RtbAdDO ad, RtbCreativeDO creative, Imp imp, Bid bid);
-}
-```
-
----
-
-## 12. 策略模式设计
-
-### 12.1 策略接口
+### 11.4 BidPriceStrategy (策略模式)
 
 ```java
 public interface BidPriceStrategy {
@@ -591,12 +614,14 @@ public interface BidPriceStrategy {
      * 计算出价
      * @param basePrice 基础出价
      * @param maxPrice 最高出价
+     * @param minPrice 最低出价
      * @param floorPrice 底价
-     * @param pctr 预测CTR (可选, 0~1)
+     * @param predictedCtr 预测CTR (0~1)
      * @return 出价（微元/千次单位）
      */
     Long calculate(BigDecimal basePrice, BigDecimal maxPrice,
-                  BigDecimal floorPrice, Double pctr);
+                  BigDecimal minPrice, BigDecimal floorPrice,
+                  Double predictedCtr);
 
     /**
      * 获取策略类型
@@ -605,61 +630,292 @@ public interface BidPriceStrategy {
 }
 ```
 
-### 12.2 策略工厂
+**策略类型:**
+
+| 策略 | Type | 说明 |
+|------|------|------|
+| FixedCpmStrategy | 1 | 固定CPM出价 |
+| SmartBidStrategy | 2 | 智能出价 (根据pCTR调整) |
+
+### 11.5 FrequencyCapService (Redis Lua 原子操作)
 
 ```java
-@Service
-public class BidPriceStrategyFactory {
-    private final Map<Integer, BidPriceStrategy> strategyMap;
+public interface FrequencyCapService {
+    /**
+     * 检查频次是否超限 (只查不累加)
+     */
+    boolean checkFrequency(String userId, RtbAdGroupDO adGroup);
 
-    public BidPriceStrategy getStrategy(Integer bidStrategyType) {
-        return strategyMap.get(bidStrategyType);
-    }
+    /**
+     * 尝试记录展示 (原子操作: 检查+累加)
+     * @return true=成功, false=超限
+     */
+    boolean tryRecord(String userId, RtbAdGroupDO adGroup);
+
+    /**
+     * 回滚展示计数
+     */
+    void rollback(String userId, RtbAdGroupDO adGroup);
+
+    /**
+     * 构建频次Key
+     */
+    String buildKey(Long adGroupId, String userId);
+}
+```
+
+**频次Key设计:**
+```
+freq:day:{date}:{adGroupId}:{userId}
+freq:hour:{date}:{hour}:{adGroupId}:{userId}
+freq:week:{week}:{adGroupId}:{userId}
+freq:month:{year}:{month}:{adGroupId}:{userId}
+```
+
+### 11.6 BudgetControlService (CAS SQL 原子操作)
+
+```java
+public interface BudgetControlService {
+    /**
+     * 检查预算是否充足 (只查不扣)
+     */
+    boolean checkBudget(RtbAdGroupDO adGroup, BigDecimal bidPrice);
+
+    /**
+     * 尝试扣减预算 (CAS原子操作)
+     * @return true=成功, false=预算不足或并发失败
+     */
+    boolean tryDeduct(RtbAdGroupDO adGroup, BigDecimal bidPrice);
+
+    /**
+     * 回滚预算
+     */
+    void rollback(RtbAdGroupDO adGroup, BigDecimal bidPrice);
+}
+```
+
+### 11.7 CreativeAssemblyService
+
+```java
+public interface CreativeAssemblyService {
+    /**
+     * 构造 ADM (创意素材)
+     */
+    String buildAdm(RtbAdDO ad, RtbCreativeDO creative, BidContext context);
+
+    /**
+     * 构建点击链接
+     */
+    String buildClickUrl(String baseUrl, BidContext context);
+
+    /**
+     * 构建展示追踪链接
+     */
+    String buildImpressionUrl(String baseUrl, BidContext context);
+
+    /**
+     * 构建赢拍追踪链接
+     */
+    String buildWinUrl(String baseUrl, BidContext context, Long price);
 }
 ```
 
 ---
 
-## 13. 缓存设计
+## 12. 业务流程实现
 
-### 13.1 频次控制缓存
-
-```
-Key:    freq_cap:{adGroupId}:{userId}:{period}
-Value:   Integer (展示次数)
-TTL:     到周期结束 (动态计算)
-
-示例:
-freq_cap:123:user001:2  (用户user001在广告组123的今日展示次数)
-```
-
-### 13.2 预算使用缓存
+### 12.1 竞价处理流程
 
 ```
-Key:    budget_used:{adGroupId}:{date}
-Value:   BigDecimal (已消耗金额)
-TTL:     2天
-
-示例:
-budget_used:123:2025-01-24  (广告组123在2025-01-24的已消耗金额)
+┌─────────────────────────────────────────────────────────────────┐
+│                       竞价请求处理流程                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ ① 请求解析与校验 (OpenRtbController)                     │   │
+│  │   - 接收 BidRequest JSON                                 │   │
+│  │   - 校验必需字段 (imp)                                    │   │
+│  │   - 调用 RtbBidService.processBid()                      │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                              ↓                                  │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ ② 获取候选广告组 (RtbBidServiceImpl.getCandidates)       │   │
+│  │   - 查询进行中的 Campaign                                 │   │
+│  │   - 查询进行中的 AdGroup                                  │   │
+│  │   - 查询进行中的 Ad                                       │   │
+│  │   - 组装 BidCandidate 列表                               │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                              ↓                                  │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ ③ 预过滤阶段 (RtbBidServiceImpl.preFilter)              │   │
+│  │   按顺序执行 BidFilter 责任链:                            │   │
+│  │   1. StatusFilter - 基本状态检查                         │   │
+│  │   2. TargetingFilter - 定向匹配                          │   │
+│  │   3. BudgetFilter - 预算预检查                           │   │
+│  │   4. FrequencyFilter - 频次预检查                        │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                              ↓                                  │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ ④ 计算出价和分数 (RtbBidServiceImpl)                     │   │
+│  │   - BidPriceService.calculateBidPrice()                 │   │
+│  │   - candidate.setBidPrice()                              │   │
+│  │   - candidate.calculateScore()                          │   │
+│  │   - 按分数排序                                           │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                              ↓                                  │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ ⑤ 资源扣减阶段 (RtbBidServiceImpl.trySelectWinner)      │   │
+│  │   按排序顺序遍历候选:                                     │   │
+│  │   1. BudgetControlService.tryDeduct() - CAS SQL         │   │
+│  │   2. FrequencyCapService.tryRecord() - Redis Lua        │   │
+│  │   3. 成功则选中，失败则继续下一个                         │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                              ↓                                  │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ ⑥ 构造响应 (RtbBidServiceImpl.buildResponse)            │   │
+│  │   - CreativeAssemblyService.buildAdm()                  │   │
+│  │   - 组装 BidResponse                                     │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-### 13.3 pCTR 预估缓存
+### 12.2 原子操作保证
 
+**预算扣减 (CAS SQL):**
+```sql
+UPDATE rtb_ad_group
+SET daily_budget_used = daily_budget_used + {bidPrice}
+WHERE id = {adGroupId}
+  AND daily_budget_used <= daily_budget - {bidPrice}
+-- 返回 affected_rows = 1 表示成功
 ```
-Key:    pctr:{adGroupId}:{deviceType}:{geo}
-Value:   Double (预估CTR)
-TTL:     1小时
 
-示例:
-pctr:123:mobile:CN-11  (广告组123在移动端北京的预估CTR)
+**频次控制 (Redis Lua):**
+```lua
+local key = KEYS[1]
+local cap = tonumber(ARGV[1])
+local ttl = tonumber(ARGV[2])
+
+local current = tonumber(redis.call('GET', key)) or 0
+if current < cap then
+    redis.call('INCR', key)
+    if ttl > 0 then
+        redis.call('EXPIRE', key, ttl)
+    end
+    return 1  -- 成功
+else
+    return 0  -- 失败
+end
 ```
 
 ---
 
-## 14. 错误处理
+## 13. 模块配置
 
-### 14.1 错误码
+### 13.1 application.yml
+
+```yaml
+server:
+  port: 8081
+
+spring:
+  application:
+    name: java-bid
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/zhuque_rtb?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      password:
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 20
+          max-idle: 10
+          min-idle: 5
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: wake.su.zhuque.model.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+logging:
+  level:
+    wake.su.zhuque.bid: DEBUG
+    org.springframework.data.redis: INFO
+```
+
+### 13.2 Redis Lua 脚本
+
+**文件:** `src/main/resources/scripts/frequency_check_and_incr.lua`
+
+```lua
+-- 频次检查并递增 (原子操作)
+-- ARGV[1]: 频次上限
+-- ARGV[2]: TTL (秒)
+
+local key = KEYS[1]
+local cap = tonumber(ARGV[1])
+local ttl = tonumber(ARGV[2])
+
+local current = tonumber(redis.call('GET', key)) or 0
+if current < cap then
+    redis.call('INCR', key)
+    if ttl > 0 then
+        redis.call('EXPIRE', key, ttl)
+    end
+    return 1  -- 成功
+else
+    return 0  -- 失败
+end
+```
+
+---
+
+## 14. 编译与运行
+
+### 14.1 编译
+
+```bash
+# 编译 java-bid 模块
+mvn clean compile -pl java-bid -am
+
+# 打包
+mvn clean package -pl java-bid -am
+```
+
+### 14.2 运行
+
+```bash
+# 直接运行
+java -jar java-bid/target/java-bid-2.0.0.jar
+
+# 或使用 Maven 插件
+mvn spring-boot:run -pl java-bid
+```
+
+### 14.3 端口说明
+
+| 服务 | 端口 | 说明 |
+|------|------|------|
+| java-bid | 8081 | RTB 竞价接口 |
+| web-admin | 8080 | 管理后台 |
+
+---
+
+## 15. 错误处理
+
+### 15.1 错误码
 
 | 错误码 | 说明 |
 |--------|------|
@@ -670,7 +926,7 @@ pctr:123:mobile:CN-11  (广告组123在移动端北京的预估CTR)
 | BUDGET_EXHAUSTED | 预算耗尽 |
 | FREQUENCY_EXCEEDED | 频次超限 |
 
-### 14.2 处理逻辑
+### 15.2 处理逻辑
 
 ```java
 @RestControllerAdvice
@@ -684,9 +940,9 @@ public class RtbExceptionHandler {
 
 ---
 
-## 15. 性能考虑
+## 16. 性能考虑
 
-### 15.1 性能目标
+### 16.1 性能目标
 
 | 指标 | 目标值 |
 |------|--------|
@@ -694,7 +950,7 @@ public class RtbExceptionHandler {
 | 吞吐量 | > 10,000 QPS |
 | 可用性 | 99.9% |
 
-### 15.2 优化措施
+### 16.2 优化措施
 
 1. **Redis 缓存**: 频次、预算、pCTR
 2. **本地缓存**: 广告组配置热点数据
@@ -704,9 +960,9 @@ public class RtbExceptionHandler {
 
 ---
 
-## 16. 监控指标
+## 17. 监控指标
 
-### 16.1 业务指标
+### 17.1 业务指标
 
 - 竞价请求量 (QPS)
 - 竞价成功率
@@ -714,7 +970,7 @@ public class RtbExceptionHandler {
 - 赢率
 - 展示率
 
-### 16.2 技术指标
+### 17.2 技术指标
 
 - 响应时间 (P50, P99)
 - 错误率
@@ -723,16 +979,16 @@ public class RtbExceptionHandler {
 
 ---
 
-## 17. 后续扩展
+## 18. 后续扩展
 
-### 17.1 待实现功能
+### 18.1 待实现功能
 
 1. **智能出价**: 引入机器学习预测 pCTR/pCVR
 2. **程序化创意**: 动态生成创意内容
 3. **A/B 测试**: 支持创意多版本测试
 4. **实时报告**: 实时竞价数据回传
 
-### 17.2 优化方向
+### 18.2 优化方向
 
 1. **多竞价**: 支持单次请求返回多个竞价
 2. **价格拆分**: 支持底价拆分 (Price Splitting)
@@ -741,7 +997,7 @@ public class RtbExceptionHandler {
 
 ---
 
-## 18. 参考资料
+## 19. 参考资料
 
 - [OpenRTB 2.6 Specification](https://iabtechlab.com/wp-content/uploads/2024/07/OpenRTB-v2_6-Final.pdf)
 - [IAB Tech Lab](https://iabtechlab.com/)
@@ -749,6 +1005,4 @@ public class RtbExceptionHandler {
 
 ---
 
-**文档版本**: v1.0
-**最后更新**: 2025-01-24
 **作者**: wake.zheng
