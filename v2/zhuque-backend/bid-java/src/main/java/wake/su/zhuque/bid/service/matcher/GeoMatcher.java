@@ -11,12 +11,12 @@ import wake.su.zhuque.model.entity.RtbAdGroupDO;
  */
 public interface GeoMatcher extends TargetingMatcher {
 
-    /**
-     * 检查地域是否匹配
-     *
-     * @param context 竞价上下文
-     * @param adGroup 广告组
-     * @return true=匹配, false=不匹配
-     */
-    boolean matches(BidContext context, RtbAdGroupDO adGroup);
+  /**
+   * 检查地域是否匹配
+   *
+   * @param context 竞价上下文
+   * @param adGroup 广告组
+   * @return true=匹配, false=不匹配
+   */
+  boolean matches(BidContext context, RtbAdGroupDO adGroup);
 }

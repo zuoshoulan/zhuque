@@ -11,12 +11,12 @@ import wake.su.zhuque.model.entity.RtbAdGroupDO;
  */
 public interface BidPriceService {
 
-    /**
-     * 计算最终出价
-     *
-     * @param adGroup      广告组
-     * @param context      竞价上下文
-     * @return 出价（微元/千次单位）
-     */
-    Long calculateBidPrice(RtbAdGroupDO adGroup, BidContext context);
+  /**
+   * 计算最终出价
+   *
+   * @param adGroup 广告组
+   * @param context 竞价上下文
+   * @return 出价（微元/千次单位）
+   */
+  Long calculateBidPrice(RtbAdGroupDO adGroup, BidContext context);
 }

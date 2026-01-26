@@ -1,13 +1,32 @@
 {
-    "java.project.referencedLibraries": [
-        "lib/**/*.jar"
-    ],
-    "java.configuration.maven.userSettings": "",
-    "java.project.sourcePaths": [
-        "zhuque-backend/*/src/main/java"
-    ],
-    "java.debug.settings.enableRunDebugCodeLens": true,
-    // interactive 模式下，需要手动点击 Build Project 才能更新构建配置
-    // automatic 模式下，会自动更新构建配置
-    "java.configuration.updateBuildConfiguration": "automatic"
+  // Java 格式化配置 - 禁用内置格式化，使用 Spotless
+  "java.format.enabled": false,
+
+  // 保存时自动格式化 Java 文件 - 使用 Spotless 任务
+  "[java]": {
+    "editor.formatOnSave": false
+  },
+
+  // VSCode Spotless 插件配置（如果安装）
+  "spotless.maven.additionalArgs": "",
+  "spotless.java.cmd": "mvn spotless:apply",
+
+  // Java 项目配置
+  "java.project.referencedLibraries": [
+    "lib/**/*.jar"
+  ],
+  "java.configuration.maven.userSettings": "",
+  "java.project.sourcePaths": [
+    "zhuque-backend/*/src/main/java"
+  ],
+  "java.debug.settings.enableRunDebugCodeLens": true,
+  "java.configuration.updateBuildConfiguration": "automatic",
+
+  // 保存时运行 Spotless 格式化（通过 Run On Save 插件）
+  "emeraldwalk.runonsave": [
+    {
+      "match": "\\.java$",
+      "cmd": "cd ${workspaceFolder}/zhuque-backend/bid-java && mvn spotless:apply"
+    }
+  ]
 }
