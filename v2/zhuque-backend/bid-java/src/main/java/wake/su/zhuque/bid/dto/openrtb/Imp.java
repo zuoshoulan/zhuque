@@ -479,6 +479,98 @@ public class Imp {
     @JsonProperty("companionad")
     private List<Banner> companionAds;
 
+    @Schema(description = """
+        视频广告时长（秒）
+
+        指定视频广告的实际持续时间。
+        """, example = "30")
+    @JsonProperty("duration")
+    private Integer duration;
+
+    @Schema(description = """
+        最少播放秒数后可跳过
+
+        指定用户必须观看多少秒后才可以跳过视频广告。
+        """, example = "5")
+    @JsonProperty("skipmin")
+    private Integer skipMin;
+
+    @Schema(description = """
+        跳过按钮显示时间（秒）
+
+        指定播放多少秒后显示跳过按钮。
+        """, example = "10")
+    @JsonProperty("skipafter")
+    private Integer skipAfter;
+
+    @Schema(description = """
+        视频序列号
+
+        当有多个视频广告时，指定当前视频的播放顺序。
+        """, example = "1")
+    @JsonProperty("sequence")
+    private Integer sequence;
+
+    @Schema(description = """
+        阻止的创意属性（Blocked Creative Attributes）
+
+        指定不允许使用的创意属性列表。
+        - 1: 用户自发动作播放音频
+        - 2: 用户自发展开
+        - 3: 鼠标悬停效果
+        等
+        """)
+    @JsonProperty("battr")
+    private List<Integer> blockedAttributes;
+
+    @Schema(description = """
+        最大延长时长（秒）
+
+        允许视频广告延长的最大时间。
+        """, example = "30")
+    @JsonProperty("maxextended")
+    private Integer maxExtended;
+
+    @Schema(description = """
+        最小码率（Kbps）
+
+        可接受的最低视频比特率。
+        """, example = "300")
+    @JsonProperty("minbitrate")
+    private Integer minBitrate;
+
+    @Schema(description = """
+        最大码率（Kbps）
+
+        可接受的最大视频比特率。
+        """, example = "1500")
+    @JsonProperty("maxbitrate")
+    private Integer maxBitrate;
+
+    @Schema(description = """
+        伴随横幅类型（Companion Type）
+
+        指定伴随广告的类型。
+        """)
+    @JsonProperty("companiontype")
+    private List<Integer> companionType;
+
+    @Schema(description = """
+        支持的API框架
+
+        - 1: VPAID 1.0
+        - 2: VPAID 2.0
+        - 3: MRAID-1
+        - 5: MRAID-2
+        - 6: MRAID-3
+        """)
+    @JsonProperty("api")
+    private List<Integer> apiFrameworks;
+
+    @Schema(description = "扩展字段")
+    @JsonProperty("ext")
+    private Object ext;
+
     public List<String> getMimes() {
       return mimes;
     }
@@ -573,6 +665,94 @@ public class Imp {
 
     public void setCompanionAds(List<Banner> companionAds) {
       this.companionAds = companionAds;
+    }
+
+    public Integer getDuration() {
+      return duration;
+    }
+
+    public void setDuration(Integer duration) {
+      this.duration = duration;
+    }
+
+    public Integer getSkipMin() {
+      return skipMin;
+    }
+
+    public void setSkipMin(Integer skipMin) {
+      this.skipMin = skipMin;
+    }
+
+    public Integer getSkipAfter() {
+      return skipAfter;
+    }
+
+    public void setSkipAfter(Integer skipAfter) {
+      this.skipAfter = skipAfter;
+    }
+
+    public Integer getSequence() {
+      return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+      this.sequence = sequence;
+    }
+
+    public List<Integer> getBlockedAttributes() {
+      return blockedAttributes;
+    }
+
+    public void setBlockedAttributes(List<Integer> blockedAttributes) {
+      this.blockedAttributes = blockedAttributes;
+    }
+
+    public Integer getMaxExtended() {
+      return maxExtended;
+    }
+
+    public void setMaxExtended(Integer maxExtended) {
+      this.maxExtended = maxExtended;
+    }
+
+    public Integer getMinBitrate() {
+      return minBitrate;
+    }
+
+    public void setMinBitrate(Integer minBitrate) {
+      this.minBitrate = minBitrate;
+    }
+
+    public Integer getMaxBitrate() {
+      return maxBitrate;
+    }
+
+    public void setMaxBitrate(Integer maxBitrate) {
+      this.maxBitrate = maxBitrate;
+    }
+
+    public List<Integer> getCompanionType() {
+      return companionType;
+    }
+
+    public void setCompanionType(List<Integer> companionType) {
+      this.companionType = companionType;
+    }
+
+    public List<Integer> getApiFrameworks() {
+      return apiFrameworks;
+    }
+
+    public void setApiFrameworks(List<Integer> apiFrameworks) {
+      this.apiFrameworks = apiFrameworks;
+    }
+
+    public Object getExt() {
+      return ext;
+    }
+
+    public void setExt(Object ext) {
+      this.ext = ext;
     }
   }
 

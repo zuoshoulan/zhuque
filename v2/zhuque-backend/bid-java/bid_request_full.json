@@ -30,6 +30,33 @@
       "ext": {
         "slot": "banner_slot_002"
       }
+    },
+    {
+      "id": "imp-003",
+      "video": {
+        "mimes": ["video/mp4", "video/x-flv"],
+        "minbitrate": 300,
+        "maxbitrate": 1500,
+        "w": 640,
+        "h": 360,
+        "duration": 30,
+        "placement": 1,
+        "linearity": 1,
+        "skip": 1,
+        "skipmin": 5,
+        "skipafter": 10,
+        "sequence": 1,
+        "battr": [1, 3],
+        "maxextended": 30,
+        "playbackend": 1,
+        "delivery": [2, 3],
+        "pos": 1,
+        "companionad": [],
+        "api": [2, 5],
+        "companiontype": [1, 2],
+        "ext": {}
+      },
+      "bidfloor": 2.0
     }
   ],
   "device": {
@@ -166,36 +193,6 @@
   "badv": ["company1.com", "company2.com"],
   "bapp": ["blocked.app.1", "blocked.app.2"],
   "bcatype": ["IAB25-1", "IAB26-2"],
-  "imp": [
-    {
-      "id": "imp-003",
-      "video": {
-        "mimes": ["video/mp4", "video/x-flv"],
-        "minbitrate": 300,
-        "maxbitrate": 1500,
-        "w": 640,
-        "h": 360,
-        "duration": 30,
-        "placement": 1,
-        "linearity": 1,
-        "skip": 1,
-        "skipmin": 5,
-        "skipafter": 10,
-        "sequence": 1,
-        "battr": [1, 3],
-        "maxextended": 30,
-        "minbitrate": 300,
-        "playbackend": 1,
-        "delivery": [2, 3],
-        "pos": 1,
-        "companionad": [],
-        "api": [2, 5],
-        "companiontype": [1, 2],
-        "ext": {}
-      },
-      "bidfloor": 2.0
-    }
-  ],
   "regs": {
     "coppa": 0,
     "ext": {
