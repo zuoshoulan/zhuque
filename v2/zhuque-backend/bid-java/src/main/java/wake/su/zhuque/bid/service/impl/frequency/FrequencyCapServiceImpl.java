@@ -87,11 +87,9 @@ public class FrequencyCapServiceImpl implements FrequencyCapService {
     int ttl = calculateTtl(period);
 
     // 执行 Lua 脚本
-    Long result = redisTemplate
-        .execute(
-            org.springframework.data.redis.core.script.RedisScript.of(FREQ_CHECK_AND_INCR_SCRIPT,
-                Long.class),
-            Collections.singletonList(key), String.valueOf(cap), String.valueOf(ttl));
+    Long result = redisTemplate.execute(
+        org.springframework.data.redis.core.script.RedisScript.of(FREQ_CHECK_AND_INCR_SCRIPT, Long.class),
+        Collections.singletonList(key), String.valueOf(cap), String.valueOf(ttl));
 
     return result != null && result == 1;
   }
@@ -108,12 +106,10 @@ public class FrequencyCapServiceImpl implements FrequencyCapService {
     String dateStr;
 
     return switch(period) {
-    case PERIOD_HOUR ->
-      "freq:hour:" + today + ":" + LocalDateTime.now().getHour() + ":" + adGroupId + ":" + userId;
+    case PERIOD_HOUR -> "freq:hour:" + today + ":" + LocalDateTime.now().getHour() + ":" + adGroupId + ":" + userId;
     case PERIOD_DAY -> "freq:day:" + today + ":" + adGroupId + ":" + userId;
     case PERIOD_WEEK -> "freq:week:" + getWeekKey(today) + ":" + adGroupId + ":" + userId;
-    case PERIOD_MONTH -> "freq:month:" + today.getYear() + ":" + today.getMonthValue() + ":"
-        + adGroupId + ":" + userId;
+    case PERIOD_MONTH -> "freq:month:" + today.getYear() + ":" + today.getMonthValue() + ":" + adGroupId + ":" + userId;
     default -> "freq:day:" + today + ":" + adGroupId + ":" + userId;
     };
   }
@@ -137,23 +133,19 @@ public class FrequencyCapServiceImpl implements FrequencyCapService {
   private int calculateTtl(Integer period) {
     LocalDateTime now = LocalDateTime.now();
     return switch(period) {
-    case PERIOD_HOUR ->
-      (int) Duration.between(now, now.plusHours(1).withMinute(0).withSecond(0)).getSeconds();
-    case PERIOD_DAY -> (int) Duration
-        .between(now, now.plusDays(1).withHour(0).withMinute(0).withSecond(0)).getSeconds();
+    case PERIOD_HOUR -> (int) Duration.between(now, now.plusHours(1).withMinute(0).withSecond(0)).getSeconds();
+    case PERIOD_DAY ->
+      (int) Duration.between(now, now.plusDays(1).withHour(0).withMinute(0).withSecond(0)).getSeconds();
     case PERIOD_WEEK -> {
       int daysUntilMonday = 7 - now.getDayOfWeek().getValue();
       if(daysUntilMonday == 0)
         daysUntilMonday = 7;
-      yield (int) Duration
-          .between(now, now.plusDays(daysUntilMonday).withHour(0).withMinute(0).withSecond(0))
+      yield (int) Duration.between(now, now.plusDays(daysUntilMonday).withHour(0).withMinute(0).withSecond(0))
           .getSeconds();
     }
     case PERIOD_MONTH -> {
-      int daysUntilMonthEnd = now.getMonth().length(now.toLocalDate().isLeapYear())
-          - now.getDayOfMonth() + 1;
-      yield (int) Duration
-          .between(now, now.plusDays(daysUntilMonthEnd).withHour(0).withMinute(0).withSecond(0))
+      int daysUntilMonthEnd = now.getMonth().length(now.toLocalDate().isLeapYear()) - now.getDayOfMonth() + 1;
+      yield (int) Duration.between(now, now.plusDays(daysUntilMonthEnd).withHour(0).withMinute(0).withSecond(0))
           .getSeconds();
     }
     default -> 86400; // 默认1天

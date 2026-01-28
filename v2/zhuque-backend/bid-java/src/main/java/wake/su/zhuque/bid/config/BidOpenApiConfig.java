@@ -24,8 +24,7 @@ public class BidOpenApiConfig {
   public OpenAPI bidOpenAPI() {
     return new OpenAPI()
         .info(new Info().title("朱雀竞价服务 API").description("OpenRTB 2.6 实时竞价接口").version("1.0.0")
-            .contact(new Contact().name("zhuque").email("tech@zhuque.com"))
-            .license(new License().name("MIT")))
+            .contact(new Contact().name("zhuque").email("tech@zhuque.com")).license(new License().name("MIT")))
         .servers(List.of(new Server().url("http://localhost:8081").description("本地开发环境"),
             new Server().url("https://api.zhuque.com").description("生产环境")));
   }

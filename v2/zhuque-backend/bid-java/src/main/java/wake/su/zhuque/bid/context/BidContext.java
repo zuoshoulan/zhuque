@@ -130,9 +130,8 @@ public class BidContext {
 
   /** 获取完整的广告组定位key (用于缓存) */
   public String getAdGroupLocationKey() {
-    return String.format("%s:%s:%s:%s", countryCode != null ? countryCode : "*",
-        regionCode != null ? regionCode : "*", deviceType != null ? deviceType : "*",
-        os != null ? os : "*");
+    return String.format("%s:%s:%s:%s", countryCode != null ? countryCode : "*", regionCode != null ? regionCode : "*",
+        deviceType != null ? deviceType : "*", os != null ? os : "*");
   }
 
   // Getters and Setters

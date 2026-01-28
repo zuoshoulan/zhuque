@@ -16,8 +16,8 @@ import wake.su.zhuque.bid.service.pricing.BidPriceStrategy;
 public class FixedCpmStrategy implements BidPriceStrategy {
 
   @Override
-  public Long calculate(BigDecimal basePrice, BigDecimal maxPrice, BigDecimal minPrice,
-      BigDecimal floorPrice, Double predictedCtr) {
+  public Long calculate(BigDecimal basePrice, BigDecimal maxPrice, BigDecimal minPrice, BigDecimal floorPrice,
+      Double predictedCtr) {
     // 使用基础出价
     BigDecimal bidPrice = basePrice;
 

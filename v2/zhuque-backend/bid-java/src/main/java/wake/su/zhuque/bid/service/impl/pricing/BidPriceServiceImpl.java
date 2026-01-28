@@ -36,8 +36,7 @@ public class BidPriceServiceImpl implements BidPriceService {
   public Long calculateBidPrice(RtbAdGroupDO adGroup, BidContext context) {
     // 懒加载策略映射
     if(strategyMap == null) {
-      strategyMap = strategies.stream()
-          .collect(Collectors.toMap(BidPriceStrategy::getType, Function.identity()));
+      strategyMap = strategies.stream().collect(Collectors.toMap(BidPriceStrategy::getType, Function.identity()));
     }
 
     // 获取出价策略

@@ -15,13 +15,11 @@ import org.junit.platform.suite.api.Suite;
 @Suite
 @SelectClasses({
     // Matcher 测试
-    wake.su.zhuque.bid.matcher.GeoMatcherTest.class,
-    wake.su.zhuque.bid.matcher.DeviceMatcherTest.class,
+    wake.su.zhuque.bid.matcher.GeoMatcherTest.class, wake.su.zhuque.bid.matcher.DeviceMatcherTest.class,
     wake.su.zhuque.bid.matcher.ScheduleMatcherTest.class,
 
     // Filter 测试
-    wake.su.zhuque.bid.filter.BudgetFilterTest.class,
-    wake.su.zhuque.bid.filter.FrequencyFilterTest.class,
+    wake.su.zhuque.bid.filter.BudgetFilterTest.class, wake.su.zhuque.bid.filter.FrequencyFilterTest.class,
 
     // Strategy 测试
     wake.su.zhuque.bid.pricing.BidPriceStrategyTest.class,

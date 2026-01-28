@@ -126,8 +126,7 @@ public class OpenRtbController {
       BidResponse response = rtbBidService.processBid(request);
 
       long duration = System.currentTimeMillis() - startTime;
-      log.info("[{}] 竞价处理完成, duration={}ms, result={}", requestId, duration,
-          response != null ? "有竞价" : "无竞价");
+      log.info("[{}] 竞价处理完成, duration={}ms, result={}", requestId, duration, response != null ? "有竞价" : "无竞价");
 
       if(response == null) {
         return ResponseEntity.noContent().build();

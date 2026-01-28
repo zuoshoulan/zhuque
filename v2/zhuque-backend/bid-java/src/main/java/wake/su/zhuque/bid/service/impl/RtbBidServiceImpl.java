@@ -113,8 +113,8 @@ public class RtbBidServiceImpl implements RtbBidService {
     BidResponse response = buildResponse(request, imp, winner, context);
 
     long duration = System.currentTimeMillis() - startTime;
-    log.info("[{}] 竞价成功, adGroupId={}, bidPrice={}, duration={}ms", requestId,
-        winner.getAdGroup().getId(), winner.getBidPrice(), duration);
+    log.info("[{}] 竞价成功, adGroupId={}, bidPrice={}, duration={}ms", requestId, winner.getAdGroup().getId(),
+        winner.getBidPrice(), duration);
 
     return response;
   }
@@ -122,10 +122,9 @@ public class RtbBidServiceImpl implements RtbBidService {
   /** 获取候选广告组 */
   private List<BidCandidate> getCandidates(BidContext context) {
     // 查询所有进行中的 Campaign
-    List<RtbCampaignDO> campaigns = campaignMapper.selectList(
-        new LambdaQueryWrapper<RtbCampaignDO>().eq(RtbCampaignDO::getStatus, STATUS_ACTIVE)
-            .le(RtbCampaignDO::getStartTime, context.getNow())
-            .ge(RtbCampaignDO::getEndTime, context.getNow()));
+    List<RtbCampaignDO> campaigns = campaignMapper
+        .selectList(new LambdaQueryWrapper<RtbCampaignDO>().eq(RtbCampaignDO::getStatus, STATUS_ACTIVE)
+            .le(RtbCampaignDO::getStartTime, context.getNow()).ge(RtbCampaignDO::getEndTime, context.getNow()));
 
     if(campaigns.isEmpty()) {
       return List.of();
@@ -145,8 +144,8 @@ public class RtbBidServiceImpl implements RtbBidService {
     // 查询每个 AdGroup 对应的 Ad
     List<Long> adGroupIds = adGroups.stream().map(RtbAdGroupDO::getId).toList();
 
-    List<RtbAdDO> ads = adMapper.selectList(new LambdaQueryWrapper<RtbAdDO>()
-        .in(RtbAdDO::getAdGroupId, adGroupIds).eq(RtbAdDO::getStatus, STATUS_ACTIVE));
+    List<RtbAdDO> ads = adMapper.selectList(
+        new LambdaQueryWrapper<RtbAdDO>().in(RtbAdDO::getAdGroupId, adGroupIds).eq(RtbAdDO::getStatus, STATUS_ACTIVE));
 
     // 组装候选对象
     List<BidCandidate> candidates = new ArrayList<>();
@@ -167,8 +166,7 @@ public class RtbBidServiceImpl implements RtbBidService {
     List<BidCandidate> passed = new ArrayList<>();
 
     // 按顺序执行过滤器
-    List<BidFilter> sortedFilters = bidFilters.stream()
-        .sorted(Comparator.comparingInt(BidFilter::order)).toList();
+    List<BidFilter> sortedFilters = bidFilters.stream().sorted(Comparator.comparingInt(BidFilter::order)).toList();
 
     for(BidCandidate candidate : candidates) {
       RtbAdGroupDO adGroup = candidate.getAdGroup();
@@ -191,8 +189,7 @@ public class RtbBidServiceImpl implements RtbBidService {
 
   /** 尝试选择获胜者 - 扣资源阶段 */
   private BidCandidate trySelectWinner(BidContext context, List<BidCandidate> candidates) {
-    BigDecimal bidPrice = BigDecimal.valueOf(candidates.get(0).getBidPrice())
-        .divide(BigDecimal.valueOf(1000));
+    BigDecimal bidPrice = BigDecimal.valueOf(candidates.get(0).getBidPrice()).divide(BigDecimal.valueOf(1000));
 
     for(BidCandidate candidate : candidates) {
       RtbAdGroupDO adGroup = candidate.getAdGroup();
@@ -221,8 +218,7 @@ public class RtbBidServiceImpl implements RtbBidService {
   }
 
   /** 构造响应 */
-  private BidResponse buildResponse(BidRequest request, Imp imp, BidCandidate winner,
-      BidContext context) {
+  private BidResponse buildResponse(BidRequest request, Imp imp, BidCandidate winner, BidContext context) {
     BidResponse response = new BidResponse();
     response.setId(request.getId());
 

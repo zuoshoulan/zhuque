@@ -34,11 +34,9 @@ public class BudgetControlServiceImpl implements BudgetControlService {
   public boolean checkBudget(RtbAdGroupDO adGroup, BigDecimal bidPrice) {
     // 检查广告组日预算
     if(adGroup.getDailyBudget() != null) {
-      BigDecimal used = adGroup.getDailyBudgetUsed() != null ? adGroup.getDailyBudgetUsed()
-          : BigDecimal.ZERO;
+      BigDecimal used = adGroup.getDailyBudgetUsed() != null ? adGroup.getDailyBudgetUsed() : BigDecimal.ZERO;
       if(used.add(bidPrice).compareTo(adGroup.getDailyBudget()) > 0) {
-        log.debug("广告组日预算不足, adGroup={}, used={}, budget={}", adGroup.getId(), used,
-            adGroup.getDailyBudget());
+        log.debug("广告组日预算不足, adGroup={}, used={}, budget={}", adGroup.getId(), used, adGroup.getDailyBudget());
         return false;
       }
     }
@@ -71,9 +69,8 @@ public class BudgetControlServiceImpl implements BudgetControlService {
   @Override
   public void rollback(RtbAdGroupDO adGroup, BigDecimal bidPrice) {
     try {
-      adGroupMapper.update(null,
-          new LambdaUpdateWrapper<RtbAdGroupDO>().eq(RtbAdGroupDO::getId, adGroup.getId())
-              .setSql("daily_budget_used = daily_budget_used - " + bidPrice));
+      adGroupMapper.update(null, new LambdaUpdateWrapper<RtbAdGroupDO>().eq(RtbAdGroupDO::getId, adGroup.getId())
+          .setSql("daily_budget_used = daily_budget_used - " + bidPrice));
     } catch(Exception e) {
       log.error("回滚预算失败, adGroup={}", adGroup.getId(), e);
     }

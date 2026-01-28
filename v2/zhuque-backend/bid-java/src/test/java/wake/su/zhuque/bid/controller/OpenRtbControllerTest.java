@@ -78,8 +78,9 @@ public class OpenRtbControllerTest {
   void testBidRequestWithEmptyImp() throws Exception {
     BidRequest request = OpenRtbTestDataLoader.noImpRequest();
 
-    mockMvc.perform(post("/openrtb/bid").contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(request))).andExpect(status().isBadRequest());
+    mockMvc.perform(
+        post("/openrtb/bid").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isBadRequest());
 
     // 服务不应该被调用
     verify(rtbBidService, never()).processBid(any(BidRequest.class));
@@ -95,9 +96,7 @@ public class OpenRtbControllerTest {
   @Test
   @DisplayName("POST /openrtb/bid - 无效JSON返回400")
   void testBidRequestWithInvalidJson() throws Exception {
-    mockMvc
-        .perform(
-            post("/openrtb/bid").contentType(MediaType.APPLICATION_JSON).content("{invalid json"))
+    mockMvc.perform(post("/openrtb/bid").contentType(MediaType.APPLICATION_JSON).content("{invalid json"))
         .andExpect(status().isBadRequest());
   }
 
@@ -119,15 +118,13 @@ public class OpenRtbControllerTest {
   @Test
   @DisplayName("GET /openrtb/health - 健康检查")
   void testHealthCheck() throws Exception {
-    mockMvc.perform(get("/openrtb/health")).andExpect(status().isOk())
-        .andExpect(content().string("OK"));
+    mockMvc.perform(get("/openrtb/health")).andExpect(status().isOk()).andExpect(content().string("OK"));
   }
 
   @Test
   @DisplayName("GET /openrtb/ready - 就绪检查")
   void testReadyCheck() throws Exception {
-    mockMvc.perform(get("/openrtb/ready")).andExpect(status().isOk())
-        .andExpect(content().string("Ready"));
+    mockMvc.perform(get("/openrtb/ready")).andExpect(status().isOk()).andExpect(content().string("Ready"));
   }
 
   @Test
