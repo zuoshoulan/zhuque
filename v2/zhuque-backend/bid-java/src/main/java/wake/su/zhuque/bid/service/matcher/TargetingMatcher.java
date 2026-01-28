@@ -14,8 +14,10 @@ public interface TargetingMatcher {
   /**
    * 匹配检查
    *
-   * @param context 竞价上下文
-   * @param adGroup 广告组
+   * @param context
+   *          竞价上下文
+   * @param adGroup
+   *          广告组
    * @return true=匹配, false=不匹配
    */
   boolean matches(BidContext context, RtbAdGroupDO adGroup);

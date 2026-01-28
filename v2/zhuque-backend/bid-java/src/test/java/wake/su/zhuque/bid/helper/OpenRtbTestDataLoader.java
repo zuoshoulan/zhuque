@@ -16,17 +16,18 @@ public class OpenRtbTestDataLoader {
   /**
    * 加载 BidRequest 测试数据
    *
-   * @param fileName 文件名 (如: bid_request_minimal.json)
+   * @param fileName
+   *          文件名 (如: bid_request_minimal.json)
    * @return BidRequest 对象
    */
   public static BidRequest loadBidRequest(String fileName) {
     String fullPath = OPENRTB_DATA_PATH + fileName;
-    try (InputStream inputStream = OpenRtbTestDataLoader.class.getResourceAsStream(fullPath)) {
-      if (inputStream == null) {
+    try(InputStream inputStream = OpenRtbTestDataLoader.class.getResourceAsStream(fullPath)) {
+      if(inputStream == null) {
         throw new IllegalArgumentException("测试数据文件不存在: " + fullPath);
       }
       return objectMapper.readValue(inputStream, BidRequest.class);
-    } catch (IOException e) {
+    } catch(IOException e) {
       throw new RuntimeException("加载测试数据失败: " + fullPath, e);
     }
   }

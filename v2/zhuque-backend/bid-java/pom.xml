@@ -135,24 +135,17 @@
                 <version>2.43.0</version>
                 <configuration>
                     <java>
-                        <!-- 使用 Google Java Style（2空格缩进） -->
-                        <googleJavaFormat>
-                            <version>1.22.0</version>
-                            <style>GOOGLE</style>
-                        </googleJavaFormat>
+                        <!-- 使用 Eclipse JDT（支持禁用注释格式化） -->
+                        <eclipse>
+                            <version>4.26</version>
+                            <file>${basedir}/.settings/org.eclipse.jdt.core.prefs</file>
+                        </eclipse>
                         <!-- 移除未使用的导入 -->
                         <removeUnusedImports />
-                        <!-- 格式化时可选：import 排序 -->
+                        <!-- import 排序 -->
                         <importOrder>
                             <order>java|javax,org,com,wake.su,</order>
                         </importOrder>
-                        <!-- 可选：License 头部（如需要可取消注释） -->
-                        <!-- <licenseHeader>-->
-                        <!--   <content>/*-->
-                        <!--    * Copyright (c) $YEAR Zhuque. All rights reserved.-->
-                        <!--    */-->
-                        <!--   </content>-->
-                        <!-- </licenseHeader>-->
                     </java>
                 </configuration>
                 <executions>

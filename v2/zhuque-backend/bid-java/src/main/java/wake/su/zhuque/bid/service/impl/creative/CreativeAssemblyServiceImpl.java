@@ -26,7 +26,7 @@ public class CreativeAssemblyServiceImpl implements CreativeAssemblyService {
 
   @Override
   public String buildAdm(RtbAdDO ad, RtbCreativeDO creative, BidContext context) {
-    if (creative == null) {
+    if(creative == null) {
       return "";
     }
 
@@ -36,7 +36,7 @@ public class CreativeAssemblyServiceImpl implements CreativeAssemblyService {
 
   @Override
   public String buildClickUrl(String baseUrl, BidContext context) {
-    if (StrUtil.isBlank(baseUrl)) {
+    if(StrUtil.isBlank(baseUrl)) {
       return "";
     }
 
@@ -46,7 +46,7 @@ public class CreativeAssemblyServiceImpl implements CreativeAssemblyService {
     url.append("&imp_id=").append(context.getCurrentImp().getId());
     url.append("&timestamp=").append(System.currentTimeMillis());
 
-    if (context.getUserId() != null) {
+    if(context.getUserId() != null) {
       url.append("&user_id=").append(context.getUserId());
     }
 
@@ -55,7 +55,7 @@ public class CreativeAssemblyServiceImpl implements CreativeAssemblyService {
 
   @Override
   public String buildImpressionUrl(String baseUrl, BidContext context) {
-    if (StrUtil.isBlank(baseUrl)) {
+    if(StrUtil.isBlank(baseUrl)) {
       return "";
     }
 
@@ -70,7 +70,7 @@ public class CreativeAssemblyServiceImpl implements CreativeAssemblyService {
 
   @Override
   public String buildWinUrl(String baseUrl, BidContext context, Long price) {
-    if (StrUtil.isBlank(baseUrl)) {
+    if(StrUtil.isBlank(baseUrl)) {
       return "";
     }
 
@@ -91,14 +91,12 @@ public class CreativeAssemblyServiceImpl implements CreativeAssemblyService {
     // TODO: 从素材获取创意URL
     String creativeUrl = "https://via.placeholder.com/300x250";
 
-    return String.format(
-        """
-                <a href="%s" target="_blank">
-                    <img src="%s" alt="%s" border="0"/>
-                </a>
-                <img src="%s" width="1" height="1" style="display:none"/>
-                """,
-        clickUrl, creativeUrl, creative.getName(), impUrl);
+    return String.format("""
+        <a href="%s" target="_blank">
+            <img src="%s" alt="%s" border="0"/>
+        </a>
+        <img src="%s" width="1" height="1" style="display:none"/>
+        """, clickUrl, creativeUrl, creative.getName(), impUrl);
   }
 
   /** 构建Video ADM (VAST XML) - TODO */

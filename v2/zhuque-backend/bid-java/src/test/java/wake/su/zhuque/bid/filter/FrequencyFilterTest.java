@@ -25,7 +25,8 @@ import wake.su.zhuque.model.entity.RtbAdGroupDO;
 @ExtendWith(MockitoExtension.class)
 public class FrequencyFilterTest {
 
-  @Mock private FrequencyCapService frequencyCapService;
+  @Mock
+  private FrequencyCapService frequencyCapService;
 
   private FrequencyFilter frequencyFilter;
   private BidContext context;

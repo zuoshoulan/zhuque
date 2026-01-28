@@ -25,7 +25,8 @@ import wake.su.zhuque.model.entity.RtbAdGroupDO;
 @ExtendWith(MockitoExtension.class)
 public class BudgetFilterTest {
 
-  @Mock private BudgetControlService budgetControlService;
+  @Mock
+  private BudgetControlService budgetControlService;
 
   private BudgetFilter budgetFilter;
   private BidContext context;

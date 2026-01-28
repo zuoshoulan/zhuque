@@ -11,156 +11,123 @@ import io.swagger.v3.oas.annotations.media.Schema;
  *
  * <p>网站信息对象（Web流量）
  */
-@Schema(
-    description =
-        """
-        OpenRTB 2.6 站点信息对象（Site）
+@Schema(description = """
+    OpenRTB 2.6 站点信息对象（Site）
 
-        当广告位在网页中时使用，包含网站的相关信息。
-        与app字段互斥（Web流量使用site，App流量使用app）。
+    当广告位在网页中时使用，包含网站的相关信息。
+    与app字段互斥（Web流量使用site，App流量使用app）。
 
-        **常用字段**：
-        - id: 站点ID
-        - domain: 站点域名
-        - page: 当前页面URL
-        - cat: IAB内容类别
-        - publisher: 发布商信息
-        """)
+    **常用字段**：
+    - id: 站点ID
+    - domain: 站点域名
+    - page: 当前页面URL
+    - cat: IAB内容类别
+    - publisher: 发布商信息
+    """)
 public class Site {
 
-  @Schema(
-      description =
-          """
-            站点ID
+  @Schema(description = """
+      站点ID
 
-            网站在广告交换平台中的唯一标识符。
-            """,
-      example = "site-12345")
+      网站在广告交换平台中的唯一标识符。
+      """, example = "site-12345")
   @JsonProperty("id")
   private String id;
 
-  @Schema(
-      description =
-          """
-            站点名称
+  @Schema(description = """
+      站点名称
 
-            网站的名称。
-            """,
-      example = "Example News")
+      网站的名称。
+      """, example = "Example News")
   @JsonProperty("name")
   private String name;
 
-  @Schema(
-      description =
-          """
-            站点域名
+  @Schema(description = """
+      站点域名
 
-            网站的主域名，不含协议和路径。
-            """,
-      example = "example.com")
+      网站的主域名，不含协议和路径。
+      """, example = "example.com")
   @JsonProperty("domain")
   private String domain;
 
-  @Schema(
-      description =
-          """
-            页面URL
+  @Schema(description = """
+      页面URL
 
-            当前广告位所在页面的完整URL。
-            """,
-      example = "https://example.com/news/article-123")
+      当前广告位所在页面的完整URL。
+      """, example = "https://example.com/news/article-123")
   @JsonProperty("page")
   private String page;
 
-  @Schema(
-      description =
-          """
-            引用URL（Referrer）
+  @Schema(description = """
+      引用URL（Referrer）
 
-            用户访问当前页面的来源URL。
-            """)
+      用户访问当前页面的来源URL。
+      """)
   @JsonProperty("ref")
   private String referrer;
 
-  @Schema(
-      description =
-          """
-            搜索关键词
+  @Schema(description = """
+      搜索关键词
 
-            如果流量来自搜索引擎，这是用户的搜索查询。
-            """)
+      如果流量来自搜索引擎，这是用户的搜索查询。
+      """)
   @JsonProperty("search")
   private String search;
 
-  @Schema(
-      description =
-          """
-            IAB内容类别（Content Categories）
+  @Schema(description = """
+      IAB内容类别（Content Categories）
 
-            使用IAB OpenRTB类别体系对站点内容进行分类。
-            如：["IAB3-1", "IAB9"]（商业、新闻）
-            """,
-      example = "[\"IAB3-1\", \"IAB9\"]")
+      使用IAB OpenRTB类别体系对站点内容进行分类。
+      如：["IAB3-1", "IAB9"]（商业、新闻）
+      """, example = "[\"IAB3-1\", \"IAB9\"]")
   @JsonProperty("cat")
   private List<String> categories;
 
-  @Schema(
-      description =
-          """
-            章节类别（Section Categories）
+  @Schema(description = """
+      章节类别（Section Categories）
 
-            页面所属的章节类别。
-            """)
+      页面所属的章节类别。
+      """)
   @JsonProperty("sectioncat")
   private List<String> sectionCategories;
 
-  @Schema(
-      description =
-          """
-            页面类别（Page Categories）
+  @Schema(description = """
+      页面类别（Page Categories）
 
-            当前页面的类别。
-            """)
+      当前页面的类别。
+      """)
   @JsonProperty("pagecat")
   private List<String> pageCategories;
 
-  @Schema(
-      description =
-          """
-            关键词
+  @Schema(description = """
+      关键词
 
-            站点的关键词，用于定向。
-            """)
+      站点的关键词，用于定向。
+      """)
   @JsonProperty("keywords")
   private String keywords;
 
-  @Schema(
-      description =
-          """
-            发布商信息
+  @Schema(description = """
+      发布商信息
 
-            站点的发布商/所有者信息。
-            """)
+      站点的发布商/所有者信息。
+      """)
   @JsonProperty("publisher")
   private Publisher publisher;
 
-  @Schema(
-      description =
-          """
-            内容信息
+  @Schema(description = """
+      内容信息
 
-            页面的内容详情。
-            """)
+      页面的内容详情。
+      """)
   @JsonProperty("content")
   private Object content;
 
-  @Schema(
-      description =
-          """
-            扩展字段
+  @Schema(description = """
+      扩展字段
 
-            用于自定义数据的扩展对象。
-            """)
+      用于自定义数据的扩展对象。
+      """)
   @JsonProperty("ext")
   private Object ext;
 
@@ -268,13 +235,11 @@ public class Site {
     this.ext = ext;
   }
 
-  @Schema(
-      description =
-          """
-        发布商对象（Publisher）
+  @Schema(description = """
+      发布商对象（Publisher）
 
-        描述站点发布商的信息。
-        """)
+      描述站点发布商的信息。
+      """)
   public static class Publisher {
     @Schema(description = "发布商ID", example = "pub-12345")
     @JsonProperty("id")
@@ -284,24 +249,19 @@ public class Site {
     @JsonProperty("name")
     private String name;
 
-    @Schema(
-        description =
-            """
-                发布商域名
+    @Schema(description = """
+        发布商域名
 
-                发布商的主域名。
-                """,
-        example = "publisher.com")
+        发布商的主域名。
+        """, example = "publisher.com")
     @JsonProperty("domain")
     private String domain;
 
-    @Schema(
-        description =
-            """
-                IAB内容类别
+    @Schema(description = """
+        IAB内容类别
 
-                发布商的内容类别。
-                """)
+        发布商的内容类别。
+        """)
     @JsonProperty("cat")
     private List<String> categories;
 

@@ -35,15 +35,15 @@ public class ScheduleMatcherImpl implements ScheduleMatcher {
   @Override
   public boolean matches(BidContext context, RtbAdGroupDO adGroup) {
     Integer scheduleType = adGroup.getScheduleType();
-    if (scheduleType == null) {
+    if(scheduleType == null) {
       scheduleType = SCHEDULE_ALL_DAY;
     }
 
-    return switch (scheduleType) {
-      case SCHEDULE_ALL_DAY -> true; // 全天投放
-      case SCHEDULE_WEEKDAY -> isWeekday(context.getDayOfWeek());
-      case SCHEDULE_CUSTOM -> isCustomScheduleMatch(context, adGroup);
-      default -> true;
+    return switch(scheduleType) {
+    case SCHEDULE_ALL_DAY -> true; // 全天投放
+    case SCHEDULE_WEEKDAY -> isWeekday(context.getDayOfWeek());
+    case SCHEDULE_CUSTOM -> isCustomScheduleMatch(context, adGroup);
+    default -> true;
     };
   }
 
@@ -55,35 +55,35 @@ public class ScheduleMatcherImpl implements ScheduleMatcher {
   /** 检查自定义时段 */
   private boolean isCustomScheduleMatch(BidContext context, RtbAdGroupDO adGroup) {
     String scheduleConfig = adGroup.getScheduleConfig();
-    if (scheduleConfig == null || scheduleConfig.isEmpty()) {
+    if(scheduleConfig == null || scheduleConfig.isEmpty()) {
       return true;
     }
 
     JSONObject config = JSONUtil.parseObj(scheduleConfig);
 
     // 检查星期
-    if (config.containsKey("weekdays")) {
+    if(config.containsKey("weekdays")) {
       JSONArray weekdays = config.getJSONArray("weekdays");
       List<Integer> allowedDays = weekdays.toList(Integer.class);
-      if (!allowedDays.contains(context.getDayOfWeek())) {
+      if(!allowedDays.contains(context.getDayOfWeek())) {
         return false;
       }
     }
 
     // 检查时间段
-    if (config.containsKey("time_ranges")) {
+    if(config.containsKey("time_ranges")) {
       JSONArray timeRanges = config.getJSONArray("time_ranges");
       List<String> ranges = timeRanges.toList(String.class);
 
       int currentHour = context.getHourOfDay();
       boolean inRange = false;
-      for (String range : ranges) {
-        if (isTimeInRange(currentHour, range)) {
+      for(String range : ranges) {
+        if(isTimeInRange(currentHour, range)) {
           inRange = true;
           break;
         }
       }
-      if (!inRange) {
+      if(!inRange) {
         return false;
       }
     }
@@ -98,7 +98,7 @@ public class ScheduleMatcherImpl implements ScheduleMatcher {
       int startHour = Integer.parseInt(parts[0].split(":")[0]);
       int endHour = Integer.parseInt(parts[1].split(":")[0]);
       return currentHour >= startHour && currentHour < endHour;
-    } catch (Exception e) {
+    } catch(Exception e) {
       log.warn("解析时间段失败: {}", range, e);
       return false;
     }

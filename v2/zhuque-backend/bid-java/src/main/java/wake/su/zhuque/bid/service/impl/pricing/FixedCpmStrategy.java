@@ -16,22 +16,18 @@ import wake.su.zhuque.bid.service.pricing.BidPriceStrategy;
 public class FixedCpmStrategy implements BidPriceStrategy {
 
   @Override
-  public Long calculate(
-      BigDecimal basePrice,
-      BigDecimal maxPrice,
-      BigDecimal minPrice,
-      BigDecimal floorPrice,
-      Double predictedCtr) {
+  public Long calculate(BigDecimal basePrice, BigDecimal maxPrice, BigDecimal minPrice,
+      BigDecimal floorPrice, Double predictedCtr) {
     // 使用基础出价
     BigDecimal bidPrice = basePrice;
 
     // 约束在 [max(floor, min), max] 范围内
-    if (minPrice != null) {
+    if(minPrice != null) {
       bidPrice = bidPrice.max(minPrice);
     }
     bidPrice = bidPrice.max(floorPrice);
 
-    if (maxPrice != null) {
+    if(maxPrice != null) {
       bidPrice = bidPrice.min(maxPrice);
     }
 

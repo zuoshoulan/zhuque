@@ -102,7 +102,7 @@ public class GeoMatcherTest {
   }
 
   @ParameterizedTest
-  @CsvSource({"CN-Beijing, true", "CN-Shanghai, false", "US, false"})
+  @CsvSource({ "CN-Beijing, true", "CN-Shanghai, false", "US, false" })
   @DisplayName("地域匹配参数化测试")
   void testGeoMatching(String targetingGeo, boolean expected) {
     adGroup.setTargetingGeo("[\"" + targetingGeo + "\"]");

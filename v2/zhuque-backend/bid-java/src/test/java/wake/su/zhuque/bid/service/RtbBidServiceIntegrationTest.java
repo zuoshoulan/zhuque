@@ -27,24 +27,30 @@ import wake.su.zhuque.dao.mapper.RtbCreativeMapper;
  *
  * <p>运行前确保 Redis 可用，或者跳过此测试
  */
-@SpringBootTest(classes = {wake.su.zhuque.bid.BidJavaApplication.class})
+@SpringBootTest(classes = { wake.su.zhuque.bid.BidJavaApplication.class })
 @ActiveProfiles("test")
 public class RtbBidServiceIntegrationTest {
 
   @Autowired(required = false)
   private RtbBidService rtbBidService;
 
-  @Autowired private ObjectMapper objectMapper;
+  @Autowired
+  private ObjectMapper objectMapper;
 
-  @MockBean private RtbCampaignMapper campaignMapper;
+  @MockBean
+  private RtbCampaignMapper campaignMapper;
 
-  @MockBean private RtbAdGroupMapper adGroupMapper;
+  @MockBean
+  private RtbAdGroupMapper adGroupMapper;
 
-  @MockBean private RtbAdMapper adMapper;
+  @MockBean
+  private RtbAdMapper adMapper;
 
-  @MockBean private RtbCreativeMapper creativeMapper;
+  @MockBean
+  private RtbCreativeMapper creativeMapper;
 
-  @MockBean private StringRedisTemplate redisTemplate;
+  @MockBean
+  private StringRedisTemplate redisTemplate;
 
   @Test
   @DisplayName("集成测试 - 加载测试数据")
@@ -136,8 +142,8 @@ public class RtbBidServiceIntegrationTest {
   // @Test
   // @DisplayName("集成测试 - 完整竞价流程 (需要真实数据库)")
   // void testFullBiddingProcess() {
-  //     // TODO: 实现完整的竞价流程测试
-  //     // 需要准备测试数据到数据库
-  //     // 或者使用 Testcontainers 进行测试
+  // // TODO: 实现完整的竞价流程测试
+  // // 需要准备测试数据到数据库
+  // // 或者使用 Testcontainers 进行测试
   // }
 }

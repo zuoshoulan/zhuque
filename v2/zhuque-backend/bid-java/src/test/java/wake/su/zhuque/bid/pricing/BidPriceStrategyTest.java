@@ -201,12 +201,11 @@ public class BidPriceStrategyTest {
   }
 
   @ParameterizedTest
-  @CsvSource({
-    "1.0, 1000", // 正常CTR
-    "1.5, 1500", // 高CTR
-    "0.7, 700", // 低CTR
-    "2.5, 2000", // 超高CTR (上限)
-    "0.3, 500" // 超低CTR (下限)
+  @CsvSource({ "1.0, 1000", // 正常CTR
+      "1.5, 1500", // 高CTR
+      "0.7, 700", // 低CTR
+      "2.5, 2000", // 超高CTR (上限)
+      "0.3, 500" // 超低CTR (下限)
   })
   @DisplayName("智能出价策略参数化测试")
   void testSmartBidParameterized(Double ctr, Long expectedMicros) {

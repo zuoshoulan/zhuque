@@ -16,12 +16,8 @@ import wake.su.zhuque.bid.service.pricing.BidPriceStrategy;
 public class SmartBidStrategy implements BidPriceStrategy {
 
   @Override
-  public Long calculate(
-      BigDecimal basePrice,
-      BigDecimal maxPrice,
-      BigDecimal minPrice,
-      BigDecimal floorPrice,
-      Double predictedCtr) {
+  public Long calculate(BigDecimal basePrice, BigDecimal maxPrice, BigDecimal minPrice,
+      BigDecimal floorPrice, Double predictedCtr) {
     // 根据pCTR调整出价
     double ctrFactor = predictedCtr != null ? predictedCtr : 1.0;
 
@@ -31,12 +27,12 @@ public class SmartBidStrategy implements BidPriceStrategy {
     BigDecimal bidPrice = basePrice.multiply(BigDecimal.valueOf(ctrFactor));
 
     // 约束在 [max(floor, min), max] 范围内
-    if (minPrice != null) {
+    if(minPrice != null) {
       bidPrice = bidPrice.max(minPrice);
     }
     bidPrice = bidPrice.max(floorPrice);
 
-    if (maxPrice != null) {
+    if(maxPrice != null) {
       bidPrice = bidPrice.min(maxPrice);
     }
 

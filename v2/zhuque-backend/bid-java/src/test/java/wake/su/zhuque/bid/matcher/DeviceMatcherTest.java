@@ -128,7 +128,7 @@ public class DeviceMatcherTest {
   }
 
   @ParameterizedTest
-  @CsvSource({"1, iOS, true", "1, Android, false", "2, iOS, false", "3, iOS, false"})
+  @CsvSource({ "1, iOS, true", "1, Android, false", "2, iOS, false", "3, iOS, false" })
   @DisplayName("设备匹配参数化测试")
   void testDeviceMatching(String deviceType, String os, boolean expected) {
     adGroup.setTargetingDevice("[" + deviceType + "]");

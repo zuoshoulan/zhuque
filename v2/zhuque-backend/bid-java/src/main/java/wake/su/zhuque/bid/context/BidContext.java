@@ -85,31 +85,31 @@ public class BidContext {
     this.attributes = new HashMap<>();
 
     // 提取设备信息
-    if (device != null) {
+    if(device != null) {
       this.deviceType = device.getDeviceType();
       this.os = device.getOs();
       this.geo = device.getGeo();
-      if (geo != null) {
+      if(geo != null) {
         this.countryCode = geo.getCountry();
         this.regionCode = geo.getRegion();
       }
     }
 
     // 提取用户ID
-    if (user != null && user.getId() != null) {
+    if(user != null && user.getId() != null) {
       this.userId = user.getId();
     }
 
     // 提取页面信息
-    if (request.getSite() != null) {
+    if(request.getSite() != null) {
       this.domain = request.getSite().getDomain();
       this.pageUrl = request.getSite().getPage();
-    } else if (request.getApp() != null) {
+    } else if(request.getApp() != null) {
       this.domain = request.getApp().getBundle();
     }
 
     // 提取底价
-    if (imp != null && imp.getBidFloor() != null) {
+    if(imp != null && imp.getBidFloor() != null) {
       this.requestFloorPrice = imp.getBidFloor();
     }
 
@@ -130,11 +130,8 @@ public class BidContext {
 
   /** 获取完整的广告组定位key (用于缓存) */
   public String getAdGroupLocationKey() {
-    return String.format(
-        "%s:%s:%s:%s",
-        countryCode != null ? countryCode : "*",
-        regionCode != null ? regionCode : "*",
-        deviceType != null ? deviceType : "*",
+    return String.format("%s:%s:%s:%s", countryCode != null ? countryCode : "*",
+        regionCode != null ? regionCode : "*", deviceType != null ? deviceType : "*",
         os != null ? os : "*");
   }
 

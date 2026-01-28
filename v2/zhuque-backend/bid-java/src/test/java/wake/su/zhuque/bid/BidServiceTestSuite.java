@@ -14,22 +14,22 @@ import org.junit.platform.suite.api.Suite;
  */
 @Suite
 @SelectClasses({
-  // Matcher 测试
-  wake.su.zhuque.bid.matcher.GeoMatcherTest.class,
-  wake.su.zhuque.bid.matcher.DeviceMatcherTest.class,
-  wake.su.zhuque.bid.matcher.ScheduleMatcherTest.class,
+    // Matcher 测试
+    wake.su.zhuque.bid.matcher.GeoMatcherTest.class,
+    wake.su.zhuque.bid.matcher.DeviceMatcherTest.class,
+    wake.su.zhuque.bid.matcher.ScheduleMatcherTest.class,
 
-  // Filter 测试
-  wake.su.zhuque.bid.filter.BudgetFilterTest.class,
-  wake.su.zhuque.bid.filter.FrequencyFilterTest.class,
+    // Filter 测试
+    wake.su.zhuque.bid.filter.BudgetFilterTest.class,
+    wake.su.zhuque.bid.filter.FrequencyFilterTest.class,
 
-  // Strategy 测试
-  wake.su.zhuque.bid.pricing.BidPriceStrategyTest.class,
+    // Strategy 测试
+    wake.su.zhuque.bid.pricing.BidPriceStrategyTest.class,
 
-  // Controller 测试
-  wake.su.zhuque.bid.controller.OpenRtbControllerTest.class,
+    // Controller 测试
+    wake.su.zhuque.bid.controller.OpenRtbControllerTest.class,
 
-  // 集成测试
-  wake.su.zhuque.bid.service.RtbBidServiceIntegrationTest.class,
-})
-public class BidServiceTestSuite {}
+    // 集成测试
+    wake.su.zhuque.bid.service.RtbBidServiceIntegrationTest.class, })
+public class BidServiceTestSuite {
+}

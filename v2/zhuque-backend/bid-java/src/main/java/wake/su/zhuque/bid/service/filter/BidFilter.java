@@ -14,8 +14,10 @@ public interface BidFilter {
   /**
    * 过滤检查
    *
-   * @param context 竞价上下文
-   * @param adGroup 待检查的广告组
+   * @param context
+   *          竞价上下文
+   * @param adGroup
+   *          待检查的广告组
    * @return true=保留, false=过滤掉
    */
   boolean test(BidContext context, RtbAdGroupDO adGroup);

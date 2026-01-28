@@ -14,7 +14,8 @@ public interface RtbBidService {
   /**
    * 处理竞价请求
    *
-   * @param request OpenRTB BidRequest
+   * @param request
+   *          OpenRTB BidRequest
    * @return BidResponse 有竞价, null 无竞价
    */
   BidResponse processBid(BidRequest request);

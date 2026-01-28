@@ -159,26 +159,25 @@ public class ScheduleMatcherTest {
   }
 
   @ParameterizedTest
-  @CsvSource({
-    "1, 10, true", // 全天
-    "1, 23, true", // 全天
-    "2, 14, true", // 工作日
-    "2, 14, false", // 周末
-    "3, 10, true" // 自定义时段内
+  @CsvSource({ "1, 10, true", // 全天
+      "1, 23, true", // 全天
+      "2, 14, true", // 工作日
+      "2, 14, false", // 周末
+      "3, 10, true" // 自定义时段内
   })
   @DisplayName("时段匹配参数化测试")
   void testScheduleMatching(int scheduleType, int hour, boolean expected) {
     // 简化参数化测试，实际需要更复杂的设置
     adGroup.setScheduleType(scheduleType);
-    if (scheduleType == 3) {
+    if(scheduleType == 3) {
       adGroup.setScheduleConfig("{\"time_ranges\":[\"09:00-18:00\"]}");
     }
 
     BidContext context = createContextWithDayAndHour(DayOfWeek.WEDNESDAY, hour);
     // 注意：这里的参数化测试是简化的，实际需要根据 scheduleType 调整
-    if (scheduleType == 3 && hour >= 9 && hour < 18) {
+    if(scheduleType == 3 && hour >= 9 && hour < 18) {
       assertTrue(scheduleMatcher.matches(context, adGroup));
-    } else if (scheduleType == 3) {
+    } else if(scheduleType == 3) {
       assertFalse(scheduleMatcher.matches(context, adGroup));
     } else {
       assertEquals(expected, scheduleMatcher.matches(context, adGroup));

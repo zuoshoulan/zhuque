@@ -34,19 +34,19 @@ public class TargetingMatcherImpl implements TargetingMatcher {
     // 所有定向条件都满足才算匹配
 
     // 1. 地域匹配
-    if (!geoMatcher.matches(context, adGroup)) {
+    if(!geoMatcher.matches(context, adGroup)) {
       log.debug("地域不匹配, adGroup={}", adGroup.getId());
       return false;
     }
 
     // 2. 设备/OS匹配
-    if (!deviceMatcher.matches(context, adGroup)) {
+    if(!deviceMatcher.matches(context, adGroup)) {
       log.debug("设备不匹配, adGroup={}", adGroup.getId());
       return false;
     }
 
     // 3. 时段匹配
-    if (!scheduleMatcher.matches(context, adGroup)) {
+    if(!scheduleMatcher.matches(context, adGroup)) {
       log.debug("时段不匹配, adGroup={}", adGroup.getId());
       return false;
     }

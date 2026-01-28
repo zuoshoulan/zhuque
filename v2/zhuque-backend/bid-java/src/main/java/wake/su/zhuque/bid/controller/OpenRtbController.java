@@ -38,31 +38,18 @@ public class OpenRtbController {
   /**
    * 竞价接口
    *
-   * @param request OpenRTB BidRequest
+   * @param request
+   *          OpenRTB BidRequest
    * @return BidResponse 有竞价, 204 No Content 无竞价
    */
-  @Operation(
-      summary = "竞价请求",
-      description =
-          """
+  @Operation(summary = "竞价请求", description = """
       接收 OpenRTB 2.6 竞价请求，返回竞价响应。
       - 返回 200：有竞价，返回 BidResponse
       - 返回 204：无竞价，不返回内容
       - 处理时限：建议在 100ms 内完成
       """)
-  @io.swagger.v3.oas.annotations.parameters.RequestBody(
-      description = "OpenRTB 2.6 竞价请求",
-      required = true,
-      content =
-          @Content(
-              mediaType = "application/json",
-              schema = @Schema(implementation = BidRequest.class),
-              examples = {
-                @ExampleObject(
-                    name = "基础请求",
-                    description = "最基础的竞价请求示例",
-                    value =
-                        """
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "OpenRTB 2.6 竞价请求", required = true, content = @Content(mediaType = "application/json", schema = @Schema(implementation = BidRequest.class), examples = {
+      @ExampleObject(name = "基础请求", description = "最基础的竞价请求示例", value = """
           {
             "id": "req-20250126-001",
             "imp": [
@@ -94,19 +81,9 @@ public class OpenRtbController {
             "at": 1,
             "tmax": 100
           }
-          """)
-              }))
+          """) }))
   @ApiResponses({
-    @ApiResponse(
-        responseCode = "200",
-        description = "有竞价，返回 BidResponse",
-        content =
-            @Content(
-                schema = @Schema(implementation = BidResponse.class),
-                examples =
-                    @ExampleObject(
-                        value =
-                            """
+      @ApiResponse(responseCode = "200", description = "有竞价，返回 BidResponse", content = @Content(schema = @Schema(implementation = BidResponse.class), examples = @ExampleObject(value = """
           {
             "id": "req-20250126-001",
             "seatbid": [
@@ -127,10 +104,9 @@ public class OpenRtbController {
             "cur": "CNY"
           }
           """))),
-    @ApiResponse(responseCode = "204", description = "无竞价，不返回内容"),
-    @ApiResponse(responseCode = "400", description = "请求无效（缺少必要参数）"),
-    @ApiResponse(responseCode = "500", description = "服务器内部错误")
-  })
+      @ApiResponse(responseCode = "204", description = "无竞价，不返回内容"),
+      @ApiResponse(responseCode = "400", description = "请求无效（缺少必要参数）"),
+      @ApiResponse(responseCode = "500", description = "服务器内部错误") })
   @PostMapping(value = "/bid", produces = "application/json", consumes = "application/json")
   public ResponseEntity<BidResponse> bid(
       @Parameter(description = "OpenRTB 竞价请求", required = true) @RequestBody BidRequest request) {
@@ -141,7 +117,7 @@ public class OpenRtbController {
 
     try {
       // 校验请求
-      if (request == null || request.getImp() == null || request.getImp().isEmpty()) {
+      if(request == null || request.getImp() == null || request.getImp().isEmpty()) {
         log.warn("[{}] 请求无效: 缺少展示机会", requestId);
         return ResponseEntity.badRequest().build();
       }
@@ -150,19 +126,16 @@ public class OpenRtbController {
       BidResponse response = rtbBidService.processBid(request);
 
       long duration = System.currentTimeMillis() - startTime;
-      log.info(
-          "[{}] 竞价处理完成, duration={}ms, result={}",
-          requestId,
-          duration,
+      log.info("[{}] 竞价处理完成, duration={}ms, result={}", requestId, duration,
           response != null ? "有竞价" : "无竞价");
 
-      if (response == null) {
+      if(response == null) {
         return ResponseEntity.noContent().build();
       }
 
       return ResponseEntity.ok(response);
 
-    } catch (Exception e) {
+    } catch(Exception e) {
       log.error("[{}] 竞价处理异常", requestId, e);
       return ResponseEntity.internalServerError().build();
     }

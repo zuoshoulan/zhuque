@@ -25,11 +25,14 @@ import wake.su.zhuque.bid.service.RtbBidService;
 @WebMvcTest(OpenRtbController.class)
 public class OpenRtbControllerTest {
 
-  @Autowired private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-  @Autowired private ObjectMapper objectMapper;
+  @Autowired
+  private ObjectMapper objectMapper;
 
-  @MockBean private RtbBidService rtbBidService;
+  @MockBean
+  private RtbBidService rtbBidService;
 
   private BidRequest validBidRequest;
 
@@ -47,12 +50,9 @@ public class OpenRtbControllerTest {
     when(rtbBidService.processBid(any(BidRequest.class))).thenReturn(mockResponse);
 
     mockMvc
-        .perform(
-            post("/openrtb/bid")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(validBidRequest)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(validBidRequest.getId()));
+        .perform(post("/openrtb/bid").contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(validBidRequest)))
+        .andExpect(status().isOk()).andExpect(jsonPath("$.id").value(validBidRequest.getId()));
 
     verify(rtbBidService, times(1)).processBid(any(BidRequest.class));
   }
@@ -78,12 +78,8 @@ public class OpenRtbControllerTest {
   void testBidRequestWithEmptyImp() throws Exception {
     BidRequest request = OpenRtbTestDataLoader.noImpRequest();
 
-    mockMvc
-        .perform(
-            post("/openrtb/bid")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-        .andExpect(status().isBadRequest());
+    mockMvc.perform(post("/openrtb/bid").contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(request))).andExpect(status().isBadRequest());
 
     // 服务不应该被调用
     verify(rtbBidService, never()).processBid(any(BidRequest.class));
@@ -92,8 +88,7 @@ public class OpenRtbControllerTest {
   @Test
   @DisplayName("POST /openrtb/bid - null请求返回400")
   void testBidRequestWithNullBody() throws Exception {
-    mockMvc
-        .perform(post("/openrtb/bid").contentType(MediaType.APPLICATION_JSON).content("{}"))
+    mockMvc.perform(post("/openrtb/bid").contentType(MediaType.APPLICATION_JSON).content("{}"))
         .andExpect(status().isBadRequest());
   }
 
@@ -124,18 +119,14 @@ public class OpenRtbControllerTest {
   @Test
   @DisplayName("GET /openrtb/health - 健康检查")
   void testHealthCheck() throws Exception {
-    mockMvc
-        .perform(get("/openrtb/health"))
-        .andExpect(status().isOk())
+    mockMvc.perform(get("/openrtb/health")).andExpect(status().isOk())
         .andExpect(content().string("OK"));
   }
 
   @Test
   @DisplayName("GET /openrtb/ready - 就绪检查")
   void testReadyCheck() throws Exception {
-    mockMvc
-        .perform(get("/openrtb/ready"))
-        .andExpect(status().isOk())
+    mockMvc.perform(get("/openrtb/ready")).andExpect(status().isOk())
         .andExpect(content().string("Ready"));
   }
 
@@ -149,19 +140,15 @@ public class OpenRtbControllerTest {
     when(rtbBidService.processBid(any(BidRequest.class))).thenReturn(mockResponse);
 
     mockMvc
-        .perform(
-            post("/openrtb/bid")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(fullRequest)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(fullRequest.getId()));
+        .perform(post("/openrtb/bid").contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(fullRequest)))
+        .andExpect(status().isOk()).andExpect(jsonPath("$.id").value(fullRequest.getId()));
   }
 
   @Test
   @DisplayName("POST /openrtb/bid - Content-Type不是JSON返回415")
   void testBidRequestWithWrongContentType() throws Exception {
-    mockMvc
-        .perform(post("/openrtb/bid").contentType(MediaType.TEXT_PLAIN).content("test"))
+    mockMvc.perform(post("/openrtb/bid").contentType(MediaType.TEXT_PLAIN).content("test"))
         .andExpect(status().isUnsupportedMediaType());
   }
 
@@ -174,11 +161,7 @@ public class OpenRtbControllerTest {
     mockResponse.setId(videoRequest.getId());
     when(rtbBidService.processBid(any(BidRequest.class))).thenReturn(mockResponse);
 
-    mockMvc
-        .perform(
-            post("/openrtb/bid")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(videoRequest)))
-        .andExpect(status().isOk());
+    mockMvc.perform(post("/openrtb/bid").contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(videoRequest))).andExpect(status().isOk());
   }
 }

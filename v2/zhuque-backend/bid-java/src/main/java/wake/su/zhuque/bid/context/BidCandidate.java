@@ -50,7 +50,7 @@ public class BidCandidate implements Comparable<BidCandidate> {
 
   /** 计算竞价分数 score = weight × bidPrice × qualityScore */
   public void calculateScore() {
-    if (bidPrice == null) {
+    if(bidPrice == null) {
       this.score = 0.0;
       return;
     }
@@ -66,7 +66,7 @@ public class BidCandidate implements Comparable<BidCandidate> {
   public int compareTo(BidCandidate other) {
     // 降序排序，分数高的在前
     int scoreCompare = Double.compare(other.score, this.score);
-    if (scoreCompare != 0) {
+    if(scoreCompare != 0) {
       return scoreCompare;
     }
     // 分数相同时，按 adGroupId 排序，保证确定性
