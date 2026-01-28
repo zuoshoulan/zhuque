@@ -8,8 +8,19 @@
 |------|------|
 | 格式化风格 | Google Java Style |
 | 缩进 | 2空格 |
-| 行宽限制 | 999（不强制换行） |
+| 行宽限制 | 120 |
 | 格式化注释 | 否 |
+
+### 行宽限制说明
+
+**120 字符** 是当前业界最通用的标准，被以下主流规范采用：
+
+- **Alibaba Java 开发手册** - 120 字符（强制）
+- **IntelliJ IDEA** - 默认 120 字符
+- **Spring Framework** - 120 字符上限
+- **Google Java Style** - 100 字符（略保守）
+
+超过 120 字符的代码行会被格式化器自动换行，确保链式调用、Stream 操作等保持良好的可读性。
 
 ## VSCode 配置
 
@@ -86,8 +97,8 @@
 
 ```properties
 eclipse.preferences.version=1
-org.eclipse.jdt.core.formatter.lineSplit=999
-org.eclipse.jdt.core.formatter.comment.line_length=999
+org.eclipse.jdt.core.formatter.lineSplit=120
+org.eclipse.jdt.core.formatter.comment.line_length=120
 org.eclipse.jdt.core.formatter.comment.format_block_comments=false
 org.eclipse.jdt.core.formatter.comment.format_comments=false
 org.eclipse.jdt.core.formatter.comment.format_html=false
