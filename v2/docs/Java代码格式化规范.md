@@ -37,15 +37,16 @@
 ```json
 {
   "java.format.enabled": true,
-  "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
-  "java.format.comments.enabled": false,
   "java.format.settings.profile": "GoogleStyle",
+  "java.format.comments.enabled": false,
   "[java]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "redhat.java"
   }
 }
 ```
+
+> **注意**：不要配置 `java.format.settings.url`，让 VSCode 使用项目本地的 `.settings/org.eclipse.jdt.core.prefs` 配置文件。
 
 ### 快捷键
 
@@ -132,8 +133,8 @@ org.eclipse.jdt.core.formatter.insert_new_line_in_empty_enum_constant=insert
 org.eclipse.jdt.core.formatter.insert_new_line_in_empty_enum_declaration=insert
 org.eclipse.jdt.core.formatter.insert_new_line_in_empty_method_body=insert
 org.eclipse.jdt.core.formatter.insert_new_line_in_empty_type_declaration=insert
-org.eclipse.jdt.core.formatter.join_lines_in_comments=true
-org.eclipse.jdt.core.formatter.join_wrapped_lines=true
+org.eclipse.jdt.core.formatter.join_lines_in_comments=false
+org.eclipse.jdt.core.formatter.join_wrapped_lines=false
 org.eclipse.jdt.core.formatter.keep_else_statement_on_same_line=false
 org.eclipse.jdt.core.formatter.keep_empty_array_initializer_on_one_line=false
 org.eclipse.jdt.core.formatter.keep_imple_if_on_one_line=false
@@ -223,6 +224,25 @@ A: 运行 `mvn spotless:apply` 后重新提交。
 ### Q: 想跳过格式化检查？
 
 A: 临时跳过：`mvn install -Dspotless.skip`（不推荐）
+
+### Q: Javadoc 多行注释被合并成一行？
+
+A: 这是默认行为。如果想让 Javadoc 保留多行格式，确保配置文件中：
+```properties
+org.eclipse.jdt.core.formatter.join_lines_in_comments=false
+org.eclipse.jdt.core.formatter.join_wrapped_lines=false
+```
+
+正确示例：
+```java
+/**
+ * 投放活动表 Mapper
+ * 三层架构：Campaign（投放活动）→ AdGroup（广告组）→ Ad（广告）
+ *
+ * @author zhuque
+ * @version 1.0
+ */
+```
 
 ### Q: 多行文本被格式化乱了？
 
