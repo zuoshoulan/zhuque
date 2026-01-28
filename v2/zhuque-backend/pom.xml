@@ -49,6 +49,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+        <!-- Spotless 格式化配置路径（子模块会覆盖为父模块路径） -->
+        <spotless.config.dir>${basedir}/.settings</spotless.config.dir>
+
         <!-- 依赖版本 -->
         <mybatis-plus.version>3.5.15</mybatis-plus.version>
         <jwt.version>0.12.3</jwt.version>
@@ -169,6 +172,34 @@
                             </exclude>
                         </excludes>
                     </configuration>
+                </plugin>
+
+                <!-- Spotless 代码格式化插件（统一配置） -->
+                <plugin>
+                    <groupId>com.diffplug.spotless</groupId>
+                    <artifactId>spotless-maven-plugin</artifactId>
+                    <version>2.43.0</version>
+                    <configuration>
+                        <java>
+                            <eclipse>
+                                <version>4.26</version>
+                                <file>${spotless.config.dir}/org.eclipse.jdt.core.prefs</file>
+                            </eclipse>
+                            <removeUnusedImports />
+                            <importOrder>
+                                <order>java|javax,org,com,wake.su,</order>
+                            </importOrder>
+                        </java>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>spotless-check</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>

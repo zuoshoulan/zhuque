@@ -16,38 +16,38 @@ import wake.su.zhuque.model.vo.MaterialVO;
  */
 public interface RtbMaterialService {
 
-    /**
-     * 创建素材
-     */
-    Long create(MaterialCreateRequest request);
+  /**
+   * 创建素材
+   */
+  Long create(MaterialCreateRequest request);
 
-    /**
-     * 更新素材
-     */
-    void update(MaterialUpdateRequest request);
+  /**
+   * 更新素材
+   */
+  void update(MaterialUpdateRequest request);
 
-    /**
-     * 删除素材
-     */
-    void delete(Long id);
+  /**
+   * 删除素材
+   */
+  void delete(Long id);
 
-    /**
-     * 素材详情
-     */
-    MaterialVO detail(Long id);
+  /**
+   * 素材详情
+   */
+  MaterialVO detail(Long id);
 
-    /**
-     * 分页查询
-     */
-    Result<List<MaterialListVO>> list(MaterialQueryRequest request);
+  /**
+   * 分页查询
+   */
+  Result<List<MaterialListVO>> list(MaterialQueryRequest request);
 
-    /**
-     * 上传文件
-     */
-    Long upload(MultipartFile file);
+  /**
+   * 上传文件
+   */
+  Long upload(MultipartFile file);
 
-    /**
-     * 更新素材状态
-     */
-    void updateStatus(Long id, Integer status);
+  /**
+   * 更新素材状态
+   */
+  void updateStatus(Long id, Integer status);
 }

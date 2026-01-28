@@ -13,27 +13,26 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum DeliveryModeEnum {
 
-    ACCELERATED(1, "加速"),
-    STANDARD(2, "均匀");
+  ACCELERATED(1, "加速"), STANDARD(2, "均匀");
 
-    private final Integer code;
-    private final String name;
+  private final Integer code;
+  private final String name;
 
-    public static String getNameByCode(Integer code) {
-        for (DeliveryModeEnum mode : values()) {
-            if (mode.getCode().equals(code)) {
-                return mode.getName();
-            }
-        }
-        return "未知";
+  public static String getNameByCode(Integer code) {
+    for(DeliveryModeEnum mode : values()) {
+      if(mode.getCode().equals(code)) {
+        return mode.getName();
+      }
     }
+    return "未知";
+  }
 
-    public static DeliveryModeEnum getByCode(Integer code) {
-        for (DeliveryModeEnum mode : values()) {
-            if (mode.getCode().equals(code)) {
-                return mode;
-            }
-        }
-        return null;
+  public static DeliveryModeEnum getByCode(Integer code) {
+    for(DeliveryModeEnum mode : values()) {
+      if(mode.getCode().equals(code)) {
+        return mode;
+      }
     }
+    return null;
+  }
 }

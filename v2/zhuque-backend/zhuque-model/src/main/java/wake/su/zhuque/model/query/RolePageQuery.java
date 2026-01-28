@@ -11,23 +11,23 @@ import lombok.Data;
 @Data
 public class RolePageQuery {
 
-    /**
-     * 当前页
-     */
-    private Long current;
+  /**
+   * 当前页
+   */
+  private Long current;
 
-    /**
-     * 每页大小
-     */
-    private Long size;
+  /**
+   * 每页大小
+   */
+  private Long size;
 
-    /**
-     * 搜索关键词（角色名称、角色编码）
-     */
-    private String keyword;
+  /**
+   * 搜索关键词（角色名称、角色编码）
+   */
+  private String keyword;
 
-    /**
-     * 状态：0-禁用，1-启用
-     */
-    private Integer status;
+  /**
+   * 状态：0-禁用，1-启用
+   */
+  private Integer status;
 }

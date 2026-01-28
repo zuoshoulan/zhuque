@@ -14,64 +14,64 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LoginResponse {
 
+  /**
+   * 访问令牌
+   */
+  private String accessToken;
+
+  /**
+   * 令牌类型
+   */
+  private String tokenType;
+
+  /**
+   * 用户信息
+   */
+  private UserInfo userInfo;
+
+  @Data
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class UserInfo {
     /**
-     * 访问令牌
+     * 用户ID
      */
-    private String accessToken;
+    private Long id;
 
     /**
-     * 令牌类型
+     * 用户名
      */
-    private String tokenType;
+    private String username;
 
     /**
-     * 用户信息
+     * 昵称
      */
-    private UserInfo userInfo;
+    private String nickname;
 
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class UserInfo {
-        /**
-         * 用户ID
-         */
-        private Long id;
+    /**
+     * 邮箱
+     */
+    private String email;
 
-        /**
-         * 用户名
-         */
-        private String username;
+    /**
+     * 手机号
+     */
+    private String phone;
 
-        /**
-         * 昵称
-         */
-        private String nickname;
+    /**
+     * 头像
+     */
+    private String avatar;
 
-        /**
-         * 邮箱
-         */
-        private String email;
+    /**
+     * 是否需要强制修改密码
+     */
+    private Boolean forceChangePassword;
 
-        /**
-         * 手机号
-         */
-        private String phone;
-
-        /**
-         * 头像
-         */
-        private String avatar;
-
-        /**
-         * 是否需要强制修改密码
-         */
-        private Boolean forceChangePassword;
-
-        /**
-         * 是否为超级管理员
-         */
-        private Boolean isSuperAdmin;
-    }
+    /**
+     * 是否为超级管理员
+     */
+    private Boolean isSuperAdmin;
+  }
 }

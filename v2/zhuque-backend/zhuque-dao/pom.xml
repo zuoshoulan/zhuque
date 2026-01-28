@@ -15,11 +15,24 @@
     <name>数据访问模块</name>
     <description>MyBatis Mapper</description>
 
+    <properties>
+        <spotless.config.dir>${project.parent.basedir}/.settings</spotless.config.dir>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>wake.su</groupId>
             <artifactId>zhuque-model</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

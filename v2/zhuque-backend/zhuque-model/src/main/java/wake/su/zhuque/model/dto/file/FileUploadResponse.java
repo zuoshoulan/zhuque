@@ -13,33 +13,33 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FileUploadResponse {
-    /**
-     * 文件ID（rtb_file.id）
-     */
-    private Long fileId;
+  /**
+   * 文件ID（rtb_file.id）
+   */
+  private Long fileId;
 
-    /**
-     * 原始文件名
-     */
-    private String fileName;
+  /**
+   * 原始文件名
+   */
+  private String fileName;
 
-    /**
-     * 文件大小(字节)
-     */
-    private Long fileSize;
+  /**
+   * 文件大小(字节)
+   */
+  private Long fileSize;
 
-    /**
-     * 文件MIME类型
-     */
-    private String fileType;
+  /**
+   * 文件MIME类型
+   */
+  private String fileType;
 
-    /**
-     * 宽度(像素) - 图片/视频有效
-     */
-    private Integer width;
+  /**
+   * 宽度(像素) - 图片/视频有效
+   */
+  private Integer width;
 
-    /**
-     * 高度(像素) - 图片/视频有效
-     */
-    private Integer height;
+  /**
+   * 高度(像素) - 图片/视频有效
+   */
+  private Integer height;
 }

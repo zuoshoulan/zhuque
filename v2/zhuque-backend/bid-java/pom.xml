@@ -15,6 +15,10 @@
     <name>竞价服务模块 (Java)</name>
     <description>RTB竞价服务 Java 实现，后续将迁移至 bid-rust</description>
 
+    <properties>
+        <spotless.config.dir>${project.parent.basedir}/.settings</spotless.config.dir>
+    </properties>
+
     <dependencies>
         <!-- 公共模块 -->
         <dependency>
@@ -128,37 +132,10 @@
 
     <build>
         <plugins>
-            <!-- Spotless 代码格式化插件 -->
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>2.43.0</version>
-                <configuration>
-                    <java>
-                        <!-- 使用 Eclipse JDT（支持禁用注释格式化） -->
-                        <eclipse>
-                            <version>4.26</version>
-                            <file>${basedir}/.settings/org.eclipse.jdt.core.prefs</file>
-                        </eclipse>
-                        <!-- 移除未使用的导入 -->
-                        <removeUnusedImports />
-                        <!-- import 排序 -->
-                        <importOrder>
-                            <order>java|javax,org,com,wake.su,</order>
-                        </importOrder>
-                    </java>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>spotless-check</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

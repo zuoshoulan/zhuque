@@ -1,91 +1,92 @@
 package wake.su.zhuque.model.entity;
 
+import java.time.LocalDateTime;
+
 import com.baomidou.mybatisplus.annotation.*;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("sys_permission")
 public class SysPermissionDO {
 
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+  @TableId(value = "id", type = IdType.AUTO)
+  private Long id;
 
-    /**
-     * 父权限ID，0表示根节点
-     */
-    private Long parentId;
+  /**
+   * 父权限ID，0表示根节点
+   */
+  private Long parentId;
 
-    /**
-     * 权限编码
-     */
-    private String permissionCode;
+  /**
+   * 权限编码
+   */
+  private String permissionCode;
 
-    /**
-     * 权限名称
-     */
-    private String permissionName;
+  /**
+   * 权限名称
+   */
+  private String permissionName;
 
-    /**
-     * 权限类型：1-路由 2-按钮 3-接口
-     */
-    private Integer permissionType;
+  /**
+   * 权限类型：1-路由 2-按钮 3-接口
+   */
+  private Integer permissionType;
 
-    /**
-     * 路由路径/接口路径
-     */
-    private String path;
+  /**
+   * 路由路径/接口路径
+   */
+  private String path;
 
-    /**
-     * HTTP方法：GET/POST/PUT/DELETE等
-     */
-    private String method;
+  /**
+   * HTTP方法：GET/POST/PUT/DELETE等
+   */
+  private String method;
 
-    /**
-     * 图标（用于菜单展示）
-     */
-    private String icon;
+  /**
+   * 图标（用于菜单展示）
+   */
+  private String icon;
 
-    /**
-     * 排序
-     */
-    private Integer sortOrder;
+  /**
+   * 排序
+   */
+  private Integer sortOrder;
 
-    /**
-     * 状态：0-禁用 1-启用
-     */
-    private Integer status;
+  /**
+   * 状态：0-禁用 1-启用
+   */
+  private Integer status;
 
-    /**
-     * 创建时间
-     */
-    @TableField("create_time")
-    private LocalDateTime createTime;
+  /**
+   * 创建时间
+   */
+  @TableField("create_time")
+  private LocalDateTime createTime;
 
-    /**
-     * 更新时间
-     */
-    @TableField("update_time")
-    private LocalDateTime updateTime;
+  /**
+   * 更新时间
+   */
+  @TableField("update_time")
+  private LocalDateTime updateTime;
 
-    /**
-     * 创建人
-     */
-    @TableField("create_by")
-    private String createBy;
+  /**
+   * 创建人
+   */
+  @TableField("create_by")
+  private String createBy;
 
-    /**
-     * 更新人
-     */
-    @TableField("update_by")
-    private String updateBy;
+  /**
+   * 更新人
+   */
+  @TableField("update_by")
+  private String updateBy;
 
-    /**
-     * 删除标记：0-未删除 1-已删除
-     */
-    @TableLogic
-    private Integer deleted;
+  /**
+   * 删除标记：0-未删除 1-已删除
+   */
+  @TableLogic
+  private Integer deleted;
 }

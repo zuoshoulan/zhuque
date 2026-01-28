@@ -15,18 +15,18 @@ import lombok.Data;
 @Schema(description = "修改密码请求")
 public class ChangePasswordRequest {
 
-    /**
-     * 原密码
-     */
-    @Schema(description = "原密码", required = true, example = "oldPassword123")
-    @NotBlank(message = "原密码不能为空")
-    private String oldPassword;
+  /**
+   * 原密码
+   */
+  @Schema(description = "原密码", required = true, example = "oldPassword123")
+  @NotBlank(message = "原密码不能为空")
+  private String oldPassword;
 
-    /**
-     * 新密码
-     */
-    @Schema(description = "新密码（至少8个字符）", required = true, example = "newPassword123")
-    @NotBlank(message = "新密码不能为空")
-    @Size(min = 8, message = "新密码长度不能少于8个字符")
-    private String newPassword;
+  /**
+   * 新密码
+   */
+  @Schema(description = "新密码（至少8个字符）", required = true, example = "newPassword123")
+  @NotBlank(message = "新密码不能为空")
+  @Size(min = 8, message = "新密码长度不能少于8个字符")
+  private String newPassword;
 }

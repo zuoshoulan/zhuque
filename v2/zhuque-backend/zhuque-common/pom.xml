@@ -15,6 +15,10 @@
     <name>公共基础模块</name>
     <description>公共基础模块（合并版）</description>
 
+    <properties>
+        <spotless.config.dir>${project.parent.basedir}/.settings</spotless.config.dir>
+    </properties>
+
     <dependencies>
         <!-- Spring Web -->
         <dependency>
@@ -122,5 +126,14 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

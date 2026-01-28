@@ -13,15 +13,15 @@ import lombok.Data;
 @Schema(description = "重置密码请求")
 public class ResetPasswordRequest {
 
-    /**
-     * 用户ID
-     */
-    @Schema(description = "用户ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    private Long userId;
+  /**
+   * 用户ID
+   */
+  @Schema(description = "用户ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+  private Long userId;
 
-    /**
-     * 新密码（可选，不传则使用默认规则生成）
-     */
-    @Schema(description = "新密码，不传则使用默认规则（yyyyMMdd+手机号）生成", example = "2026011013800138001")
-    private String newPassword;
+  /**
+   * 新密码（可选，不传则使用默认规则生成）
+   */
+  @Schema(description = "新密码，不传则使用默认规则（yyyyMMdd+手机号）生成", example = "2026011013800138001")
+  private String newPassword;
 }

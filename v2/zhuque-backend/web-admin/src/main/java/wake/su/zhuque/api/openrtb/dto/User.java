@@ -1,10 +1,11 @@
 package wake.su.zhuque.api.openrtb.dto;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
-import java.util.List;
 
 /**
  * OpenRTB 用户对象
@@ -13,63 +14,63 @@ import java.util.List;
 @Schema(description = "用户信息对象")
 public class User {
 
-    @JsonProperty("id")
-    @Schema(description = "用户唯一标识符")
-    private String id;
+  @JsonProperty("id")
+  @Schema(description = "用户唯一标识符")
+  private String id;
 
-    @JsonProperty("buyeruid")
-    @Schema(description = "买方分配的用户ID")
-    private String buyeruid;
+  @JsonProperty("buyeruid")
+  @Schema(description = "买方分配的用户ID")
+  private String buyeruid;
 
-    @JsonProperty("yob")
-    @Schema(description = "出生年份")
-    private Integer yob;
+  @JsonProperty("yob")
+  @Schema(description = "出生年份")
+  private Integer yob;
 
-    @JsonProperty("gender")
-    @Schema(description = "性别：M=男，F=女，O=其他")
-    private String gender;
+  @JsonProperty("gender")
+  @Schema(description = "性别：M=男，F=女，O=其他")
+  private String gender;
 
-    @JsonProperty("keywords")
-    @Schema(description = "用户相关关键词")
-    private String keywords;
+  @JsonProperty("keywords")
+  @Schema(description = "用户相关关键词")
+  private String keywords;
 
-    @JsonProperty("customdata")
-    @Schema(description = "自定义数据")
-    private String customdata;
+  @JsonProperty("customdata")
+  @Schema(description = "自定义数据")
+  private String customdata;
 
-    @JsonProperty("geo")
-    @Schema(description = "用户地理位置")
-    private Geo geo;
+  @JsonProperty("geo")
+  @Schema(description = "用户地理位置")
+  private Geo geo;
 
-    @JsonProperty("data")
-    @Schema(description = "数据对象数组")
-    private List<Data> data;
+  @JsonProperty("data")
+  @Schema(description = "数据对象数组")
+  private List<Data> data;
+
+  @JsonProperty("ext")
+  @Schema(description = "扩展字段")
+  private UserExt ext;
+
+  /**
+   * 用户扩展对象 (OpenRTB 2.6新增)
+   */
+  @Data
+  @Schema(description = "用户扩展对象")
+  public static class UserExt {
+
+    @JsonProperty("eids")
+    @Schema(description = "扩展ID列表 (OpenRTB 2.6新增，用于ID Bridging)")
+    private List<ExtendedId> eids;
+
+    @JsonProperty("consent")
+    @Schema(description = "GDPR同意字符串 (OpenRTB 2.6新增)")
+    private String consent;
+
+    @JsonProperty("digid")
+    @Schema(description = "数字ID (OpenRTB 2.6新增)")
+    private String digid;
 
     @JsonProperty("ext")
     @Schema(description = "扩展字段")
-    private UserExt ext;
-
-    /**
-     * 用户扩展对象 (OpenRTB 2.6新增)
-     */
-    @Data
-    @Schema(description = "用户扩展对象")
-    public static class UserExt {
-
-        @JsonProperty("eids")
-        @Schema(description = "扩展ID列表 (OpenRTB 2.6新增，用于ID Bridging)")
-        private List<ExtendedId> eids;
-
-        @JsonProperty("consent")
-        @Schema(description = "GDPR同意字符串 (OpenRTB 2.6新增)")
-        private String consent;
-
-        @JsonProperty("digid")
-        @Schema(description = "数字ID (OpenRTB 2.6新增)")
-        private String digid;
-
-        @JsonProperty("ext")
-        @Schema(description = "扩展字段")
-        private Object ext;
-    }
+    private Object ext;
+  }
 }

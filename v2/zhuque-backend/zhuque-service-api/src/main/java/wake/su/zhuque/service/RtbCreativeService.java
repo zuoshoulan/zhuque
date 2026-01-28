@@ -14,33 +14,33 @@ import wake.su.zhuque.model.vo.CreativeVO;
  */
 public interface RtbCreativeService {
 
-    /**
-     * 创建创意
-     */
-    Long create(CreativeCreateRequest request);
+  /**
+   * 创建创意
+   */
+  Long create(CreativeCreateRequest request);
 
-    /**
-     * 更新创意
-     */
-    void update(CreativeUpdateRequest request);
+  /**
+   * 更新创意
+   */
+  void update(CreativeUpdateRequest request);
 
-    /**
-     * 删除创意
-     */
-    void delete(Long id);
+  /**
+   * 删除创意
+   */
+  void delete(Long id);
 
-    /**
-     * 创意详情
-     */
-    CreativeVO detail(Long id);
+  /**
+   * 创意详情
+   */
+  CreativeVO detail(Long id);
 
-    /**
-     * 分页查询
-     */
-    Result<List<CreativeListVO>> list(CreativeQueryRequest request);
+  /**
+   * 分页查询
+   */
+  Result<List<CreativeListVO>> list(CreativeQueryRequest request);
 
-    /**
-     * 更新状态
-     */
-    void updateStatus(Long id, Integer status);
+  /**
+   * 更新状态
+   */
+  void updateStatus(Long id, Integer status);
 }

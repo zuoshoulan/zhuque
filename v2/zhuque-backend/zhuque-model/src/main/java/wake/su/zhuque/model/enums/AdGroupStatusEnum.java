@@ -13,28 +13,26 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum AdGroupStatusEnum {
 
-    DRAFT(0, "草稿"),
-    RUNNING(1, "进行中"),
-    PAUSED(2, "暂停");
+  DRAFT(0, "草稿"), RUNNING(1, "进行中"), PAUSED(2, "暂停");
 
-    private final Integer code;
-    private final String name;
+  private final Integer code;
+  private final String name;
 
-    public static String getNameByCode(Integer code) {
-        for (AdGroupStatusEnum status : values()) {
-            if (status.getCode().equals(code)) {
-                return status.getName();
-            }
-        }
-        return "未知";
+  public static String getNameByCode(Integer code) {
+    for(AdGroupStatusEnum status : values()) {
+      if(status.getCode().equals(code)) {
+        return status.getName();
+      }
     }
+    return "未知";
+  }
 
-    public static AdGroupStatusEnum getByCode(Integer code) {
-        for (AdGroupStatusEnum status : values()) {
-            if (status.getCode().equals(code)) {
-                return status;
-            }
-        }
-        return null;
+  public static AdGroupStatusEnum getByCode(Integer code) {
+    for(AdGroupStatusEnum status : values()) {
+      if(status.getCode().equals(code)) {
+        return status;
+      }
     }
+    return null;
+  }
 }

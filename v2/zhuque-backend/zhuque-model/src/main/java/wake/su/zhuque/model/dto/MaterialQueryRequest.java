@@ -7,11 +7,11 @@ import lombok.Data;
  */
 @Data
 public class MaterialQueryRequest {
-    private Long creativeId;
-    private Long advertiserId;
-    private Integer format;
-    private Integer width;
-    private Integer height;
-    private Integer current = 1;
-    private Integer size = 10;
+  private Long creativeId;
+  private Long advertiserId;
+  private Integer format;
+  private Integer width;
+  private Integer height;
+  private Integer current = 1;
+  private Integer size = 10;
 }

@@ -7,9 +7,9 @@ import lombok.Data;
  */
 @Data
 public class CreativeQueryRequest {
-    private Long advertiserId;
-    private String name;
-    private Integer status;
-    private Integer current = 1;
-    private Integer size = 10;
+  private Long advertiserId;
+  private String name;
+  private Integer status;
+  private Integer current = 1;
+  private Integer size = 10;
 }
