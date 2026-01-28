@@ -472,6 +472,16 @@ public class Imp {
     private List<Integer> delivery;
 
     @Schema(description = """
+        广告位置
+
+        - 0: 未知
+        - 1: 首屏（Above the Fold）
+        - 2: 次屏（Below the Fold）
+        """, example = "1")
+    @JsonProperty("pos")
+    private Integer pos;
+
+    @Schema(description = """
         伴随广告（Companion Ads）
 
         与视频广告同时展示的横幅广告。
@@ -657,6 +667,14 @@ public class Imp {
 
     public void setDelivery(List<Integer> delivery) {
       this.delivery = delivery;
+    }
+
+    public Integer getPos() {
+      return pos;
+    }
+
+    public void setPos(Integer pos) {
+      this.pos = pos;
     }
 
     public List<Banner> getCompanionAds() {

@@ -45,6 +45,8 @@ spring:
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
     default-property-inclusion: non_null
+    deserialization:
+      fail-on-unknown-properties: false
 
 # MyBatis-Plus 配置
 mybatis-plus:
