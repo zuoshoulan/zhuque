@@ -159,8 +159,54 @@ mvn spotless:check
 # 自动格式化代码
 mvn spotless:apply
 
+# 查看哪些文件会被修改（不实际修改）
+mvn spotless:diff
+
 # 跳过格式化检查（仅紧急情况）
 mvn install -Dspotless.skip
+```
+
+## 验证格式化不改变功能
+
+在应用格式化到现有项目时，建议验证格式化前后编译产物一致：
+
+### 字节码对比（推荐）
+
+```bash
+# 1. 格式化前编译并保存哈希
+mvn clean compile -DskipTests
+find target/classes -type f -name "*.class" | sort | xargs sha256sum > before.sum
+
+# 2. 应用格式化
+mvn spotless:apply
+
+# 3. 格式化后编译并保存哈希
+mvn clean compile -DskipTests
+find target/classes -type f -name "*.class" | sort | xargs sha256sum > after.sum
+
+# 4. 对比哈希值（应该完全相同）
+diff before.sum after.sum
+```
+
+如果输出为空，说明格式化前后字节码完全一致，功能不受影响。
+
+### 结合测试验证
+
+```bash
+# 创建格式化分支
+git checkout -b format-code
+
+# 运行测试确保原代码正常
+mvn clean test
+
+# 应用格式化
+mvn spotless:apply
+
+# 再次运行测试
+mvn clean test
+
+# 查看改动（应该只有空格、换行等格式变化）
+git diff --stat
 ```
 
 ## 在新电脑上设置
