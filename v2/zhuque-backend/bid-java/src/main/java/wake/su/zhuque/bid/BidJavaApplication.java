@@ -18,9 +18,13 @@ public class BidJavaApplication {
     SpringApplication app = new SpringApplication(BidJavaApplication.class);
     Environment env = app.run(args).getEnvironment();
     String port = env.getProperty("server.port", "8081");
-    System.out.println("\n" + "========================================\n" + "   朱雀竞价服务启动成功！\n"
-        + "   竞价接口: http://localhost:" + port + "/openrtb/bid\n" + "   Swagger: http://localhost:"
-        + port + "/swagger-ui.html\n" + "   健康检查: http://localhost:" + port + "/actuator/health\n"
-        + "========================================\n");
+    System.out.println("""
+        ========================================
+           朱雀竞价服务启动成功！
+           竞价接口: http://localhost:%s/openrtb/bid
+           Swagger: http://localhost:%s/swagger-ui.html
+           健康检查: http://localhost:%s/actuator/health
+        ========================================
+        """.formatted(port, port, port));
   }
 }
