@@ -240,3 +240,5 @@ System.out.println("""
 - [Spotless 官方文档](https://github.com/diffplug/spotless)
 - [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html)
 - [VSCode Java 扩展文档](https://code.visualstudio.com/docs/java/java-support)
+- [Alibaba Java 开发手册](https://github.com/alibaba/p3c)
+- [IntelliJ IDEA Code Style](https://www.jetbrains.com/help/idea/code-style-java.html)
