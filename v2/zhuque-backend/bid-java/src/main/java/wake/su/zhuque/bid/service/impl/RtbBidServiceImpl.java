@@ -63,7 +63,7 @@ public class RtbBidServiceImpl implements RtbBidService {
     long startTime = System.currentTimeMillis();
     String requestId = request.getId();
 
-    log.debug("[{}] 开始处理竞价请求", requestId);
+    log.debug("[{}] 开始处理竞价请求, impCount={}", requestId, request.getImp().size());
 
     // 如果没有展示机会，直接返回
     if (request.getImp() == null || request.getImp().isEmpty()) {
@@ -71,8 +71,63 @@ public class RtbBidServiceImpl implements RtbBidService {
       return null;
     }
 
-    // 目前只处理第一个展示机会
-    Imp imp = request.getImp().get(0);
+    // 遍历所有展示机会，为每个符合条件的 imp 生成竞价
+    List<Bid> winningBids = new ArrayList<>();
+    int successCount = 0;
+    int failedCount = 0;
+
+    for(Imp imp : request.getImp()) {
+      BidResponse impResponse = processSingleImp(request, imp);
+      if (impResponse != null && impResponse.getSeatbid() != null
+          && !impResponse.getSeatbid().isEmpty()) {
+        // 提取 bid 并添加到结果列表
+        SeatBid seatBid = impResponse.getSeatbid().get(0);
+        if (seatBid.getBid() != null && !seatBid.getBid().isEmpty()) {
+          winningBids.addAll(seatBid.getBid());
+          successCount++;
+        } else {
+          failedCount++;
+        }
+      } else {
+        failedCount++;
+      }
+    }
+
+    // 如果没有任何竞价成功，返回 null
+    if (winningBids.isEmpty()) {
+      log.debug("[{}] 所有展示机会均未产生竞价", requestId);
+      return null;
+    }
+
+    // 构造最终响应，包含所有成功的竞价
+    BidResponse response = new BidResponse();
+    response.setId(request.getId());
+
+    SeatBid seatBid = new SeatBid();
+    seatBid.setBid(winningBids);
+    response.setSeatbid(Arrays.asList(seatBid));
+
+    long duration = System.currentTimeMillis() - startTime;
+    log.info("[{}] 竞价处理完成, success={}, failed={}, duration={}ms", requestId, successCount,
+        failedCount, duration);
+
+    return response;
+  }
+
+  /**
+   * 处理单个展示机会的竞价
+   *
+   * @param request
+   *          竞价请求
+   * @param imp
+   *          单个展示机会
+   * @return 竞价响应（仅包含该 imp 的竞价），如果没有合适的竞价则返回 null
+   */
+  private BidResponse processSingleImp(BidRequest request, Imp imp) {
+    String requestId = request.getId();
+    String impId = imp.getId();
+
+    log.debug("[{}] 处理展示机会: {}", requestId, impId);
 
     // 构建上下文
     BidContext context = new BidContext(request, imp);
@@ -80,19 +135,19 @@ public class RtbBidServiceImpl implements RtbBidService {
     // 1. 获取候选广告组
     List<BidCandidate> candidates = getCandidates(context);
     if (candidates.isEmpty()) {
-      log.debug("[{}] 没有候选广告组", requestId);
+      log.debug("[{}] 展示机会 {} 没有候选广告组", requestId, impId);
       return null;
     }
 
     // 2. 预过滤阶段 (轻量级检查)
     List<BidCandidate> passedCandidates = preFilter(context, candidates);
     if (passedCandidates.isEmpty()) {
-      log.debug("[{}] 预过滤后无候选广告组", requestId);
+      log.debug("[{}] 展示机会 {} 预过滤后无候选广告组", requestId, impId);
       return null;
     }
 
     // 3. 计算出价和分数
-    for (BidCandidate candidate : passedCandidates) {
+    for(BidCandidate candidate : passedCandidates) {
       Long bidPrice = bidPriceService.calculateBidPrice(candidate.getAdGroup(), context);
       candidate.setBidPrice(bidPrice);
       candidate.calculateScore();
@@ -105,16 +160,15 @@ public class RtbBidServiceImpl implements RtbBidService {
     BidCandidate winner = trySelectWinner(context, passedCandidates);
 
     if (winner == null) {
-      log.debug("[{}] 所有候选广告组资源扣减失败", requestId);
+      log.debug("[{}] 展示机会 {} 所有候选广告组资源扣减失败", requestId, impId);
       return null;
     }
 
     // 6. 构造响应
     BidResponse response = buildResponse(request, imp, winner, context);
 
-    long duration = System.currentTimeMillis() - startTime;
-    log.info("[{}] 竞价成功, adGroupId={}, bidPrice={}, duration={}ms", requestId,
-        winner.getAdGroup().getId(), winner.getBidPrice(), duration);
+    log.info("[{}] 展示机会 {} 竞价成功, adGroupId={}, bidPrice={}", requestId, impId,
+        winner.getAdGroup().getId(), winner.getBidPrice());
 
     return response;
   }
@@ -150,8 +204,8 @@ public class RtbBidServiceImpl implements RtbBidService {
 
     // 组装候选对象
     List<BidCandidate> candidates = new ArrayList<>();
-    for (RtbAdGroupDO adGroup : adGroups) {
-      for (RtbAdDO ad : ads) {
+    for(RtbAdGroupDO adGroup : adGroups) {
+      for(RtbAdDO ad : ads) {
         if (ad.getAdGroupId().equals(adGroup.getId())) {
           candidates.add(new BidCandidate(adGroup, ad));
           break; // 每个 AdGroup 只取一个 Ad
@@ -167,14 +221,13 @@ public class RtbBidServiceImpl implements RtbBidService {
     List<BidCandidate> passed = new ArrayList<>();
 
     // 按顺序执行过滤器
-    List<BidFilter> sortedFilters =
-        bidFilters.stream().sorted(Comparator.comparingInt(BidFilter::order)).toList();
+    List<BidFilter> sortedFilters = bidFilters.stream().sorted(Comparator.comparingInt(BidFilter::order)).toList();
 
-    for (BidCandidate candidate : candidates) {
+    for(BidCandidate candidate : candidates) {
       RtbAdGroupDO adGroup = candidate.getAdGroup();
 
       boolean allPassed = true;
-      for (BidFilter filter : sortedFilters) {
+      for(BidFilter filter : sortedFilters) {
         if (!filter.test(context, adGroup)) {
           allPassed = false;
           break;
@@ -191,10 +244,9 @@ public class RtbBidServiceImpl implements RtbBidService {
 
   /** 尝试选择获胜者 - 扣资源阶段 */
   private BidCandidate trySelectWinner(BidContext context, List<BidCandidate> candidates) {
-    BigDecimal bidPrice =
-        BigDecimal.valueOf(candidates.get(0).getBidPrice()).divide(BigDecimal.valueOf(1000));
+    BigDecimal bidPrice = BigDecimal.valueOf(candidates.get(0).getBidPrice()).divide(BigDecimal.valueOf(1000));
 
-    for (BidCandidate candidate : candidates) {
+    for(BidCandidate candidate : candidates) {
       RtbAdGroupDO adGroup = candidate.getAdGroup();
       String userId = context.getUserId();
 
