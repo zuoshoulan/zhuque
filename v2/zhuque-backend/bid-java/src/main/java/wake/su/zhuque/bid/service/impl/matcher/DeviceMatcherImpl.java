@@ -32,22 +32,22 @@ public class DeviceMatcherImpl implements DeviceMatcher {
 
     // 检查设备定向
     String targetingDevice = adGroup.getTargetingDevice();
-    if(targetingDevice != null && !targetingDevice.isEmpty() && !"[]".equals(targetingDevice)) {
+    if (targetingDevice != null && !targetingDevice.isEmpty() && !"[]".equals(targetingDevice)) {
       JSONArray deviceArray = JSONUtil.parseArray(targetingDevice);
       List<Integer> allowedDevices = deviceArray.toList(Integer.class);
 
-      if(requestDeviceType == null || !allowedDevices.contains(requestDeviceType)) {
+      if (requestDeviceType == null || !allowedDevices.contains(requestDeviceType)) {
         return false;
       }
     }
 
     // 检查OS定向
     String targetingOs = adGroup.getTargetingOs();
-    if(targetingOs != null && !targetingOs.isEmpty() && !"[]".equals(targetingOs)) {
+    if (targetingOs != null && !targetingOs.isEmpty() && !"[]".equals(targetingOs)) {
       JSONArray osArray = JSONUtil.parseArray(targetingOs);
       List<String> allowedOs = osArray.toList(String.class);
 
-      if(requestOs == null || !isOsMatch(requestOs, allowedOs)) {
+      if (requestOs == null || !isOsMatch(requestOs, allowedOs)) {
         return false;
       }
     }
@@ -61,7 +61,7 @@ public class DeviceMatcherImpl implements DeviceMatcher {
 
     for(String allowed : allowedOs) {
       String allowedLower = allowed.toLowerCase();
-      if(normalizedOs.contains(allowedLower) || allowedLower.contains(normalizedOs)) {
+      if (normalizedOs.contains(allowedLower) || allowedLower.contains(normalizedOs)) {
         return true;
       }
     }

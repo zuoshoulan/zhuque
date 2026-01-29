@@ -27,12 +27,12 @@ public class SmartBidStrategy implements BidPriceStrategy {
     BigDecimal bidPrice = basePrice.multiply(BigDecimal.valueOf(ctrFactor));
 
     // 约束在 [max(floor, min), max] 范围内
-    if(minPrice != null) {
+    if (minPrice != null) {
       bidPrice = bidPrice.max(minPrice);
     }
     bidPrice = bidPrice.max(floorPrice);
 
-    if(maxPrice != null) {
+    if (maxPrice != null) {
       bidPrice = bidPrice.min(maxPrice);
     }
 

@@ -22,12 +22,12 @@ public class FixedCpmStrategy implements BidPriceStrategy {
     BigDecimal bidPrice = basePrice;
 
     // 约束在 [max(floor, min), max] 范围内
-    if(minPrice != null) {
+    if (minPrice != null) {
       bidPrice = bidPrice.max(minPrice);
     }
     bidPrice = bidPrice.max(floorPrice);
 
-    if(maxPrice != null) {
+    if (maxPrice != null) {
       bidPrice = bidPrice.min(maxPrice);
     }
 

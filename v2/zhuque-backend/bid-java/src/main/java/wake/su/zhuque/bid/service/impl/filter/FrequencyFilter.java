@@ -26,7 +26,7 @@ public class FrequencyFilter implements BidFilter {
   @Override
   public boolean test(BidContext context, RtbAdGroupDO adGroup) {
     String userId = context.getUserId();
-    if(userId == null || userId.isEmpty()) {
+    if (userId == null || userId.isEmpty()) {
       // 没有用户ID时，跳过频次检查
       return true;
     }

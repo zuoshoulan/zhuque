@@ -63,7 +63,7 @@ public class FrequencyCapServiceImpl implements FrequencyCapService {
     Integer cap = adGroup.getFrequencyCap();
     Integer period = adGroup.getFrequencyCapPeriod();
 
-    if(cap == null || cap <= 0 || period == null) {
+    if (cap == null || cap <= 0 || period == null) {
       return true; // 未设置频次限制
     }
 
@@ -79,7 +79,7 @@ public class FrequencyCapServiceImpl implements FrequencyCapService {
     Integer cap = adGroup.getFrequencyCap();
     Integer period = adGroup.getFrequencyCapPeriod();
 
-    if(cap == null || cap <= 0 || period == null) {
+    if (cap == null || cap <= 0 || period == null) {
       return true; // 未设置频次限制
     }
 
@@ -117,7 +117,7 @@ public class FrequencyCapServiceImpl implements FrequencyCapService {
   @Override
   public void rollback(String userId, RtbAdGroupDO adGroup) {
     Integer period = adGroup.getFrequencyCapPeriod();
-    if(period == null) {
+    if (period == null) {
       period = PERIOD_DAY;
     }
 
@@ -138,7 +138,7 @@ public class FrequencyCapServiceImpl implements FrequencyCapService {
       (int) Duration.between(now, now.plusDays(1).withHour(0).withMinute(0).withSecond(0)).getSeconds();
     case PERIOD_WEEK -> {
       int daysUntilMonday = 7 - now.getDayOfWeek().getValue();
-      if(daysUntilMonday == 0)
+      if (daysUntilMonday == 0)
         daysUntilMonday = 7;
       yield (int) Duration.between(now, now.plusDays(daysUntilMonday).withHour(0).withMinute(0).withSecond(0))
           .getSeconds();

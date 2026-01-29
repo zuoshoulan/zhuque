@@ -35,18 +35,18 @@ public class BidPriceServiceImpl implements BidPriceService {
   @Override
   public Long calculateBidPrice(RtbAdGroupDO adGroup, BidContext context) {
     // 懒加载策略映射
-    if(strategyMap == null) {
+    if (strategyMap == null) {
       strategyMap = strategies.stream().collect(Collectors.toMap(BidPriceStrategy::getType, Function.identity()));
     }
 
     // 获取出价策略
     Integer bidStrategy = adGroup.getBidStrategy();
-    if(bidStrategy == null) {
+    if (bidStrategy == null) {
       bidStrategy = 1; // 默认固定CPM
     }
 
     BidPriceStrategy strategy = strategyMap.get(bidStrategy);
-    if(strategy == null) {
+    if (strategy == null) {
       log.warn("未找到出价策略: {}, 使用固定CPM", bidStrategy);
       strategy = strategyMap.get(1);
     }
@@ -56,7 +56,7 @@ public class BidPriceServiceImpl implements BidPriceService {
     BigDecimal maxPrice = adGroup.getMaxBid();
     BigDecimal minPrice = adGroup.getBidFloor();
     BigDecimal floorPrice = context.getRequestFloorPrice();
-    if(floorPrice == null) {
+    if (floorPrice == null) {
       floorPrice = BigDecimal.ZERO;
     }
 

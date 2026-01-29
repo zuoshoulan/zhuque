@@ -24,7 +24,7 @@ public class GeoMatcherImpl implements GeoMatcher {
   @Override
   public boolean matches(BidContext context, RtbAdGroupDO adGroup) {
     String targetingGeo = adGroup.getTargetingGeo();
-    if(targetingGeo == null || targetingGeo.isEmpty() || "[]".equals(targetingGeo)) {
+    if (targetingGeo == null || targetingGeo.isEmpty() || "[]".equals(targetingGeo)) {
       // 未设置地域定向，不限制
       return true;
     }
@@ -32,7 +32,7 @@ public class GeoMatcherImpl implements GeoMatcher {
     String requestCountry = context.getCountryCode();
     String requestRegion = context.getRegionCode();
 
-    if(requestCountry == null) {
+    if (requestCountry == null) {
       // 请求没有地域信息，不匹配
       return false;
     }
@@ -44,7 +44,7 @@ public class GeoMatcherImpl implements GeoMatcher {
 
     for(int i = 0; i < geoArray.size(); i++) {
       String geo = geoArray.getStr(i);
-      if(geo.contains("-")) {
+      if (geo.contains("-")) {
         regions.add(geo);
       } else {
         countries.add(geo);
@@ -52,15 +52,15 @@ public class GeoMatcherImpl implements GeoMatcher {
     }
 
     // 检查国家匹配
-    if(!countries.isEmpty() && !countries.contains(requestCountry)) {
+    if (!countries.isEmpty() && !countries.contains(requestCountry)) {
       return false;
     }
 
     // 检查省份匹配
-    if(!regions.isEmpty()) {
+    if (!regions.isEmpty()) {
       String regionKey = requestCountry + "-" + requestRegion;
       boolean regionMatch = regions.contains(regionKey);
-      if(!regionMatch) {
+      if (!regionMatch) {
         return false;
       }
     }

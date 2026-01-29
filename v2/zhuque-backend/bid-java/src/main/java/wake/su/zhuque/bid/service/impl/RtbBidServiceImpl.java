@@ -66,7 +66,7 @@ public class RtbBidServiceImpl implements RtbBidService {
     log.debug("[{}] 开始处理竞价请求", requestId);
 
     // 如果没有展示机会，直接返回
-    if(request.getImp() == null || request.getImp().isEmpty()) {
+    if (request.getImp() == null || request.getImp().isEmpty()) {
       log.warn("[{}] 请求中没有展示机会", requestId);
       return null;
     }
@@ -79,14 +79,14 @@ public class RtbBidServiceImpl implements RtbBidService {
 
     // 1. 获取候选广告组
     List<BidCandidate> candidates = getCandidates(context);
-    if(candidates.isEmpty()) {
+    if (candidates.isEmpty()) {
       log.debug("[{}] 没有候选广告组", requestId);
       return null;
     }
 
     // 2. 预过滤阶段 (轻量级检查)
     List<BidCandidate> passedCandidates = preFilter(context, candidates);
-    if(passedCandidates.isEmpty()) {
+    if (passedCandidates.isEmpty()) {
       log.debug("[{}] 预过滤后无候选广告组", requestId);
       return null;
     }
@@ -104,7 +104,7 @@ public class RtbBidServiceImpl implements RtbBidService {
     // 5. 遍历排序后的候选，尝试扣资源
     BidCandidate winner = trySelectWinner(context, passedCandidates);
 
-    if(winner == null) {
+    if (winner == null) {
       log.debug("[{}] 所有候选广告组资源扣减失败", requestId);
       return null;
     }
@@ -126,7 +126,7 @@ public class RtbBidServiceImpl implements RtbBidService {
         .selectList(new LambdaQueryWrapper<RtbCampaignDO>().eq(RtbCampaignDO::getStatus, STATUS_ACTIVE)
             .le(RtbCampaignDO::getStartTime, context.getNow()).ge(RtbCampaignDO::getEndTime, context.getNow()));
 
-    if(campaigns.isEmpty()) {
+    if (campaigns.isEmpty()) {
       return List.of();
     }
 
@@ -137,7 +137,7 @@ public class RtbBidServiceImpl implements RtbBidService {
     List<RtbAdGroupDO> adGroups = adGroupMapper.selectList(new LambdaQueryWrapper<RtbAdGroupDO>()
         .in(RtbAdGroupDO::getCampaignId, campaignIds).eq(RtbAdGroupDO::getStatus, STATUS_ACTIVE));
 
-    if(adGroups.isEmpty()) {
+    if (adGroups.isEmpty()) {
       return List.of();
     }
 
@@ -151,7 +151,7 @@ public class RtbBidServiceImpl implements RtbBidService {
     List<BidCandidate> candidates = new ArrayList<>();
     for(RtbAdGroupDO adGroup : adGroups) {
       for(RtbAdDO ad : ads) {
-        if(ad.getAdGroupId().equals(adGroup.getId())) {
+        if (ad.getAdGroupId().equals(adGroup.getId())) {
           candidates.add(new BidCandidate(adGroup, ad));
           break; // 每个 AdGroup 只取一个 Ad
         }
@@ -173,13 +173,13 @@ public class RtbBidServiceImpl implements RtbBidService {
 
       boolean allPassed = true;
       for(BidFilter filter : sortedFilters) {
-        if(!filter.test(context, adGroup)) {
+        if (!filter.test(context, adGroup)) {
           allPassed = false;
           break;
         }
       }
 
-      if(allPassed) {
+      if (allPassed) {
         passed.add(candidate);
       }
     }
@@ -196,13 +196,13 @@ public class RtbBidServiceImpl implements RtbBidService {
       String userId = context.getUserId();
 
       // 1. 尝试扣减预算 (原子操作)
-      if(!budgetControlService.tryDeduct(adGroup, bidPrice)) {
+      if (!budgetControlService.tryDeduct(adGroup, bidPrice)) {
         log.debug("预算扣减失败, adGroup={}", adGroup.getId());
         continue;
       }
 
       // 2. 尝试记录频次 (原子操作)
-      if(!frequencyCapService.tryRecord(userId, adGroup)) {
+      if (!frequencyCapService.tryRecord(userId, adGroup)) {
         log.debug("频次记录失败, adGroup={}", adGroup.getId());
         budgetControlService.rollback(adGroup, bidPrice); // 回滚预算
         continue;
@@ -236,7 +236,7 @@ public class RtbBidServiceImpl implements RtbBidService {
 
     // 生成 ADM
     RtbCreativeDO creative = getCreative(winner.getAd().getCreativeId());
-    if(creative != null) {
+    if (creative != null) {
       String adm = creativeAssemblyService.buildAdm(winner.getAd(), creative, context);
       bid.setAdm(adm);
     }

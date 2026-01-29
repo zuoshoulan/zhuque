@@ -117,7 +117,7 @@ public class OpenRtbController {
 
     try {
       // 校验请求
-      if(request == null || request.getImp() == null || request.getImp().isEmpty()) {
+      if (request == null || request.getImp() == null || request.getImp().isEmpty()) {
         log.warn("[{}] 请求无效: 缺少展示机会", requestId);
         return ResponseEntity.badRequest().build();
       }
@@ -128,7 +128,7 @@ public class OpenRtbController {
       long duration = System.currentTimeMillis() - startTime;
       log.info("[{}] 竞价处理完成, duration={}ms, result={}", requestId, duration, response != null ? "有竞价" : "无竞价");
 
-      if(response == null) {
+      if (response == null) {
         return ResponseEntity.noContent().build();
       }
 
