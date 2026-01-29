@@ -1,0 +1,16 @@
+curl 'http://localhost:8081/openrtb/bid' \
+  -H 'Accept-Language: zh-CN,zh;q=0.9' \
+  -H 'Connection: keep-alive' \
+  -H 'Content-Type: application/json' \
+  -b 'Hm_lvt_a46ebe9cd327002026b91f791fc32c76=1765356443; _ga=GA1.1.1008639200.1765356443; _ga_S0HDVTKLXM=GS2.1.s1765356443$o1$g1$t1765356464$j39$l0$h0; Hm_lvt_ecc8b50a3122e6d5e09be7a9e5383e07=1766735396' \
+  -H 'Origin: http://localhost:8081' \
+  -H 'Referer: http://localhost:8081/swagger-ui/index.html' \
+  -H 'Sec-Fetch-Dest: empty' \
+  -H 'Sec-Fetch-Mode: cors' \
+  -H 'Sec-Fetch-Site: same-origin' \
+  -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36' \
+  -H 'accept: application/json' \
+  -H 'sec-ch-ua: "Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "Windows"' \
+  --data-raw $'{\n  "id": "req-20250126-001",\n  "imp": [\n    {\n      "id": "imp-001",\n      "banner": {\n        "w": 1358,\n        "h": 634,\n        "pos": 1\n      },\n      "bidfloor": 0.5\n    }\n  ],\n  "device": {\n    "ua": "Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36",\n    "ip": "210.73.204.1",\n    "geo": {\n      "country": "CN",\n      "region": "Beijing",\n      "city": "Beijing"\n    },\n    "devicetype": 1,\n    "os": "Android"\n  },\n  "user": {\n    "id": "user-001"\n  },\n  "test": 0,\n  "at": 1,\n  "tmax": 100\n}'
