@@ -48,7 +48,7 @@ public class JwtUtil {
 
     JwtBuilder builder = Jwts.builder().subject(subject).issuedAt(now).expiration(expiration).signWith(getSignKey());
 
-    if(claims != null && !claims.isEmpty()) {
+    if (claims != null && !claims.isEmpty()) {
       builder.addClaims(claims);
     }
 

@@ -37,7 +37,7 @@ public class JacksonConfig {
     public LocalDateTime deserialize(com.fasterxml.jackson.core.JsonParser p, DeserializationContext ctxt)
         throws IOException {
       String dateTimeStr = p.getValueAsString();
-      if(dateTimeStr == null || dateTimeStr.trim().isEmpty()) {
+      if (dateTimeStr == null || dateTimeStr.trim().isEmpty()) {
         return null;
       }
 

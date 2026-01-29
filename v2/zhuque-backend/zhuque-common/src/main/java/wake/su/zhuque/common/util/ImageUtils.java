@@ -35,7 +35,7 @@ public class ImageUtils {
   public static ImageDimension getImageDimension(byte[] fileData) {
     try(ByteArrayInputStream inputStream = new ByteArrayInputStream(fileData)) {
       BufferedImage image = ImageIO.read(inputStream);
-      if(image != null) {
+      if (image != null) {
         return new ImageDimension(image.getWidth(), image.getHeight());
       }
     } catch(IOException e) {
@@ -65,7 +65,7 @@ public class ImageUtils {
       return null;
     } finally {
       // 清理临时文件
-      if(tempFile != null && tempFile.exists()) {
+      if (tempFile != null && tempFile.exists()) {
         tempFile.delete();
       }
     }
@@ -90,7 +90,7 @@ public class ImageUtils {
       grabber.stop();
       grabber.close();
 
-      if(width > 0 && height > 0) {
+      if (width > 0 && height > 0) {
         return new ImageDimension(width, height);
       }
     } catch(Exception e) {
@@ -107,7 +107,7 @@ public class ImageUtils {
    * @return 是否为图片
    */
   public static boolean isImage(String mimeType) {
-    if(mimeType == null) {
+    if (mimeType == null) {
       return false;
     }
     return mimeType.startsWith("image/");
@@ -121,7 +121,7 @@ public class ImageUtils {
    * @return 是否为视频
    */
   public static boolean isVideo(String mimeType) {
-    if(mimeType == null) {
+    if (mimeType == null) {
       return false;
     }
     return mimeType.startsWith("video/");

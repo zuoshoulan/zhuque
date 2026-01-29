@@ -14,7 +14,7 @@ public class SecurityUtil {
    */
   public static Long getCurrentUserId() {
     Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    if(principal instanceof Long) {
+    if (principal instanceof Long) {
       return (Long) principal;
     }
     return null;
@@ -27,7 +27,7 @@ public class SecurityUtil {
    */
   public static String getCurrentUsername() {
     Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    if(principal instanceof String) {
+    if (principal instanceof String) {
       return (String) principal;
     }
     return null;

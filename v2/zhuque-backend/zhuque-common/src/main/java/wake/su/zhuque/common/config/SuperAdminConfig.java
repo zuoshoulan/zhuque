@@ -49,7 +49,7 @@ public class SuperAdminConfig {
    * @return true 如果是超级管理员
    */
   public boolean isSuperAdmin(Long userId) {
-    if(!enabled || userId == null) {
+    if (!enabled || userId == null) {
       return false;
     }
     return userIds.contains(userId);
@@ -63,7 +63,7 @@ public class SuperAdminConfig {
    * @return true 如果任意一个ID是超级管理员
    */
   public boolean isAnySuperAdmin(List<Long> userIds) {
-    if(!enabled || userIds == null || userIds.isEmpty()) {
+    if (!enabled || userIds == null || userIds.isEmpty()) {
       return false;
     }
     return userIds.stream().anyMatch(this.userIds::contains);

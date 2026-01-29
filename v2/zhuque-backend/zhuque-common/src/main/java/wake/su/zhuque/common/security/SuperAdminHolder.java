@@ -30,7 +30,7 @@ public class SuperAdminHolder {
    * @return true 如果是超级管理员
    */
   public static boolean isSuperAdmin(Long userId, SuperAdminConfig config) {
-    if(userId == null || config == null) {
+    if (userId == null || config == null) {
       return false;
     }
     return config.isSuperAdmin(userId);
@@ -83,7 +83,7 @@ public class SuperAdminHolder {
    *          超级管理员配置
    */
   public static void logOperation(Long userId, String operation, SuperAdminConfig config) {
-    if(isSuperAdmin(userId, config)) {
+    if (isSuperAdmin(userId, config)) {
       log.info("[超级管理员] 用户ID: {} 执行操作: {}", userId, operation);
     }
   }
@@ -99,7 +99,7 @@ public class SuperAdminHolder {
    *           如果是超级管理员
    */
   public static void checkNotSuperAdmin(Long userId, SuperAdminConfig config) {
-    if(isSuperAdmin(userId, config)) {
+    if (isSuperAdmin(userId, config)) {
       throw new BusinessException("超级管理员账号受保护，禁止删除或禁用");
     }
   }
@@ -115,7 +115,7 @@ public class SuperAdminHolder {
    *           如果列表中包含超级管理员
    */
   public static void checkNotSuperAdmin(java.util.List<Long> userIds, SuperAdminConfig config) {
-    if(config.isAnySuperAdmin(userIds)) {
+    if (config.isAnySuperAdmin(userIds)) {
       throw new BusinessException("超级管理员账号受保护，禁止删除或禁用");
     }
   }
