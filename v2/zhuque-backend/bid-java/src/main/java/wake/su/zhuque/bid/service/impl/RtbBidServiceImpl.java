@@ -33,8 +33,6 @@ import wake.su.zhuque.model.entity.RtbAdGroupDO;
 import wake.su.zhuque.model.entity.RtbCampaignDO;
 import wake.su.zhuque.model.entity.RtbCreativeDO;
 
-import lombok.RequiredArgsConstructor;
-
 /**
  * RTB 竞价核心服务实现
  *
@@ -42,7 +40,6 @@ import lombok.RequiredArgsConstructor;
  * @version 1.0
  */
 @Service
-@RequiredArgsConstructor
 public class RtbBidServiceImpl implements RtbBidService {
 
   private static final Logger log = LoggerFactory.getLogger(RtbBidServiceImpl.class);
@@ -50,13 +47,32 @@ public class RtbBidServiceImpl implements RtbBidService {
   private final RtbCampaignMapper campaignMapper;
   private final RtbAdGroupMapper adGroupMapper;
   private final RtbAdMapper adMapper;
-  private final List<BidFilter> bidFilters;
+  private final List<BidFilter> sortedBidFilters; // 缓存排序后的过滤器，减少GC
   private final BidPriceService bidPriceService;
   private final BudgetControlService budgetControlService;
   private final FrequencyCapService frequencyCapService;
   private final CreativeAssemblyService creativeAssemblyService;
 
   private static final Integer STATUS_ACTIVE = 1; // 进行中
+  private static final BigDecimal PRICE_DIVISOR = BigDecimal.valueOf(1000); // 缓存除数
+
+  /**
+   * 构造函数 - 初始化依赖并预排序过滤器
+   */
+  public RtbBidServiceImpl(RtbCampaignMapper campaignMapper, RtbAdGroupMapper adGroupMapper,
+      RtbAdMapper adMapper, List<BidFilter> bidFilters, BidPriceService bidPriceService,
+      BudgetControlService budgetControlService, FrequencyCapService frequencyCapService,
+      CreativeAssemblyService creativeAssemblyService) {
+    this.campaignMapper = campaignMapper;
+    this.adGroupMapper = adGroupMapper;
+    this.adMapper = adMapper;
+    this.bidPriceService = bidPriceService;
+    this.budgetControlService = budgetControlService;
+    this.frequencyCapService = frequencyCapService;
+    this.creativeAssemblyService = creativeAssemblyService;
+    // 预先排序并缓存，避免每次请求都排序
+    this.sortedBidFilters = bidFilters.stream().sorted(Comparator.comparingInt(BidFilter::order)).toList();
+  }
 
   @Override
   public BidResponse processBid(BidRequest request) {
@@ -220,14 +236,12 @@ public class RtbBidServiceImpl implements RtbBidService {
   private List<BidCandidate> preFilter(BidContext context, List<BidCandidate> candidates) {
     List<BidCandidate> passed = new ArrayList<>();
 
-    // 按顺序执行过滤器
-    List<BidFilter> sortedFilters = bidFilters.stream().sorted(Comparator.comparingInt(BidFilter::order)).toList();
-
     for(BidCandidate candidate : candidates) {
       RtbAdGroupDO adGroup = candidate.getAdGroup();
 
       boolean allPassed = true;
-      for(BidFilter filter : sortedFilters) {
+      // 使用预排序的过滤器，避免每次请求都排序
+      for(BidFilter filter : sortedBidFilters) {
         if (!filter.test(context, adGroup)) {
           allPassed = false;
           break;
@@ -244,7 +258,7 @@ public class RtbBidServiceImpl implements RtbBidService {
 
   /** 尝试选择获胜者 - 扣资源阶段 */
   private BidCandidate trySelectWinner(BidContext context, List<BidCandidate> candidates) {
-    BigDecimal bidPrice = BigDecimal.valueOf(candidates.get(0).getBidPrice()).divide(BigDecimal.valueOf(1000));
+    BigDecimal bidPrice = BigDecimal.valueOf(candidates.get(0).getBidPrice()).divide(PRICE_DIVISOR);
 
     for(BidCandidate candidate : candidates) {
       RtbAdGroupDO adGroup = candidate.getAdGroup();
