@@ -41,13 +41,13 @@ public class RtbCreativeServiceImpl implements RtbCreativeService {
   public Long create(CreativeCreateRequest request) {
     // 获取当前登录用户ID，直接使用 userId 作为 advertiserId
     ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-    if(attributes == null) {
+    if (attributes == null) {
       throw new RuntimeException("无法获取请求信息");
     }
 
     HttpServletRequest httpRequest = attributes.getRequest();
     String token = httpRequest.getHeader("Authorization");
-    if(token != null && token.startsWith("Bearer ")) {
+    if (token != null && token.startsWith("Bearer ")) {
       token = token.substring(7);
     }
 
@@ -81,7 +81,7 @@ public class RtbCreativeServiceImpl implements RtbCreativeService {
   @Transactional
   public void update(CreativeUpdateRequest request) {
     RtbCreativeDO creative = creativeMapper.selectById(request.getId());
-    if(creative == null) {
+    if (creative == null) {
       throw new RuntimeException("创意不存在");
     }
     creative.setName(request.getName());
@@ -104,7 +104,7 @@ public class RtbCreativeServiceImpl implements RtbCreativeService {
   @Override
   public CreativeVO detail(Long id) {
     RtbCreativeDO creative = creativeMapper.selectById(id);
-    if(creative == null) {
+    if (creative == null) {
       return null;
     }
     CreativeVO vo = new CreativeVO();
@@ -140,7 +140,7 @@ public class RtbCreativeServiceImpl implements RtbCreativeService {
 
     // 获取当前登录用户的ID（即advertiserId）
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(currentUserId == null) {
+    if (currentUserId == null) {
       return Result.error("未登录或登录已过期");
     }
 
@@ -180,7 +180,7 @@ public class RtbCreativeServiceImpl implements RtbCreativeService {
   @Transactional
   public void updateStatus(Long id, Integer status) {
     RtbCreativeDO creative = creativeMapper.selectById(id);
-    if(creative == null) {
+    if (creative == null) {
       throw new RuntimeException("创意不存在");
     }
     creative.setStatus(status);

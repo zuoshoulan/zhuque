@@ -46,24 +46,24 @@ public class RtbCampaignServiceImpl implements RtbCampaignService {
   @Transactional
   public Long create(CampaignCreateRequest request) {
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(currentUserId == null) {
+    if (currentUserId == null) {
       throw new RuntimeException("未登录或登录已过期");
     }
 
     // 校验时间范围
-    if(request.getStartTime().isBefore(LocalDateTime.now())) {
+    if (request.getStartTime().isBefore(LocalDateTime.now())) {
       throw new RuntimeException("开始时间不能早于当前时间");
     }
-    if(request.getEndTime().isBefore(request.getStartTime())) {
+    if (request.getEndTime().isBefore(request.getStartTime())) {
       throw new RuntimeException("结束时间必须晚于开始时间");
     }
     long days = ChronoUnit.DAYS.between(request.getStartTime(), request.getEndTime());
-    if(days > 90) {
+    if (days > 90) {
       throw new RuntimeException("活动时长不能超过90天");
     }
 
     // 校验预算
-    if(request.getLifetimeBudget().compareTo(new BigDecimal("100")) < 0) {
+    if (request.getLifetimeBudget().compareTo(new BigDecimal("100")) < 0) {
       throw new RuntimeException("预算不能少于100元");
     }
 
@@ -90,35 +90,35 @@ public class RtbCampaignServiceImpl implements RtbCampaignService {
   @Transactional
   public boolean update(Long id, CampaignUpdateRequest request) {
     RtbCampaignDO campaign = campaignMapper.selectById(id);
-    if(campaign == null) {
+    if (campaign == null) {
       throw new RuntimeException("投放活动不存在");
     }
 
     // 权限校验
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(!campaign.getAdvertiserId().equals(currentUserId)) {
+    if (!campaign.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限操作此投放活动");
     }
 
     // 进行中的活动修改关键字段需要重新审核（这里简化为允许修改）
     campaign.setName(request.getName());
     campaign.setDescription(request.getDescription());
-    if(request.getCampaignObjective() != null) {
+    if (request.getCampaignObjective() != null) {
       campaign.setCampaignObjective(request.getCampaignObjective());
     }
-    if(request.getCampaignGoalType() != null) {
+    if (request.getCampaignGoalType() != null) {
       campaign.setCampaignGoalType(request.getCampaignGoalType());
     }
-    if(request.getCampaignGoalValue() != null) {
+    if (request.getCampaignGoalValue() != null) {
       campaign.setCampaignGoalValue(request.getCampaignGoalValue());
     }
-    if(request.getLifetimeBudget() != null) {
+    if (request.getLifetimeBudget() != null) {
       campaign.setLifetimeBudget(request.getLifetimeBudget());
     }
-    if(request.getStartTime() != null) {
+    if (request.getStartTime() != null) {
       campaign.setStartTime(request.getStartTime());
     }
-    if(request.getEndTime() != null) {
+    if (request.getEndTime() != null) {
       campaign.setEndTime(request.getEndTime());
     }
     campaign.setUpdateTime(LocalDateTime.now());
@@ -130,18 +130,18 @@ public class RtbCampaignServiceImpl implements RtbCampaignService {
   @Transactional
   public boolean delete(Long id) {
     RtbCampaignDO campaign = campaignMapper.selectById(id);
-    if(campaign == null) {
+    if (campaign == null) {
       throw new RuntimeException("投放活动不存在");
     }
 
     // 权限校验
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(!campaign.getAdvertiserId().equals(currentUserId)) {
+    if (!campaign.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限操作此投放活动");
     }
 
     // 只有草稿状态可以删除
-    if(!Objects.equals(campaign.getStatus(), 0)) {
+    if (!Objects.equals(campaign.getStatus(), 0)) {
       throw new RuntimeException("只有草稿状态的投放活动可以删除");
     }
 
@@ -151,13 +151,13 @@ public class RtbCampaignServiceImpl implements RtbCampaignService {
   @Override
   public CampaignVO detail(Long id) {
     RtbCampaignDO campaign = campaignMapper.selectById(id);
-    if(campaign == null) {
+    if (campaign == null) {
       return null;
     }
 
     // 权限校验
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(!campaign.getAdvertiserId().equals(currentUserId)) {
+    if (!campaign.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限查看此投放活动");
     }
 
@@ -169,7 +169,7 @@ public class RtbCampaignServiceImpl implements RtbCampaignService {
     vo.setCampaignObjective(campaign.getCampaignObjective());
     vo.setCampaignObjectiveName(CampaignObjectiveEnum.getNameByCode(campaign.getCampaignObjective()));
 
-    if(campaign.getCampaignGoalType() != null) {
+    if (campaign.getCampaignGoalType() != null) {
       vo.setCampaignGoalType(campaign.getCampaignGoalType());
       vo.setCampaignGoalTypeName(getGoalTypeName(campaign.getCampaignGoalType()));
     }
@@ -179,7 +179,7 @@ public class RtbCampaignServiceImpl implements RtbCampaignService {
     vo.setLifetimeBudgetUsed(campaign.getLifetimeBudgetUsed());
 
     // 计算消耗百分比
-    if(campaign.getLifetimeBudget().compareTo(BigDecimal.ZERO) > 0) {
+    if (campaign.getLifetimeBudget().compareTo(BigDecimal.ZERO) > 0) {
       int percent = campaign.getLifetimeBudgetUsed().multiply(new BigDecimal("100"))
           .divide(campaign.getLifetimeBudget(), 0, RoundingMode.HALF_UP).intValue();
       vo.setUsedPercent(percent);
@@ -218,7 +218,7 @@ public class RtbCampaignServiceImpl implements RtbCampaignService {
 
     // 获取当前登录用户的ID（即advertiserId）
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(currentUserId == null) {
+    if (currentUserId == null) {
       return Result.error("未登录或登录已过期");
     }
 
@@ -243,7 +243,7 @@ public class RtbCampaignServiceImpl implements RtbCampaignService {
       vo.setLifetimeBudgetUsed(campaign.getLifetimeBudgetUsed());
 
       // 计算消耗百分比
-      if(campaign.getLifetimeBudget().compareTo(BigDecimal.ZERO) > 0) {
+      if (campaign.getLifetimeBudget().compareTo(BigDecimal.ZERO) > 0) {
         int percent = campaign.getLifetimeBudgetUsed().multiply(new BigDecimal("100"))
             .divide(campaign.getLifetimeBudget(), 0, RoundingMode.HALF_UP).intValue();
         vo.setUsedPercent(percent);
@@ -273,18 +273,18 @@ public class RtbCampaignServiceImpl implements RtbCampaignService {
   @Transactional
   public boolean updateStatus(Long id, Integer status) {
     RtbCampaignDO campaign = campaignMapper.selectById(id);
-    if(campaign == null) {
+    if (campaign == null) {
       throw new RuntimeException("投放活动不存在");
     }
 
     // 权限校验
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(!campaign.getAdvertiserId().equals(currentUserId)) {
+    if (!campaign.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限操作此投放活动");
     }
 
     // 状态只能是：0=草稿/1=进行中/2=暂停
-    if(status < 0 || status > 2) {
+    if (status < 0 || status > 2) {
       throw new RuntimeException("无效的状态值");
     }
 
@@ -297,18 +297,18 @@ public class RtbCampaignServiceImpl implements RtbCampaignService {
   @Transactional
   public boolean start(Long id) {
     RtbCampaignDO campaign = campaignMapper.selectById(id);
-    if(campaign == null) {
+    if (campaign == null) {
       throw new RuntimeException("投放活动不存在");
     }
 
     // 权限校验
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(!campaign.getAdvertiserId().equals(currentUserId)) {
+    if (!campaign.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限操作此投放活动");
     }
 
     // 只有草稿或暂停状态可以启动
-    if(!Objects.equals(campaign.getStatus(), 0) && !Objects.equals(campaign.getStatus(), 2)) {
+    if (!Objects.equals(campaign.getStatus(), 0) && !Objects.equals(campaign.getStatus(), 2)) {
       throw new RuntimeException("只有草稿或暂停状态的活动可以启动");
     }
 
@@ -321,18 +321,18 @@ public class RtbCampaignServiceImpl implements RtbCampaignService {
   @Transactional
   public boolean pause(Long id) {
     RtbCampaignDO campaign = campaignMapper.selectById(id);
-    if(campaign == null) {
+    if (campaign == null) {
       throw new RuntimeException("投放活动不存在");
     }
 
     // 权限校验
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(!campaign.getAdvertiserId().equals(currentUserId)) {
+    if (!campaign.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限操作此投放活动");
     }
 
     // 只有进行中状态可以暂停
-    if(!Objects.equals(campaign.getStatus(), 1)) {
+    if (!Objects.equals(campaign.getStatus(), 1)) {
       throw new RuntimeException("只有进行中的活动可以暂停");
     }
 
@@ -358,14 +358,14 @@ public class RtbCampaignServiceImpl implements RtbCampaignService {
     boolean notStarted = now.isBefore(campaign.getStartTime());
 
     // 1. 预算耗尽（最高优先级）
-    if(budgetExhausted) {
+    if (budgetExhausted) {
       vo.setDisplayStatusName("预算耗尽");
       vo.setDisplayStatusType("danger");
       return;
     }
 
     // 2. 投放时间耗尽
-    if(timeExpired) {
+    if (timeExpired) {
       vo.setDisplayStatusName("投放时间耗尽");
       vo.setDisplayStatusType("");
       return;
@@ -379,7 +379,7 @@ public class RtbCampaignServiceImpl implements RtbCampaignService {
       break;
     case 1:
       // 进行中状态，判断是否待开始
-      if(notStarted) {
+      if (notStarted) {
         vo.setDisplayStatusName("待开始");
         vo.setDisplayStatusType("info");
       } else {
@@ -407,14 +407,14 @@ public class RtbCampaignServiceImpl implements RtbCampaignService {
     boolean notStarted = now.isBefore(campaign.getStartTime());
 
     // 1. 预算耗尽（最高优先级）
-    if(budgetExhausted) {
+    if (budgetExhausted) {
       vo.setDisplayStatusName("预算耗尽");
       vo.setDisplayStatusType("danger");
       return;
     }
 
     // 2. 投放时间耗尽
-    if(timeExpired) {
+    if (timeExpired) {
       vo.setDisplayStatusName("投放时间耗尽");
       vo.setDisplayStatusType("");
       return;
@@ -428,7 +428,7 @@ public class RtbCampaignServiceImpl implements RtbCampaignService {
       break;
     case 1:
       // 进行中状态，判断是否待开始
-      if(notStarted) {
+      if (notStarted) {
         vo.setDisplayStatusName("待开始");
         vo.setDisplayStatusType("info");
       } else {
@@ -450,7 +450,7 @@ public class RtbCampaignServiceImpl implements RtbCampaignService {
    * 获取目标类型名称
    */
   private String getGoalTypeName(Integer type) {
-    if(type == null)
+    if (type == null)
       return null;
     switch(type) {
     case 1:

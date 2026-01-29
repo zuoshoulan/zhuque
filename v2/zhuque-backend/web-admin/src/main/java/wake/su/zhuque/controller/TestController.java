@@ -24,7 +24,7 @@ public class TestController {
   @Operation(summary = "生成今日密码（规则：yyyyMMdd + 手机号）")
   @GetMapping("/gen-password")
   public Map<String, String> generatePassword(String phone) {
-    if(phone == null || phone.isEmpty()) {
+    if (phone == null || phone.isEmpty()) {
       phone = "13800138001"; // 默认测试手机号
     }
 

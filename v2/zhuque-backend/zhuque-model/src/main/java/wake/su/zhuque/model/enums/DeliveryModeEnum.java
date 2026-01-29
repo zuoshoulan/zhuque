@@ -20,7 +20,7 @@ public enum DeliveryModeEnum {
 
   public static String getNameByCode(Integer code) {
     for(DeliveryModeEnum mode : values()) {
-      if(mode.getCode().equals(code)) {
+      if (mode.getCode().equals(code)) {
         return mode.getName();
       }
     }
@@ -29,7 +29,7 @@ public enum DeliveryModeEnum {
 
   public static DeliveryModeEnum getByCode(Integer code) {
     for(DeliveryModeEnum mode : values()) {
-      if(mode.getCode().equals(code)) {
+      if (mode.getCode().equals(code)) {
         return mode;
       }
     }

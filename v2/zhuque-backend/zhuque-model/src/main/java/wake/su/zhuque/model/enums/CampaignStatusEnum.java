@@ -21,7 +21,7 @@ public enum CampaignStatusEnum {
 
   public static String getNameByCode(Integer code) {
     for(CampaignStatusEnum status : values()) {
-      if(status.getCode().equals(code)) {
+      if (status.getCode().equals(code)) {
         return status.getName();
       }
     }
@@ -30,7 +30,7 @@ public enum CampaignStatusEnum {
 
   public static CampaignStatusEnum getByCode(Integer code) {
     for(CampaignStatusEnum status : values()) {
-      if(status.getCode().equals(code)) {
+      if (status.getCode().equals(code)) {
         return status;
       }
     }

@@ -17,7 +17,7 @@ public enum CreativeStatusEnum {
 
   public static String getNameByCode(Integer code) {
     for(CreativeStatusEnum status : values()) {
-      if(status.getCode().equals(code)) {
+      if (status.getCode().equals(code)) {
         return status.getName();
       }
     }

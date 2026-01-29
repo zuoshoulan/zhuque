@@ -51,7 +51,7 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
    * 将 JSON 数组字符串转换为 Integer 列表
    */
   private List<Integer> parseIntegerList(String jsonStr) {
-    if(StrUtil.isBlank(jsonStr)) {
+    if (StrUtil.isBlank(jsonStr)) {
       return new ArrayList<>();
     }
     try {
@@ -77,15 +77,15 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
   public Long create(MaterialCreateRequest request) {
     // 查询创意，获取广告主ID
     RtbCreativeDO creative = creativeMapper.selectById(request.getCreativeId());
-    if(creative == null) {
+    if (creative == null) {
       throw new RuntimeException("创意不存在: " + request.getCreativeId());
     }
 
     // 从文件记录中获取文件信息
     RtbFileDO fileRecord = null;
-    if(request.getFileId() != null) {
+    if (request.getFileId() != null) {
       fileRecord = fileMapper.selectById(request.getFileId());
-      if(fileRecord == null) {
+      if (fileRecord == null) {
         throw new RuntimeException("文件不存在: " + request.getFileId());
       }
     }
@@ -110,9 +110,9 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
 
     // 2. 根据format创建扩展表
     Integer format = request.getFormat() != null ? request.getFormat() : 1;
-    if(format == 1) {
+    if (format == 1) {
       // Banner
-      if(request.getBannerExt() != null) {
+      if (request.getBannerExt() != null) {
         RtbMaterialBannerDO banner = new RtbMaterialBannerDO();
         banner.setMaterialId(material.getId());
         banner.setPos(request.getBannerExt().getPos());
@@ -122,9 +122,9 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
         banner.setExt(request.getBannerExt().getExt());
         bannerMapper.insert(banner);
       }
-    } else if(format == 2) {
+    } else if (format == 2) {
       // Video
-      if(request.getVideoExt() != null) {
+      if (request.getVideoExt() != null) {
         RtbMaterialVideoDO video = new RtbMaterialVideoDO();
         video.setMaterialId(material.getId());
         video.setLinearity(request.getVideoExt().getLinearity() != null ? request.getVideoExt().getLinearity() : 1);
@@ -149,9 +149,9 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
         video.setExt(request.getVideoExt().getExt());
         videoMapper.insert(video);
       }
-    } else if(format == 3) {
+    } else if (format == 3) {
       // Audio
-      if(request.getAudioExt() != null) {
+      if (request.getAudioExt() != null) {
         RtbMaterialAudioDO audio = new RtbMaterialAudioDO();
         audio.setMaterialId(material.getId());
         audio.setSequence(request.getAudioExt().getSequence());
@@ -163,9 +163,9 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
         audio.setExt(request.getAudioExt().getExt());
         audioMapper.insert(audio);
       }
-    } else if(format == 4) {
+    } else if (format == 4) {
       // Native
-      if(request.getNativeExt() != null) {
+      if (request.getNativeExt() != null) {
         RtbMaterialNativeDO nat = new RtbMaterialNativeDO();
         nat.setMaterialId(material.getId());
         nat.setRequestJson(request.getNativeExt().getRequestJson());
@@ -182,7 +182,7 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
   @Transactional
   public void update(MaterialUpdateRequest request) {
     RtbMaterialDO material = materialMapper.selectById(request.getId());
-    if(material == null) {
+    if (material == null) {
       throw new RuntimeException("素材不存在");
     }
 
@@ -190,32 +190,32 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
 
     // 从文件记录中获取文件信息（如果更新了文件）
     RtbFileDO fileRecord = null;
-    if(request.getFileId() != null) {
+    if (request.getFileId() != null) {
       fileRecord = fileMapper.selectById(request.getFileId());
-      if(fileRecord == null) {
+      if (fileRecord == null) {
         throw new RuntimeException("文件不存在: " + request.getFileId());
       }
     }
 
     // 更新主表
-    if(request.getName() != null) {
+    if (request.getName() != null) {
       material.setName(request.getName());
     }
-    if(request.getWidth() != null) {
+    if (request.getWidth() != null) {
       material.setWidth(request.getWidth());
     }
-    if(request.getHeight() != null) {
+    if (request.getHeight() != null) {
       material.setHeight(request.getHeight());
     }
-    if(request.getFileId() != null && fileRecord != null) {
+    if (request.getFileId() != null && fileRecord != null) {
       material.setFileId(request.getFileId()); // 直接使用 fileId
       material.setFileType(fileRecord.getFileType());
       material.setFileSize(fileRecord.getFileSize());
     }
-    if(request.getMimes() != null) {
+    if (request.getMimes() != null) {
       material.setMimes(String.join(",", request.getMimes()));
     }
-    if(request.getDur() != null) {
+    if (request.getDur() != null) {
       material.setDur(request.getDur());
     }
     material.setUpdateTime(LocalDateTime.now());
@@ -223,9 +223,9 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
 
     // 更新扩展表（删除旧的，创建新的）
     Integer format = material.getFormat();
-    if(format == 1) {
+    if (format == 1) {
       // Banner
-      if(request.getBannerExt() != null) {
+      if (request.getBannerExt() != null) {
         bannerMapper.delete(
             new LambdaQueryWrapper<RtbMaterialBannerDO>().eq(RtbMaterialBannerDO::getMaterialId, material.getId()));
         RtbMaterialBannerDO banner = new RtbMaterialBannerDO();
@@ -237,9 +237,9 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
         banner.setExt(request.getBannerExt().getExt());
         bannerMapper.insert(banner);
       }
-    } else if(format == 2) {
+    } else if (format == 2) {
       // Video
-      if(request.getVideoExt() != null) {
+      if (request.getVideoExt() != null) {
         videoMapper.delete(
             new LambdaQueryWrapper<RtbMaterialVideoDO>().eq(RtbMaterialVideoDO::getMaterialId, material.getId()));
         RtbMaterialVideoDO video = new RtbMaterialVideoDO();
@@ -266,9 +266,9 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
         video.setExt(request.getVideoExt().getExt());
         videoMapper.insert(video);
       }
-    } else if(format == 3) {
+    } else if (format == 3) {
       // Audio
-      if(request.getAudioExt() != null) {
+      if (request.getAudioExt() != null) {
         audioMapper.delete(
             new LambdaQueryWrapper<RtbMaterialAudioDO>().eq(RtbMaterialAudioDO::getMaterialId, material.getId()));
         RtbMaterialAudioDO audio = new RtbMaterialAudioDO();
@@ -282,9 +282,9 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
         audio.setExt(request.getAudioExt().getExt());
         audioMapper.insert(audio);
       }
-    } else if(format == 4) {
+    } else if (format == 4) {
       // Native
-      if(request.getNativeExt() != null) {
+      if (request.getNativeExt() != null) {
         nativeMapper.delete(
             new LambdaQueryWrapper<RtbMaterialNativeDO>().eq(RtbMaterialNativeDO::getMaterialId, material.getId()));
         RtbMaterialNativeDO nat = new RtbMaterialNativeDO();
@@ -306,7 +306,7 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
   @Override
   public MaterialVO detail(Long id) {
     RtbMaterialDO material = materialMapper.selectById(id);
-    if(material == null) {
+    if (material == null) {
       return null;
     }
 
@@ -328,7 +328,7 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
     vo.setFileType(material.getFileType());
 
     // 管理后台使用 id
-    if(material.getFileId() != null) {
+    if (material.getFileId() != null) {
       vo.setFileUrl("/api/file/by-id/" + material.getFileId());
     }
 
@@ -337,11 +337,11 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
     vo.setUpdateTime(material.getUpdateTime());
 
     // 查询扩展表
-    if(material.getFormat() == 1) {
+    if (material.getFormat() == 1) {
       // Banner扩展
       RtbMaterialBannerDO banner = bannerMapper
           .selectOne(new LambdaQueryWrapper<RtbMaterialBannerDO>().eq(RtbMaterialBannerDO::getMaterialId, id));
-      if(banner != null) {
+      if (banner != null) {
         Map<String, Object> ext = new HashMap<>();
         ext.put("pos", banner.getPos());
         // btype 是单选，返回第一个值（如果有的话）
@@ -351,11 +351,11 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
         ext.put("ext", banner.getExt());
         vo.setBannerExt(ext);
       }
-    } else if(material.getFormat() == 2) {
+    } else if (material.getFormat() == 2) {
       // Video扩展
       RtbMaterialVideoDO video = videoMapper
           .selectOne(new LambdaQueryWrapper<RtbMaterialVideoDO>().eq(RtbMaterialVideoDO::getMaterialId, id));
-      if(video != null) {
+      if (video != null) {
         Map<String, Object> ext = new HashMap<>();
         ext.put("linearity", video.getLinearity());
         ext.put("sequence", video.getSequence());
@@ -378,11 +378,11 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
         ext.put("ext", video.getExt());
         vo.setVideoExt(ext);
       }
-    } else if(material.getFormat() == 3) {
+    } else if (material.getFormat() == 3) {
       // Audio扩展
       RtbMaterialAudioDO audio = audioMapper
           .selectOne(new LambdaQueryWrapper<RtbMaterialAudioDO>().eq(RtbMaterialAudioDO::getMaterialId, id));
-      if(audio != null) {
+      if (audio != null) {
         Map<String, Object> ext = new HashMap<>();
         ext.put("sequence", audio.getSequence());
         ext.put("minDuration", audio.getMinDuration());
@@ -392,11 +392,11 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
         ext.put("ext", audio.getExt());
         vo.setAudioExt(ext);
       }
-    } else if(material.getFormat() == 4) {
+    } else if (material.getFormat() == 4) {
       // Native扩展
       RtbMaterialNativeDO nat = nativeMapper
           .selectOne(new LambdaQueryWrapper<RtbMaterialNativeDO>().eq(RtbMaterialNativeDO::getMaterialId, id));
-      if(nat != null) {
+      if (nat != null) {
         Map<String, Object> ext = new HashMap<>();
         ext.put("requestJson", nat.getRequestJson());
         ext.put("ver", nat.getVer());
@@ -414,7 +414,7 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
 
     // 获取当前登录用户的ID（即advertiserId）
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(currentUserId == null) {
+    if (currentUserId == null) {
       return Result.error("未登录或登录已过期");
     }
 
@@ -446,7 +446,7 @@ public class RtbMaterialServiceImpl implements RtbMaterialService {
       vo.setWidth(material.getWidth());
       vo.setHeight(material.getHeight());
       // 管理后台使用 by-id 接口
-      if(material.getFileId() != null) {
+      if (material.getFileId() != null) {
         vo.setFileUrl("/api/file/by-id/" + material.getFileId());
       }
       vo.setCreateTime(material.getCreateTime());

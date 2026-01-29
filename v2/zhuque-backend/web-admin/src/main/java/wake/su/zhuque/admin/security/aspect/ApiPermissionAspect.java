@@ -47,12 +47,12 @@ public class ApiPermissionAspect {
   public void checkApiPermission(JoinPoint joinPoint, RequiresApiPermission requiresApiPermission) {
     // 获取当前用户ID
     Long userId = getCurrentUserId();
-    if(userId == null) {
+    if (userId == null) {
       throw new BusinessException("未登录或登录已过期");
     }
 
     String[] permissionCodes = requiresApiPermission.value();
-    if(permissionCodes.length == 0) {
+    if (permissionCodes.length == 0) {
       // 没有指定权限，默认通过
       return;
     }
@@ -61,7 +61,7 @@ public class ApiPermissionAspect {
     RequiresApiPermission.LogicalType logicalType = requiresApiPermission.logical();
 
     // 检查是否安装了PermissionValidator
-    if(permissionValidator == null) {
+    if (permissionValidator == null) {
       log.warn("PermissionValidator未注入，跳过API权限校验: userId={}, apiPermissions={}", userId, permissionList);
       return;
     }
@@ -70,7 +70,7 @@ public class ApiPermissionAspect {
     boolean hasPermission = permissionValidator.hasPermissions(userId, permissionList,
         logicalType == RequiresApiPermission.LogicalType.AND);
 
-    if(!hasPermission) {
+    if (!hasPermission) {
       log.warn("API权限不足: userId={}, requiredApiPermissions={}, logicalType={}", userId, permissionList, logicalType);
       throw new BusinessException("API权限不足，需要权限：" + String.join(" 或 ", permissionList));
     }
@@ -84,14 +84,14 @@ public class ApiPermissionAspect {
   private Long getCurrentUserId() {
     try {
       ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-      if(attributes == null) {
+      if (attributes == null) {
         return null;
       }
 
       HttpServletRequest request = attributes.getRequest();
       String token = request.getHeader("Authorization");
 
-      if(token == null || !token.startsWith("Bearer ")) {
+      if (token == null || !token.startsWith("Bearer ")) {
         return null;
       }
 

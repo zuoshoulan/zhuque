@@ -59,7 +59,7 @@ public class RoleServiceImpl implements RoleService {
     // 检查角色编码是否已存在
     SysRoleDO existing = roleMapper
         .selectOne(new LambdaQueryWrapper<SysRoleDO>().eq(SysRoleDO::getRoleCode, request.getRoleCode()));
-    if(existing != null) {
+    if (existing != null) {
       throw new RuntimeException("角色编码已存在：" + request.getRoleCode());
     }
 
@@ -73,7 +73,7 @@ public class RoleServiceImpl implements RoleService {
     log.info("创建角色成功：{}", role.getRoleCode());
 
     // 如果有权限，分配权限
-    if(request.getPermissionIds() != null && !request.getPermissionIds().isEmpty()) {
+    if (request.getPermissionIds() != null && !request.getPermissionIds().isEmpty()) {
       AssignPermissionsRequest assignRequest = new AssignPermissionsRequest();
       assignRequest.setRoleId(role.getId());
       assignRequest.setPermissionIds(request.getPermissionIds());
@@ -87,7 +87,7 @@ public class RoleServiceImpl implements RoleService {
   @Transactional(rollbackFor = Exception.class)
   public void updateRole(Long id, RoleCreateRequest request) {
     SysRoleDO role = roleMapper.selectById(id);
-    if(role == null) {
+    if (role == null) {
       throw new RuntimeException("角色不存在");
     }
 
@@ -104,13 +104,13 @@ public class RoleServiceImpl implements RoleService {
   @Transactional(rollbackFor = Exception.class)
   public void deleteRole(Long id) {
     // 检查是否有超级管理员关联该角色
-    if(superAdminConfig.isEnabled()) {
+    if (superAdminConfig.isEnabled()) {
       List<Long> superAdminIds = superAdminConfig.getUserIds();
-      if(superAdminIds != null && !superAdminIds.isEmpty()) {
+      if (superAdminIds != null && !superAdminIds.isEmpty()) {
         // 查询超级管理员是否拥有该角色
         Long count = userRoleMapper.selectCount(new LambdaQueryWrapper<SysUserRoleDO>()
             .in(SysUserRoleDO::getUserId, superAdminIds).eq(SysUserRoleDO::getRoleId, id));
-        if(count != null && count > 0) {
+        if (count != null && count > 0) {
           throw new BusinessException("该角色已分配给超级管理员，禁止删除");
         }
       }
@@ -130,7 +130,7 @@ public class RoleServiceImpl implements RoleService {
   @Override
   public RoleVO getRole(Long id) {
     SysRoleDO role = roleMapper.selectById(id);
-    if(role == null) {
+    if (role == null) {
       return null;
     }
 
@@ -173,7 +173,7 @@ public class RoleServiceImpl implements RoleService {
         .delete(new LambdaQueryWrapper<SysRolePermissionDO>().eq(SysRolePermissionDO::getRoleId, request.getRoleId()));
 
     // 分配新权限
-    if(!request.getPermissionIds().isEmpty()) {
+    if (!request.getPermissionIds().isEmpty()) {
       List<SysRolePermissionDO> list = request.getPermissionIds().stream().map(permissionId -> {
         SysRolePermissionDO rp = new SysRolePermissionDO();
         rp.setRoleId(request.getRoleId());
@@ -201,7 +201,7 @@ public class RoleServiceImpl implements RoleService {
   public List<PermissionVO> getRolePermissions(Long roleId) {
     List<Long> permissionIds = getRolePermissionIds(roleId);
 
-    if(permissionIds.isEmpty()) {
+    if (permissionIds.isEmpty()) {
       return List.of();
     }
 
@@ -231,13 +231,13 @@ public class RoleServiceImpl implements RoleService {
     LambdaQueryWrapper<SysRoleDO> wrapper = new LambdaQueryWrapper<>();
 
     // 关键词搜索
-    if(StringUtils.isNotBlank(query.getKeyword())) {
+    if (StringUtils.isNotBlank(query.getKeyword())) {
       wrapper.and(w -> w.like(SysRoleDO::getRoleName, query.getKeyword()).or().like(SysRoleDO::getRoleCode,
           query.getKeyword()));
     }
 
     // 状态筛选
-    if(query.getStatus() != null) {
+    if (query.getStatus() != null) {
       wrapper.eq(SysRoleDO::getStatus, query.getStatus());
     }
 
@@ -284,11 +284,11 @@ public class RoleServiceImpl implements RoleService {
   private String getCurrentUsername() {
     try {
       ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-      if(attributes != null) {
+      if (attributes != null) {
         HttpServletRequest request = attributes.getRequest();
         // 从请求属性获取用户名（在JwtAuthenticationFilter中设置）
         String username = (String) request.getAttribute("X-User-Name");
-        if(username != null && !username.isEmpty()) {
+        if (username != null && !username.isEmpty()) {
           return username;
         }
       }

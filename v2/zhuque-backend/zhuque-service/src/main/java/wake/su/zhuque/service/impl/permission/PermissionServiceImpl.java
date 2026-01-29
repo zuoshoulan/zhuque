@@ -53,7 +53,7 @@ public class PermissionServiceImpl implements PermissionService {
     // 检查权限编码是否已存在
     SysPermissionDO existing = permissionMapper.selectOne(
         new LambdaQueryWrapper<SysPermissionDO>().eq(SysPermissionDO::getPermissionCode, request.getPermissionCode()));
-    if(existing != null) {
+    if (existing != null) {
       throw new RuntimeException("权限编码已存在：" + request.getPermissionCode());
     }
 
@@ -77,7 +77,7 @@ public class PermissionServiceImpl implements PermissionService {
   @Transactional(rollbackFor = Exception.class)
   public void updatePermission(Long id, PermissionCreateRequest request) {
     SysPermissionDO permission = permissionMapper.selectById(id);
-    if(permission == null) {
+    if (permission == null) {
       throw new RuntimeException("权限不存在");
     }
 
@@ -100,24 +100,24 @@ public class PermissionServiceImpl implements PermissionService {
     // 检查是否有子权限
     Long childCount = permissionMapper
         .selectCount(new LambdaQueryWrapper<SysPermissionDO>().eq(SysPermissionDO::getParentId, id));
-    if(childCount > 0) {
+    if (childCount > 0) {
       throw new RuntimeException("存在子权限，无法删除");
     }
 
     // 检查是否有超级管理员的角色拥有该权限
-    if(superAdminConfig.isEnabled()) {
+    if (superAdminConfig.isEnabled()) {
       List<Long> superAdminIds = superAdminConfig.getUserIds();
-      if(superAdminIds != null && !superAdminIds.isEmpty()) {
+      if (superAdminIds != null && !superAdminIds.isEmpty()) {
         // 查询超级管理员的角色ID列表
         List<Long> roleIds = userRoleMapper
             .selectList(new LambdaQueryWrapper<SysUserRoleDO>().in(SysUserRoleDO::getUserId, superAdminIds)).stream()
             .map(SysUserRoleDO::getRoleId).collect(Collectors.toList());
 
-        if(!roleIds.isEmpty()) {
+        if (!roleIds.isEmpty()) {
           // 查询这些角色是否拥有该权限
           Long count = rolePermissionMapper.selectCount(new LambdaQueryWrapper<SysRolePermissionDO>()
               .in(SysRolePermissionDO::getRoleId, roleIds).eq(SysRolePermissionDO::getPermissionId, id));
-          if(count != null && count > 0) {
+          if (count != null && count > 0) {
             throw new BusinessException("该权限已分配给超级管理员的角色，禁止删除");
           }
         }
@@ -131,7 +131,7 @@ public class PermissionServiceImpl implements PermissionService {
   @Override
   public PermissionVO getPermission(Long id) {
     SysPermissionDO permission = permissionMapper.selectById(id);
-    if(permission == null) {
+    if (permission == null) {
       return null;
     }
     return convertToVO(permission);
@@ -158,7 +158,7 @@ public class PermissionServiceImpl implements PermissionService {
   public List<String> getUserPermissionCodes(Long userId) {
     // 先从Redis缓存获取
     java.util.Set<String> cachedPermissions = permissionCacheService.getUserPermissions(userId);
-    if(cachedPermissions != null) {
+    if (cachedPermissions != null) {
       log.debug("从缓存获取用户权限: userId={}, permissionsCount={}", userId, cachedPermissions.size());
       return new ArrayList<>(cachedPermissions);
     }
@@ -170,7 +170,7 @@ public class PermissionServiceImpl implements PermissionService {
     List<SysUserRoleDO> userRoles = userRoleMapper
         .selectList(new LambdaQueryWrapper<SysUserRoleDO>().eq(SysUserRoleDO::getUserId, userId));
 
-    if(userRoles.isEmpty()) {
+    if (userRoles.isEmpty()) {
       // 缓存空结果，避免频繁查询
       permissionCacheService.cacheUserPermissions(userId, java.util.Set.of());
       return new ArrayList<>();
@@ -182,7 +182,7 @@ public class PermissionServiceImpl implements PermissionService {
     List<SysRolePermissionDO> rolePermissions = rolePermissionMapper
         .selectList(new LambdaQueryWrapper<SysRolePermissionDO>().in(SysRolePermissionDO::getRoleId, roleIds));
 
-    if(rolePermissions.isEmpty()) {
+    if (rolePermissions.isEmpty()) {
       // 缓存空结果，避免频繁查询
       permissionCacheService.cacheUserPermissions(userId, java.util.Set.of());
       return new ArrayList<>();
@@ -208,7 +208,7 @@ public class PermissionServiceImpl implements PermissionService {
 
   @Override
   public boolean hasPermission(Long userId, String permissionCode) {
-    if(userId == null || permissionCode == null) {
+    if (userId == null || permissionCode == null) {
       return false;
     }
 
@@ -218,13 +218,13 @@ public class PermissionServiceImpl implements PermissionService {
 
   @Override
   public boolean hasPermissions(Long userId, List<String> permissionCodes, boolean requireAll) {
-    if(userId == null || permissionCodes == null || permissionCodes.isEmpty()) {
+    if (userId == null || permissionCodes == null || permissionCodes.isEmpty()) {
       return false;
     }
 
     List<String> userPermissions = getUserPermissionCodes(userId);
 
-    if(requireAll) {
+    if (requireAll) {
       // 需要拥有所有权限
       return userPermissions.containsAll(permissionCodes);
     } else {
@@ -281,11 +281,11 @@ public class PermissionServiceImpl implements PermissionService {
   private String getCurrentUsername() {
     try {
       ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-      if(attributes != null) {
+      if (attributes != null) {
         HttpServletRequest request = attributes.getRequest();
         // 从请求属性获取用户名（在JwtAuthenticationFilter中设置）
         String username = (String) request.getAttribute("X-User-Name");
-        if(username != null && !username.isEmpty()) {
+        if (username != null && !username.isEmpty()) {
           return username;
         }
       }

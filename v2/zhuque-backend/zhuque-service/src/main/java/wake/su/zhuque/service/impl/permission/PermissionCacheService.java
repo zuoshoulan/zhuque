@@ -62,7 +62,7 @@ public class PermissionCacheService {
     String key = USER_PERMISSIONS_PREFIX + userId;
     try {
       Object permissions = redisTemplate.opsForValue().get(key);
-      if(permissions instanceof Set) {
+      if (permissions instanceof Set) {
         log.debug("从缓存获取用户权限: userId={}, permissionsCount={}", userId, ((Set<?>) permissions).size());
         return (Set<String>) permissions;
       }
@@ -95,7 +95,7 @@ public class PermissionCacheService {
    *          用户ID集合
    */
   public void clearUserPermissionsBatch(Set<Long> userIds) {
-    if(userIds == null || userIds.isEmpty()) {
+    if (userIds == null || userIds.isEmpty()) {
       return;
     }
 
@@ -116,7 +116,7 @@ public class PermissionCacheService {
   public void clearAllPermissions() {
     try {
       Set<String> keys = redisTemplate.keys(USER_PERMISSIONS_PREFIX + "*");
-      if(keys != null && !keys.isEmpty()) {
+      if (keys != null && !keys.isEmpty()) {
         redisTemplate.delete(keys);
         log.info("清除所有权限缓存: count={}", keys.size());
       }

@@ -36,17 +36,17 @@ public class AuthServiceImpl implements AuthService {
     // 查询用户
     SysUserDO user = sysUserService.getByAccount(account);
 
-    if(user == null) {
+    if (user == null) {
       throw new RuntimeException("账号或密码错误");
     }
 
     // 验证密码
-    if(!PasswordUtil.matches(password, user.getPassword())) {
+    if (!PasswordUtil.matches(password, user.getPassword())) {
       throw new RuntimeException("用户名或密码错误");
     }
 
     // 检查用户状态
-    if(user.getStatus() == 0) {
+    if (user.getStatus() == 0) {
       throw new RuntimeException("账号已被禁用");
     }
 

@@ -51,25 +51,25 @@ public class RtbAdServiceImpl implements RtbAdService {
   @Transactional
   public Long create(AdCreateRequest request) {
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(currentUserId == null) {
+    if (currentUserId == null) {
       throw new RuntimeException("未登录或登录已过期");
     }
 
     // 校验广告组是否存在且属于当前用户
     RtbAdGroupDO adGroup = adGroupMapper.selectById(request.getAdGroupId());
-    if(adGroup == null) {
+    if (adGroup == null) {
       throw new RuntimeException("广告组不存在");
     }
-    if(!adGroup.getAdvertiserId().equals(currentUserId)) {
+    if (!adGroup.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限在此广告组下创建广告");
     }
 
     // 校验创意是否存在且属于当前用户
     RtbCreativeDO creative = creativeMapper.selectById(request.getCreativeId());
-    if(creative == null) {
+    if (creative == null) {
       throw new RuntimeException("创意不存在");
     }
-    if(!creative.getAdvertiserId().equals(currentUserId)) {
+    if (!creative.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限使用此创意");
     }
 
@@ -93,44 +93,44 @@ public class RtbAdServiceImpl implements RtbAdService {
   @Transactional
   public boolean update(Long id, AdUpdateRequest request) {
     RtbAdDO ad = adMapper.selectById(id);
-    if(ad == null) {
+    if (ad == null) {
       throw new RuntimeException("广告不存在");
     }
 
     // 权限校验
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(!ad.getAdvertiserId().equals(currentUserId)) {
+    if (!ad.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限操作此广告");
     }
 
     // 更新字段
     ad.setName(request.getName());
 
-    if(request.getCreativeId() != null) {
+    if (request.getCreativeId() != null) {
       // 校验创意是否存在且属于当前用户
       RtbCreativeDO creative = creativeMapper.selectById(request.getCreativeId());
-      if(creative == null) {
+      if (creative == null) {
         throw new RuntimeException("创意不存在");
       }
-      if(!creative.getAdvertiserId().equals(currentUserId)) {
+      if (!creative.getAdvertiserId().equals(currentUserId)) {
         throw new RuntimeException("无权限使用此创意");
       }
       ad.setCreativeId(request.getCreativeId());
     }
 
-    if(request.getLandingPageUrl() != null) {
+    if (request.getLandingPageUrl() != null) {
       ad.setLandingPageUrl(request.getLandingPageUrl());
     }
-    if(request.getDisplayUrl() != null) {
+    if (request.getDisplayUrl() != null) {
       ad.setDisplayUrl(request.getDisplayUrl());
     }
-    if(request.getTrackingParams() != null) {
+    if (request.getTrackingParams() != null) {
       ad.setTrackingParams(request.getTrackingParams());
     }
-    if(request.getWeight() != null) {
+    if (request.getWeight() != null) {
       ad.setWeight(request.getWeight());
     }
-    if(request.getStatus() != null) {
+    if (request.getStatus() != null) {
       ad.setStatus(request.getStatus());
     }
 
@@ -141,18 +141,18 @@ public class RtbAdServiceImpl implements RtbAdService {
   @Transactional
   public boolean delete(Long id) {
     RtbAdDO ad = adMapper.selectById(id);
-    if(ad == null) {
+    if (ad == null) {
       throw new RuntimeException("广告不存在");
     }
 
     // 权限校验
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(!ad.getAdvertiserId().equals(currentUserId)) {
+    if (!ad.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限操作此广告");
     }
 
     // 只有草稿状态可以删除
-    if(!Objects.equals(ad.getStatus(), 0)) {
+    if (!Objects.equals(ad.getStatus(), 0)) {
       throw new RuntimeException("只有草稿状态的广告可以删除");
     }
 
@@ -162,13 +162,13 @@ public class RtbAdServiceImpl implements RtbAdService {
   @Override
   public AdVO detail(Long id) {
     RtbAdDO ad = adMapper.selectById(id);
-    if(ad == null) {
+    if (ad == null) {
       return null;
     }
 
     // 权限校验
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(!ad.getAdvertiserId().equals(currentUserId)) {
+    if (!ad.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限查看此广告");
     }
 
@@ -186,7 +186,7 @@ public class RtbAdServiceImpl implements RtbAdService {
 
     // 获取当前登录用户的ID
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(currentUserId == null) {
+    if (currentUserId == null) {
       return Result.error("未登录或登录已过期");
     }
 
@@ -241,18 +241,18 @@ public class RtbAdServiceImpl implements RtbAdService {
   @Transactional
   public boolean updateStatus(Long id, Integer status) {
     RtbAdDO ad = adMapper.selectById(id);
-    if(ad == null) {
+    if (ad == null) {
       throw new RuntimeException("广告不存在");
     }
 
     // 权限校验
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(!ad.getAdvertiserId().equals(currentUserId)) {
+    if (!ad.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限操作此广告");
     }
 
     // 状态只能是：0=草稿/1=进行中/2=暂停
-    if(status < 0 || status > 2) {
+    if (status < 0 || status > 2) {
       throw new RuntimeException("无效的状态值");
     }
 
@@ -264,18 +264,18 @@ public class RtbAdServiceImpl implements RtbAdService {
   @Transactional
   public boolean start(Long id) {
     RtbAdDO ad = adMapper.selectById(id);
-    if(ad == null) {
+    if (ad == null) {
       throw new RuntimeException("广告不存在");
     }
 
     // 权限校验
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(!ad.getAdvertiserId().equals(currentUserId)) {
+    if (!ad.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限操作此广告");
     }
 
     // 只有草稿或暂停状态可以启动
-    if(!Objects.equals(ad.getStatus(), 0) && !Objects.equals(ad.getStatus(), 2)) {
+    if (!Objects.equals(ad.getStatus(), 0) && !Objects.equals(ad.getStatus(), 2)) {
       throw new RuntimeException("只有草稿或暂停状态的广告可以启动");
     }
 
@@ -287,18 +287,18 @@ public class RtbAdServiceImpl implements RtbAdService {
   @Transactional
   public boolean pause(Long id) {
     RtbAdDO ad = adMapper.selectById(id);
-    if(ad == null) {
+    if (ad == null) {
       throw new RuntimeException("广告不存在");
     }
 
     // 权限校验
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(!ad.getAdvertiserId().equals(currentUserId)) {
+    if (!ad.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限操作此广告");
     }
 
     // 只有进行中状态可以暂停
-    if(!Objects.equals(ad.getStatus(), 1)) {
+    if (!Objects.equals(ad.getStatus(), 1)) {
       throw new RuntimeException("只有进行中的广告可以暂停");
     }
 
@@ -309,7 +309,7 @@ public class RtbAdServiceImpl implements RtbAdService {
   @Override
   public List<AdListVO> listByAdGroupId(Long adGroupId) {
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(currentUserId == null) {
+    if (currentUserId == null) {
       return Collections.emptyList();
     }
 
@@ -394,7 +394,7 @@ public class RtbAdServiceImpl implements RtbAdService {
    * 获取显示状态类型
    */
   private String getDisplayStatusType(Integer status) {
-    if(status == null) {
+    if (status == null) {
       return "info";
     }
     switch(status) {

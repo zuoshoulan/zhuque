@@ -10,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-
 import wake.su.zhuque.bid.context.BidCandidate;
 import wake.su.zhuque.bid.context.BidContext;
 import wake.su.zhuque.bid.dto.openrtb.Bid;
@@ -21,6 +19,8 @@ import wake.su.zhuque.bid.dto.openrtb.Imp;
 import wake.su.zhuque.bid.dto.openrtb.SeatBid;
 import wake.su.zhuque.bid.service.RtbBidService;
 import wake.su.zhuque.bid.service.budget.BudgetControlService;
+import wake.su.zhuque.bid.service.cache.CandidateCacheService;
+import wake.su.zhuque.bid.service.cache.CreativeCacheService;
 import wake.su.zhuque.bid.service.creative.CreativeAssemblyService;
 import wake.su.zhuque.bid.service.filter.BidFilter;
 import wake.su.zhuque.bid.service.frequency.FrequencyCapService;
@@ -28,9 +28,7 @@ import wake.su.zhuque.bid.service.pricing.BidPriceService;
 import wake.su.zhuque.dao.mapper.RtbAdGroupMapper;
 import wake.su.zhuque.dao.mapper.RtbAdMapper;
 import wake.su.zhuque.dao.mapper.RtbCampaignMapper;
-import wake.su.zhuque.model.entity.RtbAdDO;
 import wake.su.zhuque.model.entity.RtbAdGroupDO;
-import wake.su.zhuque.model.entity.RtbCampaignDO;
 import wake.su.zhuque.model.entity.RtbCreativeDO;
 
 /**
@@ -52,6 +50,8 @@ public class RtbBidServiceImpl implements RtbBidService {
   private final BudgetControlService budgetControlService;
   private final FrequencyCapService frequencyCapService;
   private final CreativeAssemblyService creativeAssemblyService;
+  private final CandidateCacheService candidateCacheService; // 候选数据缓存服务
+  private final CreativeCacheService creativeCacheService; // 创意缓存服务
 
   private static final Integer STATUS_ACTIVE = 1; // 进行中
   private static final BigDecimal PRICE_DIVISOR = BigDecimal.valueOf(1000); // 缓存除数
@@ -62,7 +62,8 @@ public class RtbBidServiceImpl implements RtbBidService {
   public RtbBidServiceImpl(RtbCampaignMapper campaignMapper, RtbAdGroupMapper adGroupMapper,
       RtbAdMapper adMapper, List<BidFilter> bidFilters, BidPriceService bidPriceService,
       BudgetControlService budgetControlService, FrequencyCapService frequencyCapService,
-      CreativeAssemblyService creativeAssemblyService) {
+      CreativeAssemblyService creativeAssemblyService, CandidateCacheService candidateCacheService,
+      CreativeCacheService creativeCacheService) {
     this.campaignMapper = campaignMapper;
     this.adGroupMapper = adGroupMapper;
     this.adMapper = adMapper;
@@ -70,6 +71,8 @@ public class RtbBidServiceImpl implements RtbBidService {
     this.budgetControlService = budgetControlService;
     this.frequencyCapService = frequencyCapService;
     this.creativeAssemblyService = creativeAssemblyService;
+    this.candidateCacheService = candidateCacheService;
+    this.creativeCacheService = creativeCacheService;
     // 预先排序并缓存，避免每次请求都排序
     this.sortedBidFilters = bidFilters.stream().sorted(Comparator.comparingInt(BidFilter::order)).toList();
   }
@@ -189,44 +192,14 @@ public class RtbBidServiceImpl implements RtbBidService {
     return response;
   }
 
-  /** 获取候选广告组 */
+  /** 获取候选广告组（使用缓存） */
   private List<BidCandidate> getCandidates(BidContext context) {
-    // 查询所有进行中的 Campaign
-    List<RtbCampaignDO> campaigns = campaignMapper.selectList(
-        new LambdaQueryWrapper<RtbCampaignDO>().eq(RtbCampaignDO::getStatus, STATUS_ACTIVE)
-            .le(RtbCampaignDO::getStartTime, context.getNow())
-            .ge(RtbCampaignDO::getEndTime, context.getNow()));
+    // 从缓存获取所有活跃的候选广告组
+    // 缓存未命中时会自动从数据库加载并缓存
+    List<BidCandidate> candidates = candidateCacheService.getAllActiveCandidates();
 
-    if (campaigns.isEmpty()) {
-      return List.of();
-    }
-
-    List<Long> campaignIds = campaigns.stream().map(RtbCampaignDO::getId).toList();
-
-    // 查询这些 Campaign 下所有进行中的 AdGroup
-    // Note: AdGroup 没有 startTime/endTime 字段，时间控制由 Campaign 统一管理
-    List<RtbAdGroupDO> adGroups = adGroupMapper.selectList(new LambdaQueryWrapper<RtbAdGroupDO>()
-        .in(RtbAdGroupDO::getCampaignId, campaignIds).eq(RtbAdGroupDO::getStatus, STATUS_ACTIVE));
-
-    if (adGroups.isEmpty()) {
-      return List.of();
-    }
-
-    // 查询每个 AdGroup 对应的 Ad
-    List<Long> adGroupIds = adGroups.stream().map(RtbAdGroupDO::getId).toList();
-
-    List<RtbAdDO> ads = adMapper.selectList(new LambdaQueryWrapper<RtbAdDO>()
-        .in(RtbAdDO::getAdGroupId, adGroupIds).eq(RtbAdDO::getStatus, STATUS_ACTIVE));
-
-    // 组装候选对象
-    List<BidCandidate> candidates = new ArrayList<>();
-    for(RtbAdGroupDO adGroup : adGroups) {
-      for(RtbAdDO ad : ads) {
-        if (ad.getAdGroupId().equals(adGroup.getId())) {
-          candidates.add(new BidCandidate(adGroup, ad));
-          break; // 每个 AdGroup 只取一个 Ad
-        }
-      }
+    if (candidates.isEmpty()) {
+      log.debug("[{}] 没有活跃的候选广告组", context.getRequest().getId());
     }
 
     return candidates;
@@ -317,9 +290,12 @@ public class RtbBidServiceImpl implements RtbBidService {
     return response;
   }
 
-  /** 获取创意 (简化实现，后续从缓存或服务获取) */
+  /** 获取创意（使用缓存） */
   private RtbCreativeDO getCreative(Long creativeId) {
-    // TODO: 实现从 service 获取创意
-    return null;
+    if (creativeId == null) {
+      return null;
+    }
+    // 从缓存获取创意，缓存未命中时自动从数据库加载
+    return creativeCacheService.getCreativeById(creativeId);
   }
 }

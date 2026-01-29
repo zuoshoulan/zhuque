@@ -44,7 +44,7 @@ public class UserController {
   @GetMapping("/{userId}")
   public Result<SysUserDO> getUserById(@PathVariable("userId") Long userId) {
     SysUserDO user = sysUserService.getById(userId);
-    if(user == null) {
+    if (user == null) {
       return Result.error("用户不存在");
     }
     // 清除密码字段，不返回给前端
@@ -64,7 +64,7 @@ public class UserController {
   public Result<List<SysUserDO>> page(UserQueryRequest request) {
     Result<List<SysUserDO>> pageResult = sysUserService.page(request);
     // 清除密码字段
-    if(pageResult.getData() != null) {
+    if (pageResult.getData() != null) {
       pageResult.getData().forEach(user -> user.setPassword(null));
     }
     // 使用新的Result和PageInfo

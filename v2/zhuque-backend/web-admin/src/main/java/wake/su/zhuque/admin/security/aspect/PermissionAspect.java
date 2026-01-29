@@ -47,12 +47,12 @@ public class PermissionAspect {
   public void checkPermission(JoinPoint joinPoint, RequiresPermission requiresPermission) {
     // 获取当前用户ID
     Long userId = getCurrentUserId();
-    if(userId == null) {
+    if (userId == null) {
       throw new BusinessException("未登录或登录已过期");
     }
 
     String[] permissionCodes = requiresPermission.value();
-    if(permissionCodes.length == 0) {
+    if (permissionCodes.length == 0) {
       // 没有指定权限，默认通过
       return;
     }
@@ -61,7 +61,7 @@ public class PermissionAspect {
     RequiresPermission.LogicalType logicalType = requiresPermission.logical();
 
     // 检查是否安装了PermissionValidator
-    if(permissionValidator == null) {
+    if (permissionValidator == null) {
       log.warn("PermissionValidator未注入，跳过权限校验: userId={}, permissions={}", userId, permissionList);
       // 在开发环境可以跳过，生产环境应该强制校验
       return;
@@ -71,7 +71,7 @@ public class PermissionAspect {
     boolean hasPermission = permissionValidator.hasPermissions(userId, permissionList,
         logicalType == RequiresPermission.LogicalType.AND);
 
-    if(!hasPermission) {
+    if (!hasPermission) {
       log.warn("权限不足: userId={}, requiredPermissions={}, logicalType={}", userId, permissionList, logicalType);
       throw new BusinessException("权限不足，需要权限：" + String.join(" 或 ", permissionList));
     }
@@ -85,14 +85,14 @@ public class PermissionAspect {
   private Long getCurrentUserId() {
     try {
       ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-      if(attributes == null) {
+      if (attributes == null) {
         return null;
       }
 
       HttpServletRequest request = attributes.getRequest();
       String token = request.getHeader("Authorization");
 
-      if(token == null || !token.startsWith("Bearer ")) {
+      if (token == null || !token.startsWith("Bearer ")) {
         return null;
       }
 

@@ -28,12 +28,12 @@ public class PermissionValidatorImpl implements PermissionValidator {
 
   @Override
   public boolean hasPermissions(Long userId, List<String> permissionCodes, boolean requireAll) {
-    if(userId == null || permissionCodes == null || permissionCodes.isEmpty()) {
+    if (userId == null || permissionCodes == null || permissionCodes.isEmpty()) {
       return false;
     }
 
     // 检查是否为超级管理员
-    if(SuperAdminHolder.isSuperAdmin(userId, superAdminConfig)) {
+    if (SuperAdminHolder.isSuperAdmin(userId, superAdminConfig)) {
       log.debug("[超级管理员] 权限验证通过: userId={}", userId);
       return true;
     }

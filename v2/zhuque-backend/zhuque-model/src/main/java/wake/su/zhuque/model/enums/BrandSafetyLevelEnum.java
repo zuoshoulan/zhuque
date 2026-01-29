@@ -20,7 +20,7 @@ public enum BrandSafetyLevelEnum {
 
   public static String getNameByCode(Integer code) {
     for(BrandSafetyLevelEnum level : values()) {
-      if(level.getCode().equals(code)) {
+      if (level.getCode().equals(code)) {
         return level.getName();
       }
     }
@@ -29,7 +29,7 @@ public enum BrandSafetyLevelEnum {
 
   public static BrandSafetyLevelEnum getByCode(Integer code) {
     for(BrandSafetyLevelEnum level : values()) {
-      if(level.getCode().equals(code)) {
+      if (level.getCode().equals(code)) {
         return level;
       }
     }

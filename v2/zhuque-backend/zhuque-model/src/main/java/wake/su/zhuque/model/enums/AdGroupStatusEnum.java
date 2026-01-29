@@ -20,7 +20,7 @@ public enum AdGroupStatusEnum {
 
   public static String getNameByCode(Integer code) {
     for(AdGroupStatusEnum status : values()) {
-      if(status.getCode().equals(code)) {
+      if (status.getCode().equals(code)) {
         return status.getName();
       }
     }
@@ -29,7 +29,7 @@ public enum AdGroupStatusEnum {
 
   public static AdGroupStatusEnum getByCode(Integer code) {
     for(AdGroupStatusEnum status : values()) {
-      if(status.getCode().equals(code)) {
+      if (status.getCode().equals(code)) {
         return status;
       }
     }

@@ -20,7 +20,7 @@ public enum ScheduleTypeEnum {
 
   public static String getNameByCode(Integer code) {
     for(ScheduleTypeEnum type : values()) {
-      if(type.getCode().equals(code)) {
+      if (type.getCode().equals(code)) {
         return type.getName();
       }
     }
@@ -29,7 +29,7 @@ public enum ScheduleTypeEnum {
 
   public static ScheduleTypeEnum getByCode(Integer code) {
     for(ScheduleTypeEnum type : values()) {
-      if(type.getCode().equals(code)) {
+      if (type.getCode().equals(code)) {
         return type;
       }
     }

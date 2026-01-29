@@ -17,7 +17,7 @@ public enum CreativeFormatEnum {
 
   public static String getNameByCode(Integer code) {
     for(CreativeFormatEnum format : values()) {
-      if(format.getCode().equals(code)) {
+      if (format.getCode().equals(code)) {
         return format.getName();
       }
     }

@@ -20,7 +20,7 @@ public enum AudienceTypeEnum {
 
   public static String getNameByCode(Integer code) {
     for(AudienceTypeEnum type : values()) {
-      if(type.getCode().equals(code)) {
+      if (type.getCode().equals(code)) {
         return type.getName();
       }
     }
@@ -29,7 +29,7 @@ public enum AudienceTypeEnum {
 
   public static AudienceTypeEnum getByCode(Integer code) {
     for(AudienceTypeEnum type : values()) {
-      if(type.getCode().equals(code)) {
+      if (type.getCode().equals(code)) {
         return type;
       }
     }

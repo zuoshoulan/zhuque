@@ -41,7 +41,7 @@ public class RtbFileServiceImpl implements RtbFileService {
       RtbFileDO existingFile = fileMapper
           .selectOne(new LambdaQueryWrapper<RtbFileDO>().eq(RtbFileDO::getFileMd5, fileMd5));
 
-      if(existingFile != null) {
+      if (existingFile != null) {
         // 文件已存在，直接返回已有的id
         log.info("文件已存在，复用文件: id={}, fileUuid={}, fileName={}", existingFile.getId(), existingFile.getFileUuid(),
             file.getOriginalFilename());
@@ -63,9 +63,9 @@ public class RtbFileServiceImpl implements RtbFileService {
       fileRecord.setUpdateTime(LocalDateTime.now());
 
       // 如果是图片，解析尺寸
-      if(ImageUtils.isImage(file.getContentType())) {
+      if (ImageUtils.isImage(file.getContentType())) {
         ImageUtils.ImageDimension dimension = ImageUtils.getImageDimension(fileData);
-        if(dimension != null) {
+        if (dimension != null) {
           fileRecord.setWidth(dimension.getWidth());
           fileRecord.setHeight(dimension.getHeight());
           log.info("解析图片尺寸: {}x{}", dimension.getWidth(), dimension.getHeight());
@@ -73,9 +73,9 @@ public class RtbFileServiceImpl implements RtbFileService {
       }
 
       // 如果是视频，解析尺寸
-      if(ImageUtils.isVideo(file.getContentType())) {
+      if (ImageUtils.isVideo(file.getContentType())) {
         ImageUtils.ImageDimension dimension = ImageUtils.getVideoDimension(fileData);
-        if(dimension != null) {
+        if (dimension != null) {
           fileRecord.setWidth(dimension.getWidth());
           fileRecord.setHeight(dimension.getHeight());
           log.info("解析视频尺寸: {}x{}", dimension.getWidth(), dimension.getHeight());
@@ -117,7 +117,7 @@ public class RtbFileServiceImpl implements RtbFileService {
       StringBuilder hexString = new StringBuilder();
       for(byte b : hash) {
         String hex = Integer.toHexString(0xff & b);
-        if(hex.length() == 1) {
+        if (hex.length() == 1) {
           hexString.append('0');
         }
         hexString.append(hex);

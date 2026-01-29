@@ -43,11 +43,11 @@ public enum AdStatusEnum {
    * 根据状态码获取状态名称
    */
   public static String getNameByCode(Integer code) {
-    if(code == null) {
+    if (code == null) {
       return "未知";
     }
     for(AdStatusEnum statusEnum : values()) {
-      if(statusEnum.code.equals(code)) {
+      if (statusEnum.code.equals(code)) {
         return statusEnum.name;
       }
     }

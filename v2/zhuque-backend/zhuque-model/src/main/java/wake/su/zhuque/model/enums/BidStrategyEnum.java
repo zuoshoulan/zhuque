@@ -20,7 +20,7 @@ public enum BidStrategyEnum {
 
   public static String getNameByCode(Integer code) {
     for(BidStrategyEnum strategy : values()) {
-      if(strategy.getCode().equals(code)) {
+      if (strategy.getCode().equals(code)) {
         return strategy.getName();
       }
     }
@@ -29,7 +29,7 @@ public enum BidStrategyEnum {
 
   public static BidStrategyEnum getByCode(Integer code) {
     for(BidStrategyEnum strategy : values()) {
-      if(strategy.getCode().equals(code)) {
+      if (strategy.getCode().equals(code)) {
         return strategy;
       }
     }

@@ -57,7 +57,7 @@ public class CacheController {
   @DeleteMapping("/batch")
   public Result<Map<String, Object>> refreshUserPermissionsBatch(@RequestBody Map<String, List<Long>> request) {
     List<Long> userIds = request.get("userIds");
-    if(userIds == null || userIds.isEmpty()) {
+    if (userIds == null || userIds.isEmpty()) {
       return Result.error("用户ID列表不能为空");
     }
 

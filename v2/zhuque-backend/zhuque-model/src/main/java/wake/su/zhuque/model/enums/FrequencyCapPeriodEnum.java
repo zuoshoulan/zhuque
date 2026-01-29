@@ -20,7 +20,7 @@ public enum FrequencyCapPeriodEnum {
 
   public static String getNameByCode(Integer code) {
     for(FrequencyCapPeriodEnum period : values()) {
-      if(period.getCode().equals(code)) {
+      if (period.getCode().equals(code)) {
         return period.getName();
       }
     }
@@ -29,7 +29,7 @@ public enum FrequencyCapPeriodEnum {
 
   public static FrequencyCapPeriodEnum getByCode(Integer code) {
     for(FrequencyCapPeriodEnum period : values()) {
-      if(period.getCode().equals(code)) {
+      if (period.getCode().equals(code)) {
         return period;
       }
     }

@@ -107,13 +107,13 @@ public class SysUserServiceImpl implements SysUserService {
     LambdaQueryWrapper<SysUserDO> queryWrapper = new LambdaQueryWrapper<>();
 
     // 关键词搜索
-    if(request.getKeyword() != null && !request.getKeyword().trim().isEmpty()) {
+    if (request.getKeyword() != null && !request.getKeyword().trim().isEmpty()) {
       queryWrapper.and(wrapper -> wrapper.like(SysUserDO::getUsername, request.getKeyword()).or()
           .like(SysUserDO::getNickname, request.getKeyword()).or().like(SysUserDO::getPhone, request.getKeyword()));
     }
 
     // 状态筛选
-    if(request.getStatus() != null) {
+    if (request.getStatus() != null) {
       queryWrapper.eq(SysUserDO::getStatus, request.getStatus());
     }
 
@@ -131,15 +131,15 @@ public class SysUserServiceImpl implements SysUserService {
     // 检查用户名是否已存在
     Long count = sysUserMapper
         .selectCount(new LambdaQueryWrapper<SysUserDO>().eq(SysUserDO::getUsername, request.getUsername()));
-    if(count != null && count > 0) {
+    if (count != null && count > 0) {
       throw new RuntimeException("用户名已存在");
     }
 
     // 检查手机号是否已存在
-    if(request.getPhone() != null) {
+    if (request.getPhone() != null) {
       count = sysUserMapper
           .selectCount(new LambdaQueryWrapper<SysUserDO>().eq(SysUserDO::getPhone, request.getPhone()));
-      if(count != null && count > 0) {
+      if (count != null && count > 0) {
         throw new RuntimeException("手机号已存在");
       }
     }
@@ -171,24 +171,24 @@ public class SysUserServiceImpl implements SysUserService {
     log.info("更新用户: userId={}", userId);
 
     SysUserDO user = sysUserMapper.selectById(userId);
-    if(user == null) {
+    if (user == null) {
       throw new RuntimeException("用户不存在");
     }
 
     // 更新字段
-    if(request.getUsername() != null) {
+    if (request.getUsername() != null) {
       user.setUsername(request.getUsername());
     }
-    if(request.getNickname() != null) {
+    if (request.getNickname() != null) {
       user.setNickname(request.getNickname());
     }
-    if(request.getPhone() != null) {
+    if (request.getPhone() != null) {
       user.setPhone(request.getPhone());
     }
-    if(request.getEmail() != null) {
+    if (request.getEmail() != null) {
       user.setEmail(request.getEmail());
     }
-    if(request.getStatus() != null) {
+    if (request.getStatus() != null) {
       user.setStatus(request.getStatus());
     }
 
@@ -205,7 +205,7 @@ public class SysUserServiceImpl implements SysUserService {
     log.info("更新用户状态: userId={}, status={}", userId, status);
 
     // 禁止禁用超级管理员
-    if(status == 0) {
+    if (status == 0) {
       SuperAdminHolder.checkNotSuperAdmin(userId, superAdminConfig);
     }
 
@@ -240,21 +240,21 @@ public class SysUserServiceImpl implements SysUserService {
 
     // 查询用户
     SysUserDO user = sysUserMapper.selectById(userId);
-    if(user == null) {
+    if (user == null) {
       throw new RuntimeException("用户不存在");
     }
 
     // 生成密码
     String finalPassword;
     String passwordType;
-    if(newPassword != null && !newPassword.trim().isEmpty()) {
+    if (newPassword != null && !newPassword.trim().isEmpty()) {
       // 使用自定义密码
       finalPassword = newPassword;
       passwordType = "custom";
       log.info("使用自定义密码重置: userId={}", userId);
     } else {
       // 使用默认规则生成
-      if(user.getPhone() == null || user.getPhone().trim().isEmpty()) {
+      if (user.getPhone() == null || user.getPhone().trim().isEmpty()) {
         throw new RuntimeException("用户手机号为空，无法生成默认密码");
       }
       finalPassword = PasswordGenerator.generate(user.getPhone());
@@ -274,7 +274,7 @@ public class SysUserServiceImpl implements SysUserService {
     updateUser.setUpdateTime(LocalDateTime.now()); // 必须显式设置更新时间
     boolean success = sysUserMapper.updateById(updateUser) > 0;
 
-    if(!success) {
+    if (!success) {
       throw new RuntimeException("密码重置失败");
     }
 
@@ -290,11 +290,11 @@ public class SysUserServiceImpl implements SysUserService {
   private String getCurrentUsername() {
     try {
       ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-      if(attributes != null) {
+      if (attributes != null) {
         HttpServletRequest request = attributes.getRequest();
         // 从请求属性获取用户名（在JwtAuthenticationFilter中设置）
         String username = (String) request.getAttribute("X-User-Name");
-        if(username != null && !username.isEmpty()) {
+        if (username != null && !username.isEmpty()) {
           return username;
         }
       }
@@ -310,7 +310,7 @@ public class SysUserServiceImpl implements SysUserService {
     List<SysUserRoleDO> userRoles = sysUserRoleMapper
         .selectList(new LambdaQueryWrapper<SysUserRoleDO>().eq(SysUserRoleDO::getUserId, userId));
 
-    if(userRoles.isEmpty()) {
+    if (userRoles.isEmpty()) {
       return List.of();
     }
 
@@ -339,13 +339,13 @@ public class SysUserServiceImpl implements SysUserService {
   @Transactional(rollbackFor = Exception.class)
   public boolean assignRoles(Long userId, List<Long> roleIds) {
     // 禁止为超级管理员分配角色
-    if(SuperAdminHolder.isSuperAdmin(userId, superAdminConfig)) {
+    if (SuperAdminHolder.isSuperAdmin(userId, superAdminConfig)) {
       throw new BusinessException("超级管理员自动拥有所有权限，无需分配角色");
     }
 
     // 验证用户是否存在
     SysUserDO user = sysUserMapper.selectById(userId);
-    if(user == null) {
+    if (user == null) {
       throw new RuntimeException("用户不存在");
     }
 
@@ -353,10 +353,10 @@ public class SysUserServiceImpl implements SysUserService {
     sysUserRoleMapper.delete(new LambdaQueryWrapper<SysUserRoleDO>().eq(SysUserRoleDO::getUserId, userId));
 
     // 分配新角色
-    if(roleIds != null && !roleIds.isEmpty()) {
+    if (roleIds != null && !roleIds.isEmpty()) {
       // 验证角色是否存在
       List<SysRoleDO> roles = sysRoleMapper.selectBatchIds(roleIds);
-      if(roles.size() != roleIds.size()) {
+      if (roles.size() != roleIds.size()) {
         throw new RuntimeException("部分角色不存在");
       }
 
@@ -385,12 +385,12 @@ public class SysUserServiceImpl implements SysUserService {
 
     // 查询用户
     SysUserDO user = sysUserMapper.selectById(userId);
-    if(user == null) {
+    if (user == null) {
       throw new RuntimeException("用户不存在");
     }
 
     // 验证原密码
-    if(!PasswordUtil.matches(oldPassword, user.getPassword())) {
+    if (!PasswordUtil.matches(oldPassword, user.getPassword())) {
       throw new RuntimeException("原密码错误");
     }
 
@@ -406,7 +406,7 @@ public class SysUserServiceImpl implements SysUserService {
     updateUser.setUpdateTime(LocalDateTime.now());
 
     boolean success = sysUserMapper.updateById(updateUser) > 0;
-    if(!success) {
+    if (!success) {
       throw new RuntimeException("密码修改失败");
     }
 

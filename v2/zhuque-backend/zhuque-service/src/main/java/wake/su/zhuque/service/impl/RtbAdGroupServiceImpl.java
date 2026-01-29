@@ -49,32 +49,32 @@ public class RtbAdGroupServiceImpl implements RtbAdGroupService {
   @Transactional
   public Long create(AdGroupCreateRequest request) {
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(currentUserId == null) {
+    if (currentUserId == null) {
       throw new RuntimeException("未登录或登录已过期");
     }
 
     // 校验投放活动是否存在且属于当前用户
     RtbCampaignDO campaign = campaignMapper.selectById(request.getCampaignId());
-    if(campaign == null) {
+    if (campaign == null) {
       throw new RuntimeException("投放活动不存在");
     }
-    if(!campaign.getAdvertiserId().equals(currentUserId)) {
+    if (!campaign.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限在此投放活动下创建广告组");
     }
 
     // 校验出价
-    if(request.getBaseBidPrice().compareTo(BigDecimal.ZERO) <= 0) {
+    if (request.getBaseBidPrice().compareTo(BigDecimal.ZERO) <= 0) {
       throw new RuntimeException("基础出价必须大于0");
     }
-    if(request.getMaxBid() != null && request.getMaxBid().compareTo(request.getBaseBidPrice()) < 0) {
+    if (request.getMaxBid() != null && request.getMaxBid().compareTo(request.getBaseBidPrice()) < 0) {
       throw new RuntimeException("最高出价不能低于基础出价");
     }
-    if(request.getBidFloor() != null && request.getBaseBidPrice().compareTo(request.getBidFloor()) < 0) {
+    if (request.getBidFloor() != null && request.getBaseBidPrice().compareTo(request.getBidFloor()) < 0) {
       throw new RuntimeException("基础出价不能低于竞价底价");
     }
 
     // 校验目标CPA配合出价策略
-    if(Objects.equals(request.getBidStrategy(), 3) && request.getTargetCpa() == null) {
+    if (Objects.equals(request.getBidStrategy(), 3) && request.getTargetCpa() == null) {
       throw new RuntimeException("目标CPA出价策略必须设置目标CPA值");
     }
 
@@ -142,13 +142,13 @@ public class RtbAdGroupServiceImpl implements RtbAdGroupService {
   @Transactional
   public boolean update(Long id, AdGroupUpdateRequest request) {
     RtbAdGroupDO adGroup = adGroupMapper.selectById(id);
-    if(adGroup == null) {
+    if (adGroup == null) {
       throw new RuntimeException("广告组不存在");
     }
 
     // 权限校验
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(!adGroup.getAdvertiserId().equals(currentUserId)) {
+    if (!adGroup.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限操作此广告组");
     }
 
@@ -156,100 +156,100 @@ public class RtbAdGroupServiceImpl implements RtbAdGroupService {
     adGroup.setName(request.getName());
     adGroup.setDescription(request.getDescription());
 
-    if(request.getBidStrategy() != null) {
+    if (request.getBidStrategy() != null) {
       adGroup.setBidStrategy(request.getBidStrategy());
     }
-    if(request.getBaseBidPrice() != null) {
+    if (request.getBaseBidPrice() != null) {
       adGroup.setBaseBidPrice(request.getBaseBidPrice());
     }
-    if(request.getMaxBid() != null) {
+    if (request.getMaxBid() != null) {
       adGroup.setMaxBid(request.getMaxBid());
     }
-    if(request.getBidFloor() != null) {
+    if (request.getBidFloor() != null) {
       adGroup.setBidFloor(request.getBidFloor());
     }
-    if(request.getTargetCpa() != null) {
+    if (request.getTargetCpa() != null) {
       adGroup.setTargetCpa(request.getTargetCpa());
     }
-    if(request.getTargetRoas() != null) {
+    if (request.getTargetRoas() != null) {
       adGroup.setTargetRoas(request.getTargetRoas());
     }
-    if(request.getBidAdjustments() != null) {
+    if (request.getBidAdjustments() != null) {
       adGroup.setBidAdjustments(request.getBidAdjustments());
     }
-    if(request.getDailyBudget() != null) {
+    if (request.getDailyBudget() != null) {
       adGroup.setDailyBudget(request.getDailyBudget());
     }
-    if(request.getDeliveryMode() != null) {
+    if (request.getDeliveryMode() != null) {
       adGroup.setDeliveryMode(request.getDeliveryMode());
     }
-    if(request.getDeliveryPace() != null) {
+    if (request.getDeliveryPace() != null) {
       adGroup.setDeliveryPace(request.getDeliveryPace());
     }
-    if(request.getTargetingGeo() != null) {
+    if (request.getTargetingGeo() != null) {
       adGroup.setTargetingGeo(request.getTargetingGeo());
     }
-    if(request.getTargetingGeoExclude() != null) {
+    if (request.getTargetingGeoExclude() != null) {
       adGroup.setTargetingGeoExclude(request.getTargetingGeoExclude());
     }
-    if(request.getTargetingDevice() != null) {
+    if (request.getTargetingDevice() != null) {
       adGroup.setTargetingDevice(request.getTargetingDevice());
     }
-    if(request.getTargetingOs() != null) {
+    if (request.getTargetingOs() != null) {
       adGroup.setTargetingOs(request.getTargetingOs());
     }
-    if(request.getTargetingOsVersion() != null) {
+    if (request.getTargetingOsVersion() != null) {
       adGroup.setTargetingOsVersion(request.getTargetingOsVersion());
     }
-    if(request.getTargetingCarrier() != null) {
+    if (request.getTargetingCarrier() != null) {
       adGroup.setTargetingCarrier(request.getTargetingCarrier());
     }
-    if(request.getTargetingConnectionType() != null) {
+    if (request.getTargetingConnectionType() != null) {
       adGroup.setTargetingConnectionType(request.getTargetingConnectionType());
     }
-    if(request.getTargetingBrowser() != null) {
+    if (request.getTargetingBrowser() != null) {
       adGroup.setTargetingBrowser(request.getTargetingBrowser());
     }
-    if(request.getTargetingKeywords() != null) {
+    if (request.getTargetingKeywords() != null) {
       adGroup.setTargetingKeywords(request.getTargetingKeywords());
     }
-    if(request.getTargetingKeywordsExclude() != null) {
+    if (request.getTargetingKeywordsExclude() != null) {
       adGroup.setTargetingKeywordsExclude(request.getTargetingKeywordsExclude());
     }
-    if(request.getTargetingIabCategories() != null) {
+    if (request.getTargetingIabCategories() != null) {
       adGroup.setTargetingIabCategories(request.getTargetingIabCategories());
     }
-    if(request.getTargetingIabCategoriesExclude() != null) {
+    if (request.getTargetingIabCategoriesExclude() != null) {
       adGroup.setTargetingIabCategoriesExclude(request.getTargetingIabCategoriesExclude());
     }
-    if(request.getTargetingUserSegments() != null) {
+    if (request.getTargetingUserSegments() != null) {
       adGroup.setTargetingUserSegments(request.getTargetingUserSegments());
     }
-    if(request.getTargetingUserSegmentsExclude() != null) {
+    if (request.getTargetingUserSegmentsExclude() != null) {
       adGroup.setTargetingUserSegmentsExclude(request.getTargetingUserSegmentsExclude());
     }
-    if(request.getTargetingAudienceType() != null) {
+    if (request.getTargetingAudienceType() != null) {
       adGroup.setTargetingAudienceType(request.getTargetingAudienceType());
     }
-    if(request.getScheduleType() != null) {
+    if (request.getScheduleType() != null) {
       adGroup.setScheduleType(request.getScheduleType());
     }
-    if(request.getScheduleConfig() != null) {
+    if (request.getScheduleConfig() != null) {
       adGroup.setScheduleConfig(request.getScheduleConfig());
     }
-    if(request.getFrequencyCap() != null) {
+    if (request.getFrequencyCap() != null) {
       adGroup.setFrequencyCap(request.getFrequencyCap());
     }
-    if(request.getFrequencyCapPeriod() != null) {
+    if (request.getFrequencyCapPeriod() != null) {
       adGroup.setFrequencyCapPeriod(request.getFrequencyCapPeriod());
     }
-    if(request.getBrandSafetyLevel() != null) {
+    if (request.getBrandSafetyLevel() != null) {
       adGroup.setBrandSafetyLevel(request.getBrandSafetyLevel());
     }
-    if(request.getBrandSafetyCategoriesExclude() != null) {
+    if (request.getBrandSafetyCategoriesExclude() != null) {
       adGroup.setBrandSafetyCategoriesExclude(request.getBrandSafetyCategoriesExclude());
     }
-    if(request.getPriority() != null) {
+    if (request.getPriority() != null) {
       adGroup.setPriority(request.getPriority());
     }
 
@@ -260,18 +260,18 @@ public class RtbAdGroupServiceImpl implements RtbAdGroupService {
   @Transactional
   public boolean delete(Long id) {
     RtbAdGroupDO adGroup = adGroupMapper.selectById(id);
-    if(adGroup == null) {
+    if (adGroup == null) {
       throw new RuntimeException("广告组不存在");
     }
 
     // 权限校验
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(!adGroup.getAdvertiserId().equals(currentUserId)) {
+    if (!adGroup.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限操作此广告组");
     }
 
     // 只有草稿状态可以删除
-    if(!Objects.equals(adGroup.getStatus(), 0)) {
+    if (!Objects.equals(adGroup.getStatus(), 0)) {
       throw new RuntimeException("只有草稿状态的广告组可以删除");
     }
 
@@ -281,13 +281,13 @@ public class RtbAdGroupServiceImpl implements RtbAdGroupService {
   @Override
   public AdGroupVO detail(Long id) {
     RtbAdGroupDO adGroup = adGroupMapper.selectById(id);
-    if(adGroup == null) {
+    if (adGroup == null) {
       return null;
     }
 
     // 权限校验
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(!adGroup.getAdvertiserId().equals(currentUserId)) {
+    if (!adGroup.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限查看此广告组");
     }
 
@@ -304,7 +304,7 @@ public class RtbAdGroupServiceImpl implements RtbAdGroupService {
 
     // 获取当前登录用户的ID
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(currentUserId == null) {
+    if (currentUserId == null) {
       return Result.error("未登录或登录已过期");
     }
 
@@ -336,7 +336,7 @@ public class RtbAdGroupServiceImpl implements RtbAdGroupService {
       vo.setDailyBudgetUsed(adGroup.getDailyBudgetUsed());
 
       // 计算日消耗百分比
-      if(adGroup.getDailyBudget() != null && adGroup.getDailyBudget().compareTo(BigDecimal.ZERO) > 0) {
+      if (adGroup.getDailyBudget() != null && adGroup.getDailyBudget().compareTo(BigDecimal.ZERO) > 0) {
         int percent = adGroup.getDailyBudgetUsed().multiply(new BigDecimal("100"))
             .divide(adGroup.getDailyBudget(), 0, RoundingMode.HALF_UP).intValue();
         vo.setDailyUsedPercent(percent);
@@ -365,18 +365,18 @@ public class RtbAdGroupServiceImpl implements RtbAdGroupService {
   @Transactional
   public boolean updateStatus(Long id, Integer status) {
     RtbAdGroupDO adGroup = adGroupMapper.selectById(id);
-    if(adGroup == null) {
+    if (adGroup == null) {
       throw new RuntimeException("广告组不存在");
     }
 
     // 权限校验
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(!adGroup.getAdvertiserId().equals(currentUserId)) {
+    if (!adGroup.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限操作此广告组");
     }
 
     // 状态只能是：0=草稿/1=进行中/2=暂停
-    if(status < 0 || status > 2) {
+    if (status < 0 || status > 2) {
       throw new RuntimeException("无效的状态值");
     }
 
@@ -388,18 +388,18 @@ public class RtbAdGroupServiceImpl implements RtbAdGroupService {
   @Transactional
   public boolean start(Long id) {
     RtbAdGroupDO adGroup = adGroupMapper.selectById(id);
-    if(adGroup == null) {
+    if (adGroup == null) {
       throw new RuntimeException("广告组不存在");
     }
 
     // 权限校验
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(!adGroup.getAdvertiserId().equals(currentUserId)) {
+    if (!adGroup.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限操作此广告组");
     }
 
     // 只有草稿或暂停状态可以启动
-    if(!Objects.equals(adGroup.getStatus(), 0) && !Objects.equals(adGroup.getStatus(), 2)) {
+    if (!Objects.equals(adGroup.getStatus(), 0) && !Objects.equals(adGroup.getStatus(), 2)) {
       throw new RuntimeException("只有草稿或暂停状态的广告组可以启动");
     }
 
@@ -411,18 +411,18 @@ public class RtbAdGroupServiceImpl implements RtbAdGroupService {
   @Transactional
   public boolean pause(Long id) {
     RtbAdGroupDO adGroup = adGroupMapper.selectById(id);
-    if(adGroup == null) {
+    if (adGroup == null) {
       throw new RuntimeException("广告组不存在");
     }
 
     // 权限校验
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(!adGroup.getAdvertiserId().equals(currentUserId)) {
+    if (!adGroup.getAdvertiserId().equals(currentUserId)) {
       throw new RuntimeException("无权限操作此广告组");
     }
 
     // 只有进行中状态可以暂停
-    if(!Objects.equals(adGroup.getStatus(), 1)) {
+    if (!Objects.equals(adGroup.getStatus(), 1)) {
       throw new RuntimeException("只有进行中的广告组可以暂停");
     }
 
@@ -433,7 +433,7 @@ public class RtbAdGroupServiceImpl implements RtbAdGroupService {
   @Override
   public List<AdGroupListVO> listByCampaignId(Long campaignId) {
     Long currentUserId = SecurityUtil.getCurrentUserId();
-    if(currentUserId == null) {
+    if (currentUserId == null) {
       return Collections.emptyList();
     }
 
@@ -492,13 +492,13 @@ public class RtbAdGroupServiceImpl implements RtbAdGroupService {
     vo.setDailyBudget(adGroup.getDailyBudget());
     vo.setDailyBudgetUsed(adGroup.getDailyBudgetUsed());
 
-    if(adGroup.getDailyBudget() != null && adGroup.getDailyBudget().compareTo(BigDecimal.ZERO) > 0) {
+    if (adGroup.getDailyBudget() != null && adGroup.getDailyBudget().compareTo(BigDecimal.ZERO) > 0) {
       int percent = adGroup.getDailyBudgetUsed().multiply(new BigDecimal("100"))
           .divide(adGroup.getDailyBudget(), 0, RoundingMode.HALF_UP).intValue();
       vo.setDailyUsedPercent(percent);
     }
 
-    if(adGroup.getDailyBudget() != null) {
+    if (adGroup.getDailyBudget() != null) {
       vo.setRemainingDailyBudget(adGroup.getDailyBudget().subtract(adGroup.getDailyBudgetUsed()));
     }
 
@@ -561,7 +561,7 @@ public class RtbAdGroupServiceImpl implements RtbAdGroupService {
    * 解析JSON数组大小
    */
   private Integer parseJsonArraySize(String json) {
-    if(json == null || json.isEmpty()) {
+    if (json == null || json.isEmpty()) {
       return 0;
     }
     try {
@@ -577,7 +577,7 @@ public class RtbAdGroupServiceImpl implements RtbAdGroupService {
    * 构建频次控制描述
    */
   private String buildFrequencyCapDesc(Integer cap, Integer period) {
-    if(cap == null) {
+    if (cap == null) {
       return "不限";
     }
     String periodName = FrequencyCapPeriodEnum.getNameByCode(period);
@@ -588,7 +588,7 @@ public class RtbAdGroupServiceImpl implements RtbAdGroupService {
    * 获取显示状态类型
    */
   private String getDisplayStatusType(Integer status) {
-    if(status == null) {
+    if (status == null) {
       return "info";
     }
     switch(status) {

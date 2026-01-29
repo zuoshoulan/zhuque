@@ -37,7 +37,7 @@ public class FileController {
     // 根据id查询完整的文件信息
     RtbFileDO fileRecord = fileMapper.selectById(fileId);
 
-    if(fileRecord == null) {
+    if (fileRecord == null) {
       return Result.error("文件上传失败");
     }
 
@@ -57,7 +57,7 @@ public class FileController {
         .selectOne(new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<RtbFileDO>()
             .eq(RtbFileDO::getFileUuid, fileUuid));
 
-    if(fileRecord == null || fileRecord.getFileData() == null) {
+    if (fileRecord == null || fileRecord.getFileData() == null) {
       return ResponseEntity.notFound().build();
     }
 
@@ -84,7 +84,7 @@ public class FileController {
     // 根据id查询文件
     RtbFileDO fileRecord = fileMapper.selectById(id);
 
-    if(fileRecord == null || fileRecord.getFileData() == null) {
+    if (fileRecord == null || fileRecord.getFileData() == null) {
       return ResponseEntity.notFound().build();
     }
 
@@ -113,7 +113,7 @@ public class FileController {
         .selectOne(new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<RtbFileDO>()
             .eq(RtbFileDO::getFileUuid, fileUuid));
 
-    if(fileRecord == null) {
+    if (fileRecord == null) {
       return ResponseEntity.notFound().build();
     }
 

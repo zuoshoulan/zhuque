@@ -17,7 +17,7 @@ public enum CampaignObjectiveEnum {
 
   public static String getNameByCode(Integer code) {
     for(CampaignObjectiveEnum objective : values()) {
-      if(objective.getCode().equals(code)) {
+      if (objective.getCode().equals(code)) {
         return objective.getName();
       }
     }

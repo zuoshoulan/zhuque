@@ -37,12 +37,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     String authHeader = request.getHeader("Authorization");
 
     // 验证Token
-    if(authHeader != null && authHeader.startsWith("Bearer ")) {
+    if (authHeader != null && authHeader.startsWith("Bearer ")) {
       String token = authHeader.substring(7); // 去掉 "Bearer " 前缀
 
       try {
         // 验证Token有效性
-        if(jwtUtil.validateToken(token)) {
+        if (jwtUtil.validateToken(token)) {
           // 获取用户ID
           Long userId = jwtUtil.getUserId(token);
           String username = jwtUtil.getUsername(token);

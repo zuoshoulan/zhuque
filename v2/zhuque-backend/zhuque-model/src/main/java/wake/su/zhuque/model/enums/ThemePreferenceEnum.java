@@ -62,11 +62,11 @@ public enum ThemePreferenceEnum {
    * 根据数据库code获取枚举
    */
   public static ThemePreferenceEnum fromCode(Integer code) {
-    if(code == null) {
+    if (code == null) {
       return AUTO;
     }
     for(ThemePreferenceEnum theme : values()) {
-      if(theme.code.equals(code)) {
+      if (theme.code.equals(code)) {
         return theme;
       }
     }
@@ -77,11 +77,11 @@ public enum ThemePreferenceEnum {
    * 根据前端value获取枚举
    */
   public static ThemePreferenceEnum fromValue(String value) {
-    if(value == null || value.trim().isEmpty()) {
+    if (value == null || value.trim().isEmpty()) {
       return AUTO;
     }
     for(ThemePreferenceEnum theme : values()) {
-      if(theme.value.equals(value)) {
+      if (theme.value.equals(value)) {
         return theme;
       }
     }
