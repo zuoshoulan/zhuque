@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.StructuredTaskScope;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,7 @@ public class RtbBidServiceImpl implements RtbBidService {
 
   private static final Integer STATUS_ACTIVE = 1; // 进行中
   private static final BigDecimal PRICE_DIVISOR = BigDecimal.valueOf(1000); // 缓存除数
+  private static final long MULTI_IMP_TIMEOUT_MS = 40; // 多 imp 并行处理超时时间（毫秒）
 
   /**
    * 构造函数 - 初始化依赖并预排序过滤器
@@ -90,47 +92,95 @@ public class RtbBidServiceImpl implements RtbBidService {
       return null;
     }
 
-    // 遍历所有展示机会，为每个符合条件的 imp 生成竞价
-    List<Bid> winningBids = new ArrayList<>();
-    int successCount = 0;
-    int failedCount = 0;
-
-    for(Imp imp : request.getImp()) {
-      BidResponse impResponse = processSingleImp(request, imp);
-      if (impResponse != null && impResponse.getSeatbid() != null
-          && !impResponse.getSeatbid().isEmpty()) {
-        // 提取 bid 并添加到结果列表
-        SeatBid seatBid = impResponse.getSeatbid().get(0);
-        if (seatBid.getBid() != null && !seatBid.getBid().isEmpty()) {
-          winningBids.addAll(seatBid.getBid());
-          successCount++;
-        } else {
-          failedCount++;
-        }
-      } else {
-        failedCount++;
-      }
+    // 如果只有一个 imp，串行处理（避免虚拟线程开销）
+    if (request.getImp().size() == 1) {
+      return processSingleImp(request, request.getImp().get(0));
     }
 
-    // 如果没有任何竞价成功，返回 null
-    if (winningBids.isEmpty()) {
-      log.debug("[{}] 所有展示机会均未产生竞价", requestId);
+    // 多个 imp，使用虚拟线程并行处理
+    try(var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+      // 为每个 imp 创建并行任务
+      List<StructuredTaskScope.Subtask<BidResponse>> tasks = request.getImp().stream()
+          .map(imp -> scope.fork(() -> processSingleImp(request, imp)))
+          .toList();
+
+      boolean timedOut = false;
+      boolean hasFailure = false;
+
+      try {
+        // 等待所有任务完成（最多 40ms）
+        // 超时后只返回已完成的结果，未完成的不等待
+        scope.joinUntil(java.time.Instant.now().plusMillis(MULTI_IMP_TIMEOUT_MS))
+            .throwIfFailed();
+      } catch(java.util.concurrent.TimeoutException e) {
+        // 超时 - 这是正常情况，继续收集已完成的结果
+        timedOut = true;
+        log.debug("[{}] 部分展示机会处理超时，将返回已完成的结果", requestId);
+      } catch(java.util.concurrent.ExecutionException e) {
+        // 某个子任务失败 - 继续收集其他已完成的结果
+        hasFailure = true;
+        log.warn("[{}] 部分展示机会处理失败: {}", requestId, e.getCause().getMessage());
+      }
+
+      // 收集已完成的结果
+      List<Bid> winningBids = new ArrayList<>();
+      int successCount = 0;
+      int failedCount = 0;
+      int timeoutCount = 0;
+
+      for(var task : tasks) {
+        try {
+          // 使用 get() 检查任务是否完成
+          // 如果任务未完成，get() 会抛出 IllegalStateException
+          BidResponse impResponse = task.get();
+          if (impResponse != null && impResponse.getSeatbid() != null
+              && !impResponse.getSeatbid().isEmpty()) {
+            SeatBid seatBid = impResponse.getSeatbid().get(0);
+            if (seatBid.getBid() != null && !seatBid.getBid().isEmpty()) {
+              winningBids.addAll(seatBid.getBid());
+              successCount++;
+            } else {
+              failedCount++;
+            }
+          } else {
+            failedCount++;
+          }
+        } catch(IllegalStateException e) {
+          // 任务未完成（超时）
+          timeoutCount++;
+        }
+      }
+
+      // 如果没有任何竞价成功，返回 null
+      if (winningBids.isEmpty()) {
+        log.debug("[{}] 所有展示机会均未产生竞价", requestId);
+        return null;
+      }
+
+      // 构造最终响应，包含所有成功的竞价
+      BidResponse response = new BidResponse();
+      response.setId(request.getId());
+
+      SeatBid seatBid = new SeatBid();
+      seatBid.setBid(winningBids);
+      response.setSeatbid(Arrays.asList(seatBid));
+
+      long duration = System.currentTimeMillis() - startTime;
+      if (timeoutCount > 0) {
+        log.warn("[{}] 竞价处理完成(并行,部分超时), success={}, failed={}, timeout={}, duration={}ms",
+            requestId, successCount, failedCount, timeoutCount, duration);
+      } else {
+        log.info("[{}] 竞价处理完成(并行), success={}, failed={}, duration={}ms", requestId, successCount,
+            failedCount, duration);
+      }
+
+      return response;
+
+    } catch(InterruptedException e) {
+      Thread.currentThread().interrupt();
+      log.warn("[{}] 竞价处理被中断", requestId);
       return null;
     }
-
-    // 构造最终响应，包含所有成功的竞价
-    BidResponse response = new BidResponse();
-    response.setId(request.getId());
-
-    SeatBid seatBid = new SeatBid();
-    seatBid.setBid(winningBids);
-    response.setSeatbid(Arrays.asList(seatBid));
-
-    long duration = System.currentTimeMillis() - startTime;
-    log.info("[{}] 竞价处理完成, success={}, failed={}, duration={}ms", requestId, successCount,
-        failedCount, duration);
-
-    return response;
   }
 
   /**
