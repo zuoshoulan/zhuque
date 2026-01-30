@@ -57,7 +57,7 @@ public enum OSType {
     if (name == null) {
       return null;
     }
-    for (OSType os : values()) {
+    for(OSType os : values()) {
       if (os.name.equalsIgnoreCase(name)) {
         return os;
       }
