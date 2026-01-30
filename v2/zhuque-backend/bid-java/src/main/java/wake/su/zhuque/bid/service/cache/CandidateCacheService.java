@@ -6,16 +6,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.github.benmanes.caffeine.cache.CacheLoader;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
+import com.github.benmanes.caffeine.cache.stats.CacheStats;
 
-import wake.su.zhuque.bid.config.CacheConfig;
 import wake.su.zhuque.bid.context.BidCandidate;
 import wake.su.zhuque.dao.mapper.RtbAdGroupMapper;
 import wake.su.zhuque.dao.mapper.RtbAdMapper;
@@ -24,6 +25,8 @@ import wake.su.zhuque.model.entity.RtbAdDO;
 import wake.su.zhuque.model.entity.RtbAdGroupDO;
 import wake.su.zhuque.model.entity.RtbCampaignDO;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,7 +42,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  * <p>缓存策略：
  * <ul>
- * <li>缓存名称：{@link CacheConfig#CANDIDATE_CACHE}</li>
+ * <li>使用原生 Caffeine LoadingCache</li>
  * <li>刷新时间：10 秒（refresh-after-write，后台刷新不阻塞请求）</li>
  * <li>数据变化时记录 info 日志</li>
  * </ul>
@@ -55,10 +58,61 @@ public class CandidateCacheService {
   private final RtbCampaignMapper campaignMapper;
   private final RtbAdGroupMapper adGroupMapper;
   private final RtbAdMapper adMapper;
-  private final CacheManager cacheManager;
 
   private static final Integer STATUS_ACTIVE = 1; // 进行中
   private static final String CACHE_KEY = "all";
+
+  /** 原生 Caffeine LoadingCache */
+  private LoadingCache<String, List<BidCandidate>> candidateCache;
+
+  /** 上次加载的数据，用于检测变化 */
+  private volatile List<BidCandidate> lastLoadedData;
+
+  /**
+   * 初始化缓存
+   */
+  @PostConstruct
+  public void init() {
+    this.candidateCache = Caffeine.newBuilder()
+        // 初始容量
+        .initialCapacity(50)
+        // 最大容量
+        .maximumSize(200)
+        // 写入后 10 秒刷新（后台异步刷新，不阻塞请求）
+        .refreshAfterWrite(10, TimeUnit.SECONDS)
+        // 启用统计
+        .recordStats()
+        // 构建带加载器的缓存
+        .build(new CacheLoader<String, List<BidCandidate>>() {
+          @Override
+          public List<BidCandidate> load(String key) {
+            return loadFromDbWithLog();
+          }
+
+          @Override
+          public List<BidCandidate> reload(String key, List<BidCandidate> oldValue) {
+            // 后台刷新时记录变化
+            List<BidCandidate> newValue = loadFromDb();
+            if (!candidatesEqual(oldValue, newValue)) {
+              logChange(oldValue, newValue);
+            }
+            return newValue;
+          }
+        });
+
+    log.info("候选缓存初始化完成");
+  }
+
+  /**
+   * 销毁缓存
+   */
+  @PreDestroy
+  public void destroy() {
+    if (candidateCache != null) {
+      candidateCache.invalidateAll();
+      log.info("候选缓存已清空");
+    }
+  }
 
   /**
    * 获取所有活跃的候选广告组（带缓存）
@@ -68,29 +122,22 @@ public class CandidateCacheService {
    * @return 候选广告组列表
    */
   public List<BidCandidate> getAllActiveCandidates() {
-    Cache cache = cacheManager.getCache(CacheConfig.CANDIDATE_CACHE);
-    if (cache == null) {
-      log.error("缓存 {} 未找到", CacheConfig.CANDIDATE_CACHE);
+    try {
+      return candidateCache.get(CACHE_KEY);
+    } catch(Exception e) {
+      log.error("获取候选缓存失败，降级为直接查询数据库", e);
       return loadFromDb();
     }
+  }
 
-    // 尝试从缓存获取
-    Cache.ValueWrapper wrapper = cache.get(CACHE_KEY);
-    @SuppressWarnings("unchecked")
-    List<BidCandidate> cached = wrapper != null ? (List<BidCandidate>) wrapper.get() : null;
-
-    // 从数据库加载最新数据
-    List<BidCandidate> fresh = loadFromDb();
-
-    // 缓存并记录变化
-    if (cached == null) {
-      log.info("候选缓存初始化: 加载 {} 个活跃广告组", fresh.size());
-    } else if (!candidatesEqual(cached, fresh)) {
-      logChange(cached, fresh);
-    }
-
-    cache.put(CACHE_KEY, fresh);
-    return fresh;
+  /**
+   * 从数据库加载候选数据（带日志）
+   */
+  private List<BidCandidate> loadFromDbWithLog() {
+    List<BidCandidate> data = loadFromDb();
+    log.info("候选缓存初始化: 加载 {} 个活跃广告组", data.size());
+    lastLoadedData = data;
+    return data;
   }
 
   /**
@@ -195,56 +242,14 @@ public class CandidateCacheService {
    * </ul>
    */
   public void evictCandidateCache() {
-    Cache cache = cacheManager.getCache(CacheConfig.CANDIDATE_CACHE);
-    if (cache != null) {
-      cache.evict(CACHE_KEY);
-      log.info("候选数据缓存已清空，下次访问将重新加载");
-    }
+    candidateCache.invalidate(CACHE_KEY);
+    log.info("候选数据缓存已清空，下次访问将重新加载");
   }
 
   /**
-   * 根据 ID 列表获取 AdGroup（带缓存）
-   *
-   * @param adGroupIds
-   *          AdGroup ID 列表
-   * @return AdGroup 列表
+   * 获取缓存统计信息
    */
-  @Cacheable(value = CacheConfig.AD_GROUP_CACHE, key = "#root.target.createKey(#adGroupIds)")
-  public List<RtbAdGroupDO> getAdGroupsByIds(List<Long> adGroupIds) {
-    log.debug("缓存未命中，从数据库加载 AdGroup, ids={}", adGroupIds);
-    return adGroupMapper.selectList(
-        new LambdaQueryWrapper<RtbAdGroupDO>()
-            .in(RtbAdGroupDO::getId, adGroupIds)
-            .eq(RtbAdGroupDO::getStatus, STATUS_ACTIVE));
-  }
-
-  /**
-   * 根据 ID 列表获取 Ads（带缓存）
-   *
-   * @param adIds
-   *          Ad ID 列表
-   * @return Ad 列表
-   */
-  @Cacheable(value = CacheConfig.AD_CACHE, key = "#root.target.createKey(#adIds)")
-  public List<RtbAdDO> getAdsByIds(List<Long> adIds) {
-    log.debug("缓存未命中，从数据库加载 Ads, ids={}", adIds);
-    return adMapper.selectList(
-        new LambdaQueryWrapper<RtbAdDO>()
-            .in(RtbAdDO::getId, adIds)
-            .eq(RtbAdDO::getStatus, STATUS_ACTIVE));
-  }
-
-  /**
-   * 创建缓存键的辅助方法
-   *
-   * @param ids
-   *          ID 列表
-   * @return 缓存键
-   */
-  public String createKey(List<Long> ids) {
-    return ids.stream()
-        .map(String::valueOf)
-        .sorted()
-        .collect(Collectors.joining(","));
+  public CacheStats getStats() {
+    return candidateCache.stats();
   }
 }

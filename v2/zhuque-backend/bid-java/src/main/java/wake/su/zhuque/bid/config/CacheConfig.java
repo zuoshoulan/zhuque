@@ -76,19 +76,19 @@ public class CacheConfig {
    *          初始容量
    * @param maximumSize
    *          最大容量
-   * @param refreshAfterSeconds
-   *          写入后刷新时间（秒），后台刷新不阻塞请求
+   * @param expireAfterSeconds
+   *          写入后过期时间（秒）
    * @return Caffeine 实例
    */
   private Caffeine<Object, Object> buildCaffeine(int initialCapacity, int maximumSize,
-      int refreshAfterSeconds) {
+      int expireAfterSeconds) {
     return Caffeine.newBuilder()
         // 初始容量
         .initialCapacity(initialCapacity)
         // 最大容量（基于权重）
         .maximumSize(maximumSize)
-        // 写入后刷新时间（后台自动刷新，不阻塞当前请求）
-        .refreshAfterWrite(refreshAfterSeconds, TimeUnit.SECONDS)
+        // 写入后过期时间
+        .expireAfterWrite(expireAfterSeconds, TimeUnit.SECONDS)
         // 启用统计
         .recordStats()
         // 移除监听器（可选，用于调试）

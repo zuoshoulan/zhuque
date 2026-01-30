@@ -901,7 +901,7 @@ mvn clean package -pl java-bid -am
 java -jar java-bid/target/java-bid-2.0.0.jar
 
 # 或使用 Maven 插件
-mvn spring-boot:run -pl java-bid
+mvn spring-boot:run -pl bid-java
 ```
 
 ### 14.3 端口说明

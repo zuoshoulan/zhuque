@@ -49,6 +49,8 @@ public class SecurityConfig {
         .csrf(AbstractHttpConfigurer::disable)
         // 配置请求授权
         .authorizeHttpRequests(authorize -> authorize
+            // 放行 OPTIONS 预检请求
+            .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
             // 允许匿名访问的路径（从配置文件读取）
             .requestMatchers(permitAllProperties.getPaths().toArray(new String [ 0 ])).permitAll()
             // 其他所有请求都需要认证
