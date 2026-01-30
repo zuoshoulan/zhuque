@@ -148,10 +148,11 @@
 
       <el-form-item label="设备定向" prop="targetingDevice">
         <el-checkbox-group v-model="targetingDeviceArray">
-          <el-checkbox label="mobile">手机</el-checkbox>
-          <el-checkbox label="tablet">平板</el-checkbox>
-          <el-checkbox label="desktop">桌面</el-checkbox>
-          <el-checkbox label="tv">电视</el-checkbox>
+          <el-checkbox :label="1">手机</el-checkbox>
+          <el-checkbox :label="2">个人电脑</el-checkbox>
+          <el-checkbox :label="3">平板</el-checkbox>
+          <el-checkbox :label="4">联网电视</el-checkbox>
+          <el-checkbox :label="5">机顶盒</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
 
@@ -161,6 +162,11 @@
           <el-checkbox label="Android">Android</el-checkbox>
           <el-checkbox label="Windows">Windows</el-checkbox>
           <el-checkbox label="macOS">macOS</el-checkbox>
+          <el-checkbox label="Linux">Linux</el-checkbox>
+          <el-checkbox label="ROKU">ROKU</el-checkbox>
+          <el-checkbox label="Chrome OS">Chrome OS</el-checkbox>
+          <el-checkbox label="Tizen">Tizen</el-checkbox>
+          <el-checkbox label="WebOS">WebOS</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
 
@@ -298,7 +304,7 @@ const formData = reactive<AdGroupCreateRequest>({
 
 // 数组类型的定向（用于组件绑定）
 const targetingGeoArray = ref<string[]>([])
-const targetingDeviceArray = ref<string[]>([])
+const targetingDeviceArray = ref<number[]>([])
 const targetingOsArray = ref<string[]>([])
 
 // 监听数组变化，同步到JSON字符串

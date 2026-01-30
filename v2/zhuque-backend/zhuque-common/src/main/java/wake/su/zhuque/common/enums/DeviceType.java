@@ -3,7 +3,9 @@ package wake.su.zhuque.common.enums;
 /**
  * OpenRTB 2.6 设备类型标准
  *
- * @see <a href="https://www.iab.com/guidelines/openrtb-2-6-specification/">OpenRTB 2.6 Specification</a>
+ * @see <a href=
+ *      "https://www.iab.com/guidelines/openrtb-2-6-specification/">OpenRTB 2.6
+ *      Specification</a>
  * @author zhuque
  */
 public enum DeviceType {
@@ -43,7 +45,7 @@ public enum DeviceType {
    * 根据 code 获取设备类型
    */
   public static DeviceType fromCode(int code) {
-    for (DeviceType type : values()) {
+    for(DeviceType type : values()) {
       if (type.code == code) {
         return type;
       }

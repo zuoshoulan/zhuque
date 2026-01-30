@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import wake.su.zhuque.bid.context.BidContext;
 import wake.su.zhuque.bid.service.matcher.DeviceMatcher;
-import wake.su.zhuque.common.enums.DeviceType;
 import wake.su.zhuque.model.entity.RtbAdGroupDO;
 
 import cn.hutool.json.JSONArray;
