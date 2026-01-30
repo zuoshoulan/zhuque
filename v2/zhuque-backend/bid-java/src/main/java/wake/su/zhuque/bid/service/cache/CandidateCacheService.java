@@ -2,11 +2,14 @@ package wake.su.zhuque.bid.service.cache;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -37,8 +40,8 @@ import lombok.extern.slf4j.Slf4j;
  * <p>缓存策略：
  * <ul>
  * <li>缓存名称：{@link CacheConfig#CANDIDATE_CACHE}</li>
- * <li>过期时间：10 秒</li>
- * <li>刷新策略：write-after-write</li>
+ * <li>刷新时间：10 秒（refresh-after-write，后台刷新不阻塞请求）</li>
+ * <li>数据变化时记录 info 日志</li>
  * </ul>
  *
  * @author zhuque
@@ -52,8 +55,10 @@ public class CandidateCacheService {
   private final RtbCampaignMapper campaignMapper;
   private final RtbAdGroupMapper adGroupMapper;
   private final RtbAdMapper adMapper;
+  private final CacheManager cacheManager;
 
   private static final Integer STATUS_ACTIVE = 1; // 进行中
+  private static final String CACHE_KEY = "all";
 
   /**
    * 获取所有活跃的候选广告组（带缓存）
@@ -62,10 +67,36 @@ public class CandidateCacheService {
    *
    * @return 候选广告组列表
    */
-  @Cacheable(value = CacheConfig.CANDIDATE_CACHE, key = "'all'")
   public List<BidCandidate> getAllActiveCandidates() {
-    log.debug("缓存未命中，从数据库加载候选数据");
+    Cache cache = cacheManager.getCache(CacheConfig.CANDIDATE_CACHE);
+    if (cache == null) {
+      log.error("缓存 {} 未找到", CacheConfig.CANDIDATE_CACHE);
+      return loadFromDb();
+    }
 
+    // 尝试从缓存获取
+    Cache.ValueWrapper wrapper = cache.get(CACHE_KEY);
+    @SuppressWarnings("unchecked")
+    List<BidCandidate> cached = wrapper != null ? (List<BidCandidate>) wrapper.get() : null;
+
+    // 从数据库加载最新数据
+    List<BidCandidate> fresh = loadFromDb();
+
+    // 缓存并记录变化
+    if (cached == null) {
+      log.info("候选缓存初始化: 加载 {} 个活跃广告组", fresh.size());
+    } else if (!candidatesEqual(cached, fresh)) {
+      logChange(cached, fresh);
+    }
+
+    cache.put(CACHE_KEY, fresh);
+    return fresh;
+  }
+
+  /**
+   * 从数据库加载候选数据
+   */
+  private List<BidCandidate> loadFromDb() {
     // 获取当前日期
     LocalDate now = LocalDate.now();
 
@@ -77,7 +108,6 @@ public class CandidateCacheService {
             .ge(RtbCampaignDO::getEndTime, now));
 
     if (campaigns.isEmpty()) {
-      log.debug("没有活跃的 Campaign");
       return List.of();
     }
 
@@ -90,7 +120,6 @@ public class CandidateCacheService {
             .eq(RtbAdGroupDO::getStatus, STATUS_ACTIVE));
 
     if (adGroups.isEmpty()) {
-      log.debug("没有活跃的 AdGroup");
       return List.of();
     }
 
@@ -102,7 +131,7 @@ public class CandidateCacheService {
             .in(RtbAdDO::getAdGroupId, adGroupIds)
             .eq(RtbAdDO::getStatus, STATUS_ACTIVE));
 
-    // 4. 组装候选对象（优化：使用 Map 加速查找）
+    // 4. 组装候选对象
     Map<Long, List<RtbAdDO>> adMap = ads.stream()
         .collect(Collectors.groupingBy(RtbAdDO::getAdGroupId));
 
@@ -110,13 +139,48 @@ public class CandidateCacheService {
     for(RtbAdGroupDO adGroup : adGroups) {
       List<RtbAdDO> groupAds = adMap.get(adGroup.getId());
       if (groupAds != null && !groupAds.isEmpty()) {
-        // 每个 AdGroup 只取第一个 Ad
         candidates.add(new BidCandidate(adGroup, groupAds.get(0)));
       }
     }
 
-    log.debug("加载了 {} 个候选广告组", candidates.size());
     return candidates;
+  }
+
+  /**
+   * 比较两组候选是否相同（基于 adGroupId）
+   */
+  private boolean candidatesEqual(List<BidCandidate> c1, List<BidCandidate> c2) {
+    if (c1.size() != c2.size()) {
+      return false;
+    }
+    Set<Long> ids1 = c1.stream().map(c -> c.getAdGroup().getId()).collect(Collectors.toSet());
+    Set<Long> ids2 = c2.stream().map(c -> c.getAdGroup().getId()).collect(Collectors.toSet());
+    return ids1.equals(ids2);
+  }
+
+  /**
+   * 记录缓存变化日志
+   */
+  private void logChange(List<BidCandidate> oldCandidates, List<BidCandidate> newCandidates) {
+    Set<Long> oldIds = oldCandidates.stream().map(c -> c.getAdGroup().getId()).collect(Collectors.toSet());
+    Set<Long> newIds = newCandidates.stream().map(c -> c.getAdGroup().getId()).collect(Collectors.toSet());
+
+    Set<Long> added = new HashSet<>(newIds);
+    added.removeAll(oldIds);
+
+    Set<Long> removed = new HashSet<>(oldIds);
+    removed.removeAll(newIds);
+
+    if (!added.isEmpty() || !removed.isEmpty()) {
+      log.info("候选缓存已更新: 新增 {} 个, 移除 {} 个, 当前总数 {}",
+          added.size(), removed.size(), newCandidates.size());
+      if (!added.isEmpty()) {
+        log.debug("新增 AdGroup IDs: {}", added);
+      }
+      if (!removed.isEmpty()) {
+        log.debug("移除 AdGroup IDs: {}", removed);
+      }
+    }
   }
 
   /**
@@ -130,9 +194,12 @@ public class CandidateCacheService {
    * <li>预算调整</li>
    * </ul>
    */
-  @CacheEvict(value = CacheConfig.CANDIDATE_CACHE, key = "'all'")
   public void evictCandidateCache() {
-    log.info("候选数据缓存已清空，下次访问将重新加载");
+    Cache cache = cacheManager.getCache(CacheConfig.CANDIDATE_CACHE);
+    if (cache != null) {
+      cache.evict(CACHE_KEY);
+      log.info("候选数据缓存已清空，下次访问将重新加载");
+    }
   }
 
   /**
