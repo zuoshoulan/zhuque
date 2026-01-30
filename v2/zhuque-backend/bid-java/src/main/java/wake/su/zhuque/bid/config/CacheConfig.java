@@ -42,7 +42,7 @@ public class CacheConfig {
    *
    * <p>缓存策略：
    * <ul>
-   * <li>过期时间：30 秒后自动刷新（write-after-write）</li>
+   * <li>刷新时间：10 秒后后台自动刷新（refresh-after-write，不阻塞请求）</li>
    * <li>初始容量：100 个条目</li>
    * <li>最大容量：1000 个条目（基于内存使用自动清理）</li>
    * <li>统计信息：启用缓存命中率统计</li>
@@ -76,19 +76,19 @@ public class CacheConfig {
    *          初始容量
    * @param maximumSize
    *          最大容量
-   * @param expireAfterSeconds
-   *          写入后过期时间（秒）
+   * @param refreshAfterSeconds
+   *          写入后刷新时间（秒），后台刷新不阻塞请求
    * @return Caffeine 实例
    */
   private Caffeine<Object, Object> buildCaffeine(int initialCapacity, int maximumSize,
-      int expireAfterSeconds) {
+      int refreshAfterSeconds) {
     return Caffeine.newBuilder()
         // 初始容量
         .initialCapacity(initialCapacity)
         // 最大容量（基于权重）
         .maximumSize(maximumSize)
-        // 写入后过期时间
-        .expireAfterWrite(expireAfterSeconds, TimeUnit.SECONDS)
+        // 写入后刷新时间（后台自动刷新，不阻塞当前请求）
+        .refreshAfterWrite(refreshAfterSeconds, TimeUnit.SECONDS)
         // 启用统计
         .recordStats()
         // 移除监听器（可选，用于调试）
