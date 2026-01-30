@@ -6,24 +6,20 @@ import org.springframework.stereotype.Service;
 
 import wake.su.zhuque.bid.context.BidContext;
 import wake.su.zhuque.bid.service.matcher.DeviceMatcher;
+import wake.su.zhuque.common.enums.DeviceType;
 import wake.su.zhuque.model.entity.RtbAdGroupDO;
 
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 
 /**
- * 设备匹配器实现 @ @author zhuque
+ * 设备匹配器实现
  *
+ * @author zhuque
  * @version 1.0
  */
 @Service
 public class DeviceMatcherImpl implements DeviceMatcher {
-
-  // 设备类型: 1=手机, 2=平板, 3=桌面, 4=TV
-  private static final int DEVICE_PHONE = 1;
-  private static final int DEVICE_TABLET = 2;
-  private static final int DEVICE_DESKTOP = 3;
-  private static final int DEVICE_TV = 4;
 
   @Override
   public boolean matches(BidContext context, RtbAdGroupDO adGroup) {
