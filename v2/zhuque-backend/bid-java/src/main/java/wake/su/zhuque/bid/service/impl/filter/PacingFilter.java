@@ -5,32 +5,29 @@ import org.springframework.stereotype.Component;
 
 import wake.su.zhuque.bid.context.BidContext;
 import wake.su.zhuque.bid.service.filter.BidFilter;
-import wake.su.zhuque.bid.service.frequency.FrequencyCapService;
+import wake.su.zhuque.bid.service.pacing.PacingService;
 import wake.su.zhuque.model.entity.RtbAdGroupDO;
 
 import lombok.RequiredArgsConstructor;
 
 /**
- * 频次过滤器 预检查频次是否超限（只查不累加）
+ * 投放节奏过滤器
+ *
+ * <p>在均匀投放模式下，控制广告组的出价节奏，防止预算在短时间内消耗完毕。
  *
  * @author zhuque
- * @version 1.0
+ * @version 2.0
  */
 @Component
 @Order(4)
 @RequiredArgsConstructor
-public class FrequencyFilter implements BidFilter {
+public class PacingFilter implements BidFilter {
 
-  private final FrequencyCapService frequencyCapService;
+  private final PacingService pacingService;
 
   @Override
   public boolean test(BidContext context, RtbAdGroupDO adGroup) {
-    String userId = context.getUserId();
-    if (userId == null || userId.isEmpty()) {
-      // 没有用户ID时，跳过频次检查
-      return true;
-    }
-    return frequencyCapService.checkFrequency(userId, adGroup);
+    return pacingService.allowBid(adGroup);
   }
 
   @Override

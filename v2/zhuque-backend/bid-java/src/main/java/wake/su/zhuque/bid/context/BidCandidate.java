@@ -49,7 +49,7 @@ public class BidCandidate implements Comparable<BidCandidate> {
   }
 
   /** 计算竞价分数 score = weight × bidPrice × qualityScore */
-  public void calculateScore() {
+  public void  calculateScore() {
     if (bidPrice == null) {
       this.score = 0.0;
       return;

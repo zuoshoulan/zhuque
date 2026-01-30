@@ -24,7 +24,7 @@ import wake.su.zhuque.bid.service.cache.CandidateCacheService;
 import wake.su.zhuque.bid.service.cache.CreativeCacheService;
 import wake.su.zhuque.bid.service.creative.CreativeAssemblyService;
 import wake.su.zhuque.bid.service.filter.BidFilter;
-import wake.su.zhuque.bid.service.frequency.FrequencyCapService;
+import wake.su.zhuque.bid.service.pacing.PacingService;
 import wake.su.zhuque.bid.service.pricing.BidPriceService;
 import wake.su.zhuque.dao.mapper.RtbAdGroupMapper;
 import wake.su.zhuque.dao.mapper.RtbAdMapper;
@@ -49,7 +49,7 @@ public class RtbBidServiceImpl implements RtbBidService {
   private final List<BidFilter> sortedBidFilters; // 缓存排序后的过滤器，减少GC
   private final BidPriceService bidPriceService;
   private final BudgetControlService budgetControlService;
-  private final FrequencyCapService frequencyCapService;
+  private final PacingService pacingService;
   private final CreativeAssemblyService creativeAssemblyService;
   private final CandidateCacheService candidateCacheService; // 候选数据缓存服务
   private final CreativeCacheService creativeCacheService; // 创意缓存服务
@@ -63,7 +63,7 @@ public class RtbBidServiceImpl implements RtbBidService {
    */
   public RtbBidServiceImpl(RtbCampaignMapper campaignMapper, RtbAdGroupMapper adGroupMapper,
       RtbAdMapper adMapper, List<BidFilter> bidFilters, BidPriceService bidPriceService,
-      BudgetControlService budgetControlService, FrequencyCapService frequencyCapService,
+      BudgetControlService budgetControlService, PacingService pacingService,
       CreativeAssemblyService creativeAssemblyService, CandidateCacheService candidateCacheService,
       CreativeCacheService creativeCacheService) {
     this.campaignMapper = campaignMapper;
@@ -71,7 +71,7 @@ public class RtbBidServiceImpl implements RtbBidService {
     this.adMapper = adMapper;
     this.bidPriceService = bidPriceService;
     this.budgetControlService = budgetControlService;
-    this.frequencyCapService = frequencyCapService;
+    this.pacingService = pacingService;
     this.creativeAssemblyService = creativeAssemblyService;
     this.candidateCacheService = candidateCacheService;
     this.creativeCacheService = creativeCacheService;
@@ -285,7 +285,6 @@ public class RtbBidServiceImpl implements RtbBidService {
 
     for(BidCandidate candidate : candidates) {
       RtbAdGroupDO adGroup = candidate.getAdGroup();
-      String userId = context.getUserId();
 
       // 1. 尝试扣减预算 (原子操作)
       if (!budgetControlService.tryDeduct(adGroup, bidPrice)) {
@@ -293,16 +292,11 @@ public class RtbBidServiceImpl implements RtbBidService {
         continue;
       }
 
-      // 2. 尝试记录频次 (原子操作)
-      if (!frequencyCapService.tryRecord(userId, adGroup)) {
-        log.debug("频次记录失败, adGroup={}", adGroup.getId());
-        budgetControlService.rollback(adGroup, bidPrice); // 回滚预算
-        continue;
-      }
+      // 2. 记录出价（投放节奏控制）
+      pacingService.recordBid(adGroup);
 
-      // 两项都成功，选中
+      // 成功，选中
       candidate.setBudgetPassed(true);
-      candidate.setFrequencyPassed(true);
       return candidate;
     }
 
