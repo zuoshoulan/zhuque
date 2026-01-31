@@ -5,6 +5,7 @@ v2/zhuque-frontend/.vite/
 
 # 后端构建产物
 **/target/
+**/target
 *.class
 *.jar
 *.war
